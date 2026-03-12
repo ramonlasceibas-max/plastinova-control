@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Plastinova Gerencial Pro</title>
+    <style>
+        /* --- ESTILOS DE INTERFAZ WEB (Lo que ves en el celular) --- */
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
+        .header { background-color: #2E7D32; color: white; padding: 15px; text-align: center; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 900; }
+        .nav-tabs { display: flex; background: #1B5E20; overflow-x: auto;}
+        .nav-tabs button { flex: 1; padding: 12px; background: none; border: none; color: white; font-weight: bold; font-size: 12px; cursor: pointer; opacity: 0.7; min-width: 80px;}
+        .nav-tabs button.active { opacity: 1; border-bottom: 4px solid #FFEB3B; }
+        .container { padding: 10px; max-width: 800px; margin: auto; padding-bottom: 50px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; color: #2E7D32; border-bottom: 2px solid #e8f5e9; padding-bottom: 5px; font-size: 15px; }
+        .row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 30%; }
+        .form-group label { display: block; font-size: 11px; color: #555; font-weight: bold; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; background-color: #f9f9f9; }
+        .input-precio { border: 2px solid #4CAF50 !important; font-weight: bold; color: #2E7D32; background-color: #e8f5e9 !important; }
+        
+        .btn { background-color: #1565C0; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-green { background-color: #2E7D32; }
+        .btn-orange { background-color: #EF6C00; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 10px; padding: 10px; background: #e8f5e9; border-radius: 5px; border: 1px solid #c8e6c9;}
+        .checkbox-group input { width: 20px; height: 20px; }
+
+        table.db-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; white-space: nowrap;}
+        table.db-table th, table.db-table td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+        table.db-table th { background-color: #2E7D32; color: white; }
+        .badge-tipo { font-size: 9px; background-color: #e0e0e0; color: #333; padding: 3px 6px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;}
+
+        .grafica-container { display: flex; align-items: flex-end; justify-content: space-around; height: 200px; padding: 10px 5px 0 5px; border-bottom: 2px solid #ccc; gap: 15px; margin-top: 10px; overflow-x: auto; }
+        .grafica-col { flex: 0 0 50px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+        .grafica-bar { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.5s ease-in-out; display: flex; justify-content: center; align-items: flex-start; color: white; font-size: 10px; font-weight: bold; padding-top: 5px; overflow: hidden; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
+        .bar-ventas { background-color: #1565C0; }
+        .bar-prod { background-color: #EF6C00; }
+        .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
+
+        /* --- ESTILOS PDF (CLON EXACTO DE EXCEL) --- */
+        #pdf-report { display: none; }
+        @media print {
+            @page { size: landscape; margin: 10mm; }
+            body { background-color: white; margin: 0; }
+            #app-ui { display: none !important; }
+            #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
+            
+            .header-pdf { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
+            .subtitle-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; }
+            
+            /* Tablas Principales de Ventas */
+            .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center; }
+            .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 9px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; }
+            .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 4px; }
+            .row-total td { color: red !important; font-weight: bold; }
+            
+            /* Tablas de Finanzas (Parte Inferior) */
+            .bottom-container { display: flex; gap: 20px; margin-top: 15px; }
+            
+            /* Izquierda (Extras) */
+            .tabla-extras { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; }
+            .tabla-extras td { border: 1px solid #000; padding: 3px; }
+            
+            /* Derecha (Gastos y Resumen) */
+            .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; text-align: right; }
+            .tabla-resumen td { padding: 3px; }
+            
+            .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; margin-bottom: 5px;}
+            .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; }
+            
+            .firma { margin-top: 30px; font-size: 10px; font-weight: normal; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-ui">
+        <div class="header"><h1>PLASTINOVA GERENCIAL</h1></div>
+        
+        <div class="nav-tabs">
+            <button id="btn-tab-registro" class="active" onclick="cambiarTab('registro')">📝 Diario</button>
+            <button id="btn-tab-bd" onclick="cambiarTab('bd')">🗄️ Historial</button>
+            <button id="btn-tab-dashboard" onclick="cambiarTab('dashboard')">📊 Gráficas</button>
+            <button id="btn-tab-cortes" onclick="cambiarTab('cortes')">✂️ Cortes</button>
+        </div>
+
+        <div class="container">
+            
+            <div id="tab-registro" class="tab-content active">
+                <div class="card">
+                    <div class="row">
+                        <div class="form-group"><label>Fecha</label><input type="date" id="fecha"></div>
+                        <div class="form-group"><label>Semana (Auto)</label><input type="text" id="semana" readonly style="background:#eee;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Vendedor (Para Ventas y Gastos)</label>
+                        <select id="vendedor">
+                            <option value="FERNANDO">FERNANDO</option><option value="HUSAI" selected>HUSAI</option>
+                            <option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option>
+                            <option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📦 Venta Tinacos</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <select id="capTinaco" onchange="actualizarPrecios('tinaco')">
+                                <option value="1200LT">1200LT</option>
+                                <option value="1100LT" selected>1100LT</option>
+                                <option value="750LT">750LT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select id="colTinaco">
+                                <option value="BEIGE">BEIGE</option><option value="NEGRO" selected>NEGRO</option><option value="AZUL">AZUL</option>
+                                <option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option>
+                                <option value="NARANJA">NARANJA</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option>
+                                <option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Tipo Precio</label>
+                            <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')">
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Cantidad</label><input type="number" id="qTinaco" value="0"></div>
+                        <div class="form-group"><label>Precio Uni ($)</label><input type="number" id="pTinaco" value="1250" class="input-precio"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🛢️ Venta Tambos</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <select id="capTambo" onchange="actualizarPrecios('tambo')"><option value="235LT">235LT</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select id="colTambo">
+                                <option value="AZUL" selected>AZUL</option><option value="NEGRO">NEGRO</option><option value="BEIGE">BEIGE</option>
+                                <option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option>
+                                <option value="NARANJA">NARANJA</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option><option value="CAFÉ">CAFÉ</option>
+                                <option value="BLANCO">BLANCO</option><option value="ROJO CON BLANCO">ROJO CON BLANCO</option>
+                                <option value="VERDE CON BLANCO">VERDE CON BLANCO</option><option value="AZUL CON BLANCO">AZUL CON BLANCO</option>
+                                <option value="TERRACOTA">TERRACOTA</option><option value="MENTA">MENTA</option><option value="PISTACHE">PISTACHE</option>
+                                <option value="GRANITO BEIGE">GRANITO BEIGE</option><option value="GRANITO">GRANITO</option><option value="DUVALIN">DUVALIN</option>
+                                <option value="UVA">UVA</option><option value="MELON">MELON</option><option value="OXFORD">OXFORD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Tipo Precio</label>
+                            <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')">
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Cantidad</label><input type="number" id="qTambo" value="0"></div>
+                        <div class="form-group"><label>Precio Uni ($)</label><input type="number" id="pTambo" value="495" class="input-precio"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🏭 Registro de Producción</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Productor</label>
+                            <select id="productor">
+                                <option value="PEDRO">PEDRO</option><option value="FERNANDO">FERNANDO</option>
+                                <option value="IVAN">IVAN</option><option value="HUSAI">HUSAI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Producto Fabricado</label>
+                            <select id="tipoProdFabricado">
+                                <option value="TINACO">TINACO</option>
+                                <option value="TAMBO">TAMBO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <select id="capProdFabricado">
+                                <option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option>
+                                <option value="750LT">750LT</option><option value="235LT">235LT (Tambo)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select id="colProdFabricado">
+                                <option value="AZUL" selected>AZUL</option><option value="NEGRO">NEGRO</option><option value="BEIGE">BEIGE</option>
+                                <option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option>
+                                <option value="NARANJA">NARANJA</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option><option value="CAFÉ">CAFÉ</option>
+                                <option value="BLANCO">BLANCO</option><option value="ROJO CON BLANCO">ROJO CON BLANCO</option>
+                                <option value="VERDE CON BLANCO">VERDE CON BLANCO</option><option value="AZUL CON BLANCO">AZUL CON BLANCO</option>
+                                <option value="TERRACOTA">TERRACOTA</option><option value="MENTA">MENTA</option><option value="PISTACHE">PISTACHE</option>
+                                <option value="GRANITO BEIGE">GRANITO BEIGE</option><option value="GRANITO">GRANITO</option><option value="DUVALIN">DUVALIN</option>
+                                <option value="UVA">UVA</option><option value="MELON">MELON</option><option value="OXFORD">OXFORD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Cant. NORMAL (Pza)</label><input type="number" id="qProdNormal" value="0"></div>
+                        <div class="form-group"><label>Cant. EXTRA (Pza)</label><input type="number" id="qProdExtra" value="0" class="input-precio"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>💸 Gastos del Vendedor</h3>
+                    <div class="form-group"><label>Concepto (Ej. Gasolina)</label><input type="text" id="descGasto"></div>
+                    <div class="form-group"><label>Monto ($)</label><input type="number" id="montoGasto" value="0"></div>
+                </div>
+
+                <button class="btn btn-green" onclick="guardarRegistro()">💾 Guardar Movimientos</button>
+            </div>
+
+            <div id="tab-bd" class="tab-content">
+                <div class="card" style="overflow-x: auto;">
+                    <h3>🗄️ Historial de Movimientos</h3>
+                    <table class="db-table" id="tablaBD">
+                        <thead><tr><th>Fecha</th><th>Resp.</th><th>Movimiento</th><th>Concepto</th><th>Cant.</th><th>P. Uni</th><th>Total</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <button class="btn" style="background-color: #d32f2f; margin-top: 15px;" onclick="limpiarBD()">🗑️ Borrar Historial</button>
+                </div>
+            </div>
+
+            <div id="tab-dashboard" class="tab-content">
+                <div class="card">
+                    <h3>📊 Filtros del Tablero</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Periodo</label>
+                            <select id="filtroTiempo" onchange="renderGraficas()">
+                                <option value="semana">Esta Semana Corriente</option>
+                                <option value="mes">Este Mes</option>
+                                <option value="anio">Este Año</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vendedor</label>
+                            <select id="filtroVendedorGrafica" onchange="renderGraficas()">
+                                <option value="TODOS">TODOS</option>
+                                <option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option>
+                                <option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option>
+                                <option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card"><h3 style="color: #1565C0;">💰 Ventas Totales</h3><div class="grafica-container" id="graficaVentas"></div></div>
+                <div class="card"><h3 style="color: #EF6C00;">🏭 Producción Total</h3><div class="grafica-container" id="graficaProd"></div></div>
+            </div>
+
+            <div id="tab-cortes" class="tab-content">
+                <div class="card">
+                    <h3>✂️ Generar Reporte de Corte</h3>
+                    <p style="font-size: 11px; color: #666; margin-bottom: 15px;">La app jalará ventas, gastos y extras de la semana. (Regla Fernando: se jalan también los extras de Pedro).</p>
+                    
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <select id="vendedorCorte">
+                            <option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option>
+                            <option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option>
+                            <option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-group"><input type="checkbox" id="chkTinacos" checked><label for="chkTinacos">Mostrar Ventas de Tinacos</label></div>
+                    <div class="checkbox-group"><input type="checkbox" id="chkTambos" checked><label for="chkTambos">Mostrar Ventas de Tambos</label></div>
+
+                    <button class="btn btn-orange" onclick="generarCortePDF()" style="margin-top: 15px;">📄 Crear PDF del Corte</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="pdf-report">
+        <div class="header-pdf">
+            TINACOS PLASTINOVA<br>
+            VENDEDOR: <span id="r-vendedor"></span><br>
+            <span id="r-fechas"></span>. SEMANA <span id="r-semana"></span>
+        </div>
+
+        <div class="subtitle-pdf">VENTAS TINACOS</div>
+        <table class="pdf-table">
+            <thead>
+                <tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TINACO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr>
+            </thead>
+            <tbody id="r-tabla-tinacos"></tbody>
+            <tfoot>
+                <tr class="row-total">
+                    <td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td>
+                    <td><span id="r-sumQTinacos"></span></td>
+                    <td>$</td>
+                    <td><span id="r-sumDineroTinacos"></span></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="subtitle-pdf">VENTAS TAMBOS 235 LT</div>
+        <table class="pdf-table">
+            <thead>
+                <tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAMBO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr>
+            </thead>
+            <tbody id="r-tabla-tambos"></tbody>
+            <tfoot>
+                <tr class="row-total">
+                    <td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td>
+                    <td><span id="r-sumQTambos"></span></td>
+                    <td>$</td>
+                    <td><span id="r-sumDineroTambos"></span></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="bottom-container">
+            <div style="width: 45%;">
+                <div class="firma">FIRMA_______________________</div>
+                <div style="text-align: center; font-size: 8px; font-weight: bold; margin-bottom: 2px;">EXTRAS TRABAJADORES</div>
+                <table class="tabla-extras">
+                    <tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr>
+                    <tr id="row-pedro"><td style="text-align:center;"><span id="r-qProdExtraTinPedro"></span></td><td>TINACOS EXTRA PEDRO</td><td style="text-align:right;"><span id="r-comExtraTinPedro"></span></td></tr>
+                    <tr><td style="text-align:center;"><span id="r-qProdExtraTin"></span></td><td>TINACOS EXTRA <span id="r-vendLabelExtra"></span></td><td style="text-align:right;"><span id="r-comExtraTin"></span></td></tr>
+                    <tr><td style="text-align:center;"><span id="r-sumQTinacosCom"></span></td><td>VENTAS TINACOS</td><td style="text-align:right;"><span id="r-comTinacos"></span></td></tr>
+                    <tr><td style="text-align:center;"><span id="r-sumQTambosCom"></span></td><td>VENTAS TAMBOS</td><td style="text-align:right;"><span id="r-comTambos"></span></td></tr>
+                    <tr><td colspan="2" style="text-align:center; color:red;">TOTAL</td><td style="color:red; text-align:right;"><span id="r-totComisiones"></span></td></tr>
+                </table>
+            </div>
+            
+            <div style="width: 55%;">
+                <table class="tabla-resumen">
+                    <tr><td style="width: 70%; color: red;">TOTAL VENTAS</td><td style="color: red;"><span id="r-granTotalVentas"></span></td></tr>
+                    <tr><td colspan="2" style="text-align: center; font-size:10px;">GASTOS</td></tr>
+                </table>
+                
+                <table class="tabla-gastos">
+                    <tbody id="r-tabla-gastos"></tbody>
+                </table>
+                
+                <table class="tabla-resumen">
+                    <tr><td style="width: 70%;">GASTOS $</td><td><span id="r-totGastos"></span></td></tr>
+                    <tr><td>SUB TOTAL $</td><td><span id="r-subTotal"></span></td></tr>
+                    <tr><td>EXTRA TRABAJADORES</td><td><span id="r-totComisionesFin"></span></td></tr>
+                    <tr><td style="color: red; font-size: 13px;">TOTAL $</td><td style="color: red; font-size: 13px;"><span id="r-totalEfectivo"></span></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LISTA_PRECIOS = {
+            "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400 },
+            "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200 },
+            "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200 },
+            "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495  }
+        };
+
+        function actualizarPrecios(tipoItem) {
+            if(tipoItem === 'tinaco') {
+                const cap = document.getElementById('capTinaco').value;
+                const tipo = document.getElementById('tipoPrecioTinaco').value;
+                if(LISTA_PRECIOS[cap]) document.getElementById('pTinaco').value = LISTA_PRECIOS[cap][tipo];
+            } else if (tipoItem === 'tambo') {
+                const cap = document.getElementById('capTambo').value;
+                const tipo = document.getElementById('tipoPrecioTambo').value;
+                if(LISTA_PRECIOS[cap]) document.getElementById('pTambo').value = LISTA_PRECIOS[cap][tipo];
+            }
+        }
+
+        const hoy = new Date();
+        document.getElementById('fecha').valueAsDate = hoy;
+        
+        function getNumeroSemana(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+        document.getElementById('semana').value = getNumeroSemana(hoy);
+
+        function cambiarTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('btn-tab-' + tab).classList.add('active');
+            if(tab === 'bd') cargarBD();
+            if(tab === 'dashboard') renderGraficas();
+        }
+
+        function formato(num) { return num.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+
+        function getTipoAmigable(tipo) {
+            if(tipo === 'VENTA_TINACO' || tipo === 'VENTA_TAMBO') return 'VENTA';
+            if(tipo === 'PROD_NORMAL') return 'PROD. NORMAL';
+            if(tipo.includes('PROD_EXTRA')) return 'PROD. EXTRA';
+            if(tipo === 'GASTO') return 'GASTO';
+            return tipo;
+        }
+
+        function guardarRegistro() {
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
+            const fecha = document.getElementById('fecha').value;
+            const sem = document.getElementById('semana').value;
+            const vend = document.getElementById('vendedor').value;
+            const prod = document.getElementById('productor').value;
+
+            const addRecord = (v, tipo, concepto, cant, precio, total) => {
+                db.push({ fecha, semana: sem, vendedor: v, tipo, concepto, cantidad: cant, precio, total });
+            };
+
+            const qTin = parseFloat(document.getElementById('qTinaco').value) || 0;
+            const pTin = parseFloat(document.getElementById('pTinaco').value) || 0;
+            if(qTin > 0) addRecord(vend, 'VENTA_TINACO', `TINACO ${document.getElementById('capTinaco').value} ${document.getElementById('colTinaco').value}`, qTin, pTin, qTin * pTin);
+            
+            const qTam = parseFloat(document.getElementById('qTambo').value) || 0;
+            const pTam = parseFloat(document.getElementById('pTambo').value) || 0;
+            if(qTam > 0) addRecord(vend, 'VENTA_TAMBO', `TAMBO ${document.getElementById('capTambo').value} ${document.getElementById('colTambo').value}`, qTam, pTam, qTam * pTam);
+
+            const tipoP = document.getElementById('tipoProdFabricado').value;
+            const capP = document.getElementById('capProdFabricado').value;
+            const colP = document.getElementById('colProdFabricado').value;
+            const descProd = `${tipoP} ${capP} ${colP}`;
+
+            const qNorm = parseFloat(document.getElementById('qProdNormal').value) || 0;
+            if(qNorm > 0) addRecord(prod, 'PROD_NORMAL', `NORMAL: ${descProd}`, qNorm, 0, 0);
+            
+            const qExt = parseFloat(document.getElementById('qProdExtra').value) || 0;
+            if(qExt > 0) {
+                if (tipoP === 'TINACO') addRecord(prod, 'PROD_EXTRA_TINACO', `EXTRA: ${descProd}`, qExt, 0, 0);
+                else addRecord(prod, 'PROD_EXTRA_TAMBO', `EXTRA: ${descProd}`, qExt, 0, 0);
+            }
+
+            const gasto = parseFloat(document.getElementById('montoGasto').value) || 0;
+            if(gasto > 0) addRecord(vend, 'GASTO', document.getElementById('descGasto').value.toUpperCase(), 1, gasto, gasto);
+
+            localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
+            
+            ['qTinaco','qTambo','qProdNormal','qProdExtra','montoGasto'].forEach(id => document.getElementById(id).value = '0');
+            actualizarPrecios('tinaco'); actualizarPrecios('tambo');
+            document.getElementById('descGasto').value = '';
+            alert('¡Guardado!');
+        }
+
+        function cargarBD() {
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
+            let tbody = document.querySelector('#tablaBD tbody');
+            tbody.innerHTML = '';
+            db.slice().reverse().forEach(row => {
+                tbody.innerHTML += `<tr><td>${row.fecha}</td><td>${row.vendedor}</td><td><span class="badge-tipo">${getTipoAmigable(row.tipo)}</span></td><td>${row.concepto}</td><td>${row.cantidad}</td><td>${row.precio>0?'$'+formato(row.precio):'-'}</td><td>$${formato(row.total)}</td></tr>`;
+            });
+        }
+        function limpiarBD() { if(confirm('¿Borrar historial?')) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); renderGraficas(); } }
+
+        function renderGraficas() {
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
+            const fTiempo = document.getElementById('filtroTiempo').value;
+            const fVend = document.getElementById('filtroVendedorGrafica').value;
+            
+            let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear();
+            let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
+
+            db.forEach(r => {
+                let rD = new Date(r.fecha + "T00:00:00");
+                let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
+                if(valid && (fVend==='TODOS'||r.vendedor===fVend)) {
+                    if(r.tipo.includes('VENTA')) { v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; }
+                    if(r.tipo.includes('PROD')) { v_prod[r.vendedor] = (v_prod[r.vendedor]||0)+r.cantidad; if(v_prod[r.vendedor]>maxP) maxP=v_prod[r.vendedor]; }
+                }
+            });
+
+            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v]/maxV)*100:0}%;">$${formato(v_ventas[v])}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
+            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
+        }
+
+        // --- EL CORAZÓN DEL REPORTE CLON DE EXCEL ---
+        function generarCortePDF() {
+            const vendedor = document.getElementById('vendedorCorte').value;
+            const mostrarTinacos = document.getElementById('chkTinacos').checked;
+            const mostrarTambos = document.getElementById('chkTambos').checked;
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
+            
+            let lunes = new Date(); lunes.setDate(lunes.getDate() - lunes.getDay() + (lunes.getDay()===0?-6:1));
+            
+            // EL BUG ESTABA AQUÍ: Usar fInicio en lugar de fIni. Reparado.
+            let fInicio = new Date(lunes); 
+            if(vendedor === 'ISIDRO') fInicio.setDate(lunes.getDate()-3); 
+            
+            let fFin = new Date(lunes); 
+            fFin.setDate(lunes.getDate()+6);
+
+            const startStr = fInicio.toISOString().split('T')[0];
+            const endStr = fFin.toISOString().split('T')[0];
+
+            let registros = db.filter(r => {
+                let dentroFecha = (r.fecha >= startStr && r.fecha <= endStr);
+                if (!dentroFecha) return false;
+                
+                if (r.vendedor === vendedor) return true;
+                if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && r.tipo.includes('PROD_EXTRA')) return true; 
+                return false;
+            });
+
+            let tTinacos = '', tTambos = '', tGastos = '';
+            let sumQTin = 0, sumDTin = 0, sumQTam = 0, sumDTam = 0, sumQExtTin = 0, sumQExtTinPedro = 0, sumGastos = 0;
+            let countGastos = 0;
+
+            registros.forEach(r => {
+                const fila = `<tr><td></td><td>${r.fecha.split('-').reverse().join('/')}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${r.cantidad.toFixed(2)}</td><td>$ ${formato(r.precio)}</td><td>$ ${formato(r.total)}</td></tr>`;
+                
+                if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += r.cantidad; sumDTin += r.total; }
+                if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += r.cantidad; sumDTam += r.total; }
+                
+                if(r.tipo === 'PROD_EXTRA_TINACO') {
+                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') {
+                        sumQExtTinPedro += r.cantidad;
+                    } else {
+                        sumQExtTin += r.cantidad;
+                    }
+                }
+                
+                if(r.tipo === 'GASTO') {
+                    tGastos += `<tr><td style="text-align:left; width:70%;">${r.concepto}</td><td style="text-align:center;">$</td><td style="text-align:right;">${formato(r.total)}</td></tr>`;
+                    sumGastos += r.total;
+                    countGastos++;
+                }
+            });
+
+            while(countGastos < 6) {
+                tGastos += `<tr><td style="text-align:left; width:70%;">&nbsp;</td><td style="text-align:center;">$</td><td style="text-align:right;">-</td></tr>`;
+                countGastos++;
+            }
+
+            const granTotal = sumDTin + sumDTam;
+            const comExtTinPedro = sumQExtTinPedro * 35;
+            const comExtTin = sumQExtTin * 35;
+            const comTin = sumQTin * 35;
+            const comTam = sumQTam * 10;
+            
+            const totComs = comExtTinPedro + comExtTin + comTin + comTam;
+            const subTotal = granTotal - sumGastos;
+            const totalEfe = subTotal - totComs;
+
+            document.getElementById('r-vendedor').innerText = vendedor;
+            document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')}`;
+            document.getElementById('r-semana').innerText = getNumeroSemana(new Date());
+
+            document.getElementById('r-tabla-tinacos').innerHTML = tTinacos;
+            document.getElementById('r-sumQTinacos').innerText = sumQTin.toFixed(2);
+            document.getElementById('r-sumDineroTinacos').innerText = formato(sumDTin);
+
+            document.getElementById('r-tabla-tambos').innerHTML = tTambos;
+            document.getElementById('r-sumQTambos').innerText = sumQTam.toFixed(2);
+            document.getElementById('r-sumDineroTambos').innerText = formato(sumDTam);
+
+            document.getElementById('r-tabla-gastos').innerHTML = tGastos;
+            document.getElementById('r-totGastos').innerText = formato(sumGastos);
+
+            document.getElementById('row-pedro').style.display = (vendedor === 'FERNANDO') ? 'table-row' : 'none';
+            document.getElementById('r-qProdExtraTinPedro').innerText = sumQExtTinPedro;
+            document.getElementById('r-comExtraTinPedro').innerText = '$' + formato(comExtTinPedro);
+            
+            document.getElementById('r-vendLabelExtra').innerText = vendedor === 'FERNANDO' ? '' : vendedor;
+            document.getElementById('r-qProdExtraTin').innerText = sumQExtTin;
+            document.getElementById('r-comExtraTin').innerText = '$' + formato(comExtTin);
+            
+            document.getElementById('r-sumQTinacosCom').innerText = sumQTin.toFixed(2);
+            document.getElementById('r-comTinacos').innerText = '$' + formato(comTin);
+            document.getElementById('r-sumQTambosCom').innerText = sumQTam.toFixed(2);
+            document.getElementById('r-comTambos').innerText = '$' + formato(comTam);
+            document.getElementById('r-totComisiones').innerText = '$' + formato(totComs);
+
+            document.getElementById('r-granTotalVentas').innerText = '$ ' + formato(granTotal);
+            document.getElementById('r-subTotal').innerText = formato(subTotal);
+            document.getElementById('r-totComisionesFin').innerText = '$' + formato(totComs);
+            document.getElementById('r-totalEfectivo').innerText = formato(totalEfe);
+
+            window.print();
+        }
+
+        window.onload = function() {
+            actualizarPrecios('tinaco');
+            actualizarPrecios('tambo');
+        }
+    </script>
+</body>
+</html>
