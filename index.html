@@ -43,14 +43,12 @@
         .bar-prod { background-color: #EF6C00; }
         .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
 
-        /* --- ESTILOS PDF 1 HOJA --- */
+        /* --- ESTILOS PDF --- */
         #pdf-report, #pdf-inventario { display: none; }
-        
         @media print {
             @page { size: landscape; margin: 3mm; } 
             body { background-color: white; margin: 0; padding: 0; }
             #app-ui { display: none !important; }
-            
             #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
             #pdf-report .header-pdf { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
             #pdf-report .subtitle-pdf { text-align: center; font-weight: bold; font-size: 13px; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; }
@@ -236,7 +234,7 @@
                 
                 <div class="card" style="border: 2px solid #2E7D32;">
                     <h3 style="color: #2E7D32; margin-bottom: 5px;">📊 Stock Actual (Calculado Automático)</h3>
-                    <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 10px;">Este panel te muestra los Kilos y Piezas que la app va descontando solita cuando registras ventas o producción.</p>
+                    <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 10px;">Este panel te muestra los Kilos y Piezas que la app va descontando solita.</p>
                     <button class="btn btn-green" onclick="verStockActual()" style="margin-bottom: 10px; padding: 10px; font-size: 14px;">🔄 Actualizar Vista de Stock</button>
                     <div style="overflow-x: auto;">
                         <table class="db-table" id="tablaStockActual">
@@ -248,7 +246,6 @@
 
                 <div class="card" style="border: 2px solid #1565C0;">
                     <h3 style="color: #1565C0; margin-bottom: 5px;">📥 Entrada de Material (Compras/Proveedores)</h3>
-                    <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 10px;">Registra el material nuevo que llega para sumarlo al stock actual.</p>
                     <div class="row">
                         <div class="form-group">
                             <label>Material / Accesorio</label>
@@ -375,7 +372,11 @@
                         </table>
                     </div>
                     <div style="text-align: right; margin-top: 10px; font-weight: bold;">TOTAL: <span id="invGranTotalTemp" style="color:red;">0</span> KG / PZAS</div>
-                    <button class="btn" style="background-color: #333;" onclick="guardarYGenerarPDFInventario()" style="margin-top: 15px;">📄 Generar PDF de Cierre</button>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn" style="background-color: #d32f2f; flex: 1;" onclick="vaciarCarritoInv()">🗑️ Vaciar</button>
+                        <button class="btn" style="background-color: #333; flex: 2;" onclick="guardarYGenerarPDFInventario()">📄 Generar PDF</button>
+                    </div>
                 </div>
             </div>
 
@@ -434,7 +435,7 @@
             if(tipo === 'PROD_NORMAL') return 'PROD. NORMAL'; 
             if(tipo.includes('PROD_EXTRA')) return 'PROD. EXTRA'; 
             if(tipo === 'GASTO') return 'GASTO'; 
-            if(tipo === 'COMPRA') return 'COMPRA/ENTRADA'; // Añadido para historial
+            if(tipo === 'COMPRA') return 'COMPRA/ENTRADA'; 
             return tipo; 
         }
 
@@ -455,46 +456,50 @@
         }
 
         // ==========================================
-        // CEREBRO DEL ERP (CÁLCULO Y DESCUENTO)
+        // CEREBRO DEL ERP (CÁLCULO Y REVERSA)
         // ==========================================
-        function procesarConsumoERP(tipoMovimiento, capacidad, colorUI, cantidadIngresada) {
-            let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
-            
-            const descontar = (materialExacto, valorPorUnidad) => {
-                if(!materialExacto) return;
-                let deduccionTotal = parseFloat(valorPorUnidad) * parseFloat(cantidadIngresada);
-                stock[materialExacto] = (stock[materialExacto] || 0) - deduccionTotal;
-            };
-
+        function obtenerRecetaMateriales(tipoMovimiento, capacidad, colorUI) {
+            let consumo = {};
             const mapeoColor = {
-                'NEGRO': 'ROTOLENE NEGRO - BLACK',
-                'BEIGE': 'ROTOLENE BEIGE',
-                'AZUL': 'ROTOLENE AZUL #5',
-                'VERDE': 'ROTOLENE VERDE #15',
-                'NATURAL': 'ROTOLENE NATURAL',
-                'NARANJA': 'ROTOLENE NARANJA II',
-                'CAFÉ': 'ROTOLENE CAFÉ',
-                'BLANCO': 'ROTOLENE BLANCO',
-                'ROJO': 'ROTOLENE ROJO 14', 
-                'VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUST.'
+                'NEGRO': 'ROTOLENE NEGRO - BLACK', 'BEIGE': 'ROTOLENE BEIGE', 'AZUL': 'ROTOLENE AZUL #5',
+                'VERDE': 'ROTOLENE VERDE #15', 'NATURAL': 'ROTOLENE NATURAL', 'NARANJA': 'ROTOLENE NARANJA II',
+                'CAFÉ': 'ROTOLENE CAFÉ', 'BLANCO': 'ROTOLENE BLANCO', 'ROJO': 'ROTOLENE ROJO 14', 'VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUST.'
             };
-
             let matColorBase = mapeoColor[colorUI] || `ROTOLENE ${colorUI}`;
 
             if (tipoMovimiento.includes('VENTA_TINACO')) {
-                descontar('TAPA (PIEZAS)', 1); descontar('JARRO DE AIRE (PIEZAS)', 1); descontar('BRIDA (PIEZAS)', 1); descontar('CAPUCHON (PIEZAS)', 1); descontar('FILTRO (PIEZAS)', 1); descontar('ETIQUETA (PIEZAS)', 1); descontar('KIT COMPLETO (PIEZAS)', 1);
+                ['TAPA (PIEZAS)', 'JARRO DE AIRE (PIEZAS)', 'BRIDA (PIEZAS)', 'CAPUCHON (PIEZAS)', 'FILTRO (PIEZAS)', 'ETIQUETA (PIEZAS)', 'KIT COMPLETO (PIEZAS)'].forEach(m => consumo[m] = 1);
             } else if (tipoMovimiento.includes('VENTA_TAMBO')) {
-                descontar('TAPA (PIEZAS)', 1); descontar('BRIDA (PIEZAS)', 1); descontar('ETIQUETA (PIEZAS)', 1);
+                ['TAPA (PIEZAS)', 'BRIDA (PIEZAS)', 'ETIQUETA (PIEZAS)'].forEach(m => consumo[m] = 1);
             } else if (tipoMovimiento.includes('PROD_')) {
                 const ignorar = ['GRANITO BEIGE', 'GRANITO', 'DUVALIN', 'TERRACOTA', 'MENTA', 'PISTACHE', 'UVA', 'MELON', 'OXFORD'];
-                if (ignorar.includes(colorUI)) { /* Sin receta */ } 
-                else if (capacidad === '1200LT') { descontar(matColorBase, 6); descontar('ROTOFOAM NEGRO AR', 5); descontar('ROTOLENE BLANCO', 5); } 
-                else if (capacidad === '1100LT') { descontar(matColorBase, 5); descontar('ROTOFOAM NEGRO AR', 4.5); descontar('ROTOLENE BLANCO', 3.5); } 
-                else if (capacidad === '750LT') { descontar(matColorBase, 4.5); descontar('ROTOFOAM NEGRO AR', 4); descontar('ROTOLENE BLANCO', 3); } 
-                else if (capacidad === '235LT') { 
-                    if (colorUI === 'ROJO CON BLANCO' || colorUI === 'VERDE CON BLANCO' || colorUI === 'AZUL CON BLANCO') {
-                        let cPrimario = colorUI.split(' ')[0]; descontar('ROTOLENE BLANCO', 0.65); descontar(mapeoColor[cPrimario], 1.35); descontar('ROTOFOAM BLANCO AR', 2.5);
-                    } else { descontar(matColorBase, 2); descontar('ROTOFOAM BLANCO AR', 2.5); }
+                if (!ignorar.includes(colorUI)) {
+                    if (capacidad === '1200LT') { consumo[matColorBase] = 6; consumo['ROTOFOAM NEGRO AR'] = 5; consumo['ROTOLENE BLANCO'] = 5; } 
+                    else if (capacidad === '1100LT') { consumo[matColorBase] = 5; consumo['ROTOFOAM NEGRO AR'] = 4.5; consumo['ROTOLENE BLANCO'] = 3.5; } 
+                    else if (capacidad === '750LT') { consumo[matColorBase] = 4.5; consumo['ROTOFOAM NEGRO AR'] = 4; consumo['ROTOLENE BLANCO'] = 3; } 
+                    else if (capacidad === '235LT') { 
+                        if (colorUI.includes('CON BLANCO')) {
+                            let cPrimario = colorUI.split(' ')[0]; consumo['ROTOLENE BLANCO'] = 0.65; consumo[mapeoColor[cPrimario] || `ROTOLENE ${cPrimario}`] = 1.35; consumo['ROTOFOAM BLANCO AR'] = 2.5;
+                        } else { consumo[matColorBase] = 2; consumo['ROTOFOAM BLANCO AR'] = 2.5; }
+                    }
+                }
+            }
+            return consumo;
+        }
+
+        // Esta función hace la magia hacia adelante (Guardar) y hacia atrás (Borrar)
+        function actualizarStockGlobal(tipo, capacidad, color, cant, esReversa) {
+            let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
+            let multiplicador = esReversa ? -1 : 1; 
+
+            if(tipo === 'COMPRA') {
+                // Compra normal SUMA (+1). Si es reversa RESTA (-1)
+                stock[color] = (stock[color] || 0) + (cant * multiplicador);
+            } else {
+                // Venta/Prod normal RESTA (+1 se vuelve negativo). Si es reversa SUMA (-1 se vuelve positivo)
+                let receta = obtenerRecetaMateriales(tipo, capacidad, color);
+                for(let mat in receta) {
+                    stock[mat] = (stock[mat] || 0) - (receta[mat] * cant * multiplicador);
                 }
             }
             localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
@@ -507,62 +512,86 @@
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const fecha = document.getElementById('fecha').value; const sem = document.getElementById('semana').value; const vend = document.getElementById('vendedor').value; const prod = document.getElementById('productor').value;
             
-            const addRecord = (v, tipo, concepto, cant, precio, total) => { 
+            // AHORA GUARDAMOS CAPACIDAD Y COLOR EN LA BD PARA PODER HACER LA REVERSA FACILMENTE DESPUES
+            const addRecord = (v, tipo, concepto, cant, precio, total, cap, col) => { 
                 const id = Date.now() + Math.floor(Math.random() * 1000); 
-                db.push({ id, fecha, semana: sem, vendedor: v, tipo, concepto, cantidad: cant, precio, total }); 
+                db.push({ id, fecha, semana: sem, vendedor: v, tipo, concepto, cantidad: cant, precio, total, capacidad: cap, colorUI: col }); 
             };
 
             const qTin = parseFloat(document.getElementById('qTinaco').value) || 0; const pTin = parseFloat(document.getElementById('pTinaco').value) || 0; const capTin = document.getElementById('capTinaco').value; const colTin = document.getElementById('colTinaco').value;
-            if(qTin > 0) { addRecord(vend, 'VENTA_TINACO', `TINACO ${capTin} ${colTin}`, qTin, pTin, qTin * pTin); procesarConsumoERP('VENTA_TINACO', capTin, colTin, qTin); }
+            if(qTin > 0) { addRecord(vend, 'VENTA_TINACO', `TINACO ${capTin} ${colTin}`, qTin, pTin, qTin * pTin, capTin, colTin); actualizarStockGlobal('VENTA_TINACO', capTin, colTin, qTin, false); }
             
             const qTam = parseFloat(document.getElementById('qTambo').value) || 0; const pTam = parseFloat(document.getElementById('pTambo').value) || 0; const capTam = document.getElementById('capTambo').value; const colTam = document.getElementById('colTambo').value;
-            if(qTam > 0) { addRecord(vend, 'VENTA_TAMBO', `TAMBO ${capTam} ${colTam}`, qTam, pTam, qTam * pTam); procesarConsumoERP('VENTA_TAMBO', capTam, colTam, qTam); }
+            if(qTam > 0) { addRecord(vend, 'VENTA_TAMBO', `TAMBO ${capTam} ${colTam}`, qTam, pTam, qTam * pTam, capTam, colTam); actualizarStockGlobal('VENTA_TAMBO', capTam, colTam, qTam, false); }
 
             const tipoP = document.getElementById('tipoProdFabricado').value; const capP = document.getElementById('capProdFabricado').value; const colP = document.getElementById('colProdFabricado').value; const descProd = `${tipoP} ${capP} ${colP}`;
             const qNorm = parseFloat(document.getElementById('qProdNormal').value) || 0; 
-            if(qNorm > 0) { addRecord(prod, 'PROD_NORMAL', `NORMAL: ${descProd}`, qNorm, 0, 0); procesarConsumoERP(`PROD_NORMAL_${tipoP}`, capP, colP, qNorm); }
+            if(qNorm > 0) { addRecord(prod, 'PROD_NORMAL', `NORMAL: ${descProd}`, qNorm, 0, 0, capP, colP); actualizarStockGlobal(`PROD_NORMAL_${tipoP}`, capP, colP, qNorm, false); }
             
             const qExt = parseFloat(document.getElementById('qProdExtra').value) || 0; 
-            if(qExt > 0) { let tipoExt = tipoP === 'TINACO' ? 'PROD_EXTRA_TINACO' : 'PROD_EXTRA_TAMBO'; addRecord(prod, tipoExt, `EXTRA: ${descProd}`, qExt, 0, 0); procesarConsumoERP(tipoExt, capP, colP, qExt); }
+            if(qExt > 0) { let tipoExt = tipoP === 'TINACO' ? 'PROD_EXTRA_TINACO' : 'PROD_EXTRA_TAMBO'; addRecord(prod, tipoExt, `EXTRA: ${descProd}`, qExt, 0, 0, capP, colP); actualizarStockGlobal(tipoExt, capP, colP, qExt, false); }
 
             const gasto = parseFloat(document.getElementById('montoGasto').value) || 0; 
-            if(gasto > 0) addRecord(vend, 'GASTO', document.getElementById('descGasto').value.toUpperCase(), 1, gasto, gasto);
+            if(gasto > 0) addRecord(vend, 'GASTO', document.getElementById('descGasto').value.toUpperCase(), 1, gasto, gasto, null, null);
 
             localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
             ['qTinaco', 'pTinaco', 'qTambo', 'pTambo', 'qProdNormal', 'qProdExtra', 'montoGasto', 'descGasto'].forEach(id => { if(document.getElementById(id)) { document.getElementById(id).value = ''; } });
             alert('¡Movimientos guardados y ERP actualizado!');
         }
 
-        // NUEVO: FUNCION DE REGISTRO DE COMPRAS
         function registrarCompra() {
             const mat = document.getElementById('compraMaterial').value;
             const cant = parseFloat(document.getElementById('compraCantidad').value) || 0;
+            if(!mat || cant <= 0) { alert("Selecciona un material e ingresa una cantidad válida."); return; }
 
-            if(!mat || cant <= 0) { alert("Selecciona un material e ingresa una cantidad válida (mayor a 0)."); return; }
+            // Actualiza Stock (Forward)
+            actualizarStockGlobal('COMPRA', null, mat, cant, false);
 
-            // 1. Sumar al Stock
-            let stockActual = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
-            stockActual[mat] = (stockActual[mat] || 0) + cant;
-            localStorage.setItem('plastinova_stock_v1', JSON.stringify(stockActual));
-
-            // 2. Guardar en el Historial General como Proveedor
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-            const fechaHoy = document.getElementById('invFecha').value; // Toma la fecha de la caja de la pestaña Inv
+            const fechaHoy = document.getElementById('invFecha').value; 
             const sem = getNumeroSemana(new Date(fechaHoy + "T00:00:00"));
             const id = Date.now() + Math.floor(Math.random() * 1000); 
-            
-            db.push({ id, fecha: fechaHoy, semana: sem, vendedor: 'PROVEEDOR', tipo: 'COMPRA', concepto: `COMPRA: ${mat}`, cantidad: cant, precio: 0, total: 0 }); 
+            // Guarda el colorUI para que la reversa lo encuentre
+            db.push({ id, fecha: fechaHoy, semana: sem, vendedor: 'PROVEEDOR', tipo: 'COMPRA', concepto: `COMPRA: ${mat}`, cantidad: cant, precio: 0, total: 0, capacidad: null, colorUI: mat }); 
             localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
 
-            // 3. Limpiar Cajas y Avisar
-            document.getElementById('compraMaterial').selectedIndex = 0;
-            document.getElementById('compraCantidad').value = '';
-            
+            document.getElementById('compraMaterial').selectedIndex = 0; document.getElementById('compraCantidad').value = '';
             alert(`¡Se sumaron ${cant} de ${mat} al stock correctamente!`);
             verStockActual();
         }
         
-        function borrarRegistro(id) { if(confirm('¿Seguro que deseas borrar solo este movimiento?')) { let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; db = db.filter(r => r.id !== id); localStorage.setItem('plastinova_bd_v2', JSON.stringify(db)); cargarBD(); renderGraficas(); } }
+        // MOTOR DE BORRADO INDIVIDUAL CON REVERSA INTELIGENTE
+        function borrarRegistro(id) { 
+            if(confirm('¿Seguro que deseas borrar este movimiento? Si es de Producción o Venta, se ajustará el Stock automáticamente.')) { 
+                let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
+                let record = db.find(r => r.id === id);
+                
+                // Si el registro tiene capacidad o es una compra (es decir, fue creado con el nuevo ERP)
+                if(record && (record.capacidad || record.tipo === 'COMPRA')) {
+                    actualizarStockGlobal(record.tipo, record.capacidad, record.colorUI, record.cantidad, true); // TRUE = HACE LA REVERSA
+                }
+
+                db = db.filter(r => r.id !== id); 
+                localStorage.setItem('plastinova_bd_v2', JSON.stringify(db)); 
+                cargarBD(); renderGraficas(); verStockActual();
+            } 
+        }
+
+        // MOTOR DE BORRADO TOTAL CON REVERSA MASIVA
+        function limpiarBD() { 
+            if(confirm('🚨 ADVERTENCIA: ¿Borrar TODO el historial permanentemente? Esto le regresará todo el material al Stock como estaba antes de registrar estos movimientos.')) { 
+                let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
+                
+                db.forEach(record => {
+                    if(record && (record.capacidad || record.tipo === 'COMPRA')) {
+                        actualizarStockGlobal(record.tipo, record.capacidad, record.colorUI, record.cantidad, true);
+                    }
+                });
+
+                localStorage.removeItem('plastinova_bd_v2'); 
+                cargarBD(); renderGraficas(); verStockActual();
+            } 
+        }
         
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; let necesitaGuardar = false; db.forEach((r, index) => { if(!r.id) { r.id = Date.now() + index; necesitaGuardar = true; } }); if(necesitaGuardar) localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
@@ -570,8 +599,6 @@
             let tbody = document.querySelector('#tablaBD tbody'); tbody.innerHTML = '';
             db.forEach(row => { tbody.innerHTML += `<tr><td>${row.fecha}</td><td>${row.vendedor}</td><td><span class="badge-tipo">${getTipoAmigable(row.tipo)}</span></td><td>${row.concepto}</td><td>${row.cantidad}</td><td>${row.precio>0?'$'+formato(row.precio):'-'}</td><td>$${formato(row.total)}</td><td style="text-align:center;"><button onclick="borrarRegistro(${row.id})" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-weight:bold;">❌</button></td></tr>`; });
         }
-        
-        function limpiarBD() { if(confirm('¿Borrar TODO el historial permanentemente?')) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); renderGraficas(); } }
         
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; const fTiempo = document.getElementById('filtroTiempo').value; const fVend = document.getElementById('filtroVendedorGrafica').value; let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
@@ -581,13 +608,13 @@
             document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
         
-        function actualizarFechasCorte() { /* INTACTO */
+        function actualizarFechasCorte() { 
             const v = document.getElementById('vendedorCorte').value; let d = new Date(); let diaActual = d.getDay() === 0 ? 7 : d.getDay(); let fIni = new Date(d); let fFin = new Date(d);
             if (v === 'ISIDRO') { fIni.setDate(d.getDate() - diaActual - 1); fFin.setDate(d.getDate() - diaActual + 5); } else if (v === 'OFELIA') { fIni.setDate(d.getDate() - diaActual + 2); fFin.setDate(d.getDate() - diaActual + 7); } else { fIni.setDate(d.getDate() - diaActual + 1); fFin.setDate(d.getDate() - diaActual + 6); }
             document.getElementById('fechaDesde').valueAsDate = fIni; document.getElementById('fechaHasta').valueAsDate = fFin;
         }
         
-        function generarCortePDF() { /* INTACTO */
+        function generarCortePDF() { 
             const vendedor = document.getElementById('vendedorCorte').value; const mostrarTinacos = document.getElementById('chkTinacos').checked; const mostrarTambos = document.getElementById('chkTambos').checked; let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const startStr = document.getElementById('fechaDesde').value; const endStr = document.getElementById('fechaHasta').value;
             let registros = db.filter(r => { let dentroFecha = (r.fecha >= startStr && r.fecha <= endStr); if (!dentroFecha) return false; if (r.vendedor === vendedor) return true; if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && r.tipo.includes('PROD_EXTRA')) return true; return false; });
@@ -682,6 +709,13 @@
         }
 
         function borrarItemInv(id) { invTemporal = invTemporal.filter(i => i.id !== id); renderInvTemporal(); }
+
+        function vaciarCarritoInv() {
+            if(confirm('¿Vaciar toda la lista del conteo que llevas hasta ahora?')) {
+                invTemporal = [];
+                renderInvTemporal();
+            }
+        }
 
         function guardarYGenerarPDFInventario() {
             if(invTemporal.length === 0) { alert("Tu carrito de inventario está vacío. Añade materiales primero."); return; }
