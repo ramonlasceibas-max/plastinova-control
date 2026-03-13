@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Plastinova Gerencial Pro</title>
     <style>
-        /* --- ESTILOS DE INTERFAZ WEB (Lo que ves en el celular) --- */
+        /* --- ESTILOS DE INTERFAZ WEB --- */
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
         .header { background-color: #2E7D32; color: white; padding: 15px; text-align: center; }
         .header h1 { margin: 0; font-size: 20px; font-weight: 900; }
@@ -43,7 +43,7 @@
         .bar-prod { background-color: #EF6C00; }
         .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
 
-        /* --- ESTILOS PDF (CLON EXACTO DE EXCEL) --- */
+        /* --- ESTILOS PDF (CLON EXCEL) --- */
         #pdf-report { display: none; }
         @media print {
             @page { size: landscape; margin: 10mm; }
@@ -60,16 +60,12 @@
             .row-total td { color: red !important; font-weight: bold; }
             
             .bottom-container { display: flex; gap: 20px; margin-top: 15px; }
-            
             .tabla-extras { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; }
             .tabla-extras td { border: 1px solid #000; padding: 3px; }
-            
             .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; text-align: right; }
             .tabla-resumen td { padding: 3px; }
-            
             .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; margin-bottom: 5px;}
             .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; }
-            
             .firma { margin-top: 30px; font-size: 10px; font-weight: normal; }
         }
     </style>
@@ -87,7 +83,6 @@
         </div>
 
         <div class="container">
-            
             <div id="tab-registro" class="tab-content active">
                 <div class="card">
                     <div class="row">
@@ -110,9 +105,7 @@
                         <div class="form-group">
                             <label>Capacidad</label>
                             <select id="capTinaco" onchange="actualizarPrecios('tinaco')">
-                                <option value="1200LT">1200LT</option>
-                                <option value="1100LT" selected>1100LT</option>
-                                <option value="750LT">750LT</option>
+                                <option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -129,9 +122,7 @@
                         <div class="form-group">
                             <label>Tipo Precio</label>
                             <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')">
-                                <option value="publico">PÚBLICO</option>
-                                <option value="mayoreo" selected>MAYOREO</option>
-                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTinaco" placeholder="0"></div>
@@ -164,9 +155,7 @@
                         <div class="form-group">
                             <label>Tipo Precio</label>
                             <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')">
-                                <option value="publico">PÚBLICO</option>
-                                <option value="mayoreo" selected>MAYOREO</option>
-                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTambo" placeholder="0"></div>
@@ -187,8 +176,7 @@
                         <div class="form-group">
                             <label>Producto Fabricado</label>
                             <select id="tipoProdFabricado">
-                                <option value="TINACO">TINACO</option>
-                                <option value="TAMBO">TAMBO</option>
+                                <option value="TINACO">TINACO</option><option value="TAMBO">TAMBO</option>
                             </select>
                         </div>
                     </div>
@@ -263,7 +251,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="card"><h3 style="color: #1565C0;">💰 Ventas Totales</h3><div class="grafica-container" id="graficaVentas"></div></div>
                 <div class="card"><h3 style="color: #EF6C00;">🏭 Producción Total</h3><div class="grafica-container" id="graficaProd"></div></div>
             </div>
@@ -271,19 +258,25 @@
             <div id="tab-cortes" class="tab-content">
                 <div class="card">
                     <h3>✂️ Generar Reporte de Corte</h3>
-                    <p style="font-size: 11px; color: #666; margin-bottom: 15px;">La app jalará ventas, gastos y extras de la semana. (Regla Fernando: se jalan también los extras de Pedro).</p>
+                    <p style="font-size: 11px; color: #666; margin-bottom: 15px;">La app ajusta los días según el vendedor, pero puedes cambiarlos si lo necesitas.</p>
                     
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <select id="vendedorCorte">
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <label>Vendedor a Cortar</label>
+                        <select id="vendedorCorte" onchange="actualizarFechasCorte()">
                             <option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option>
                             <option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option>
                             <option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
                         </select>
                     </div>
 
+                    <div class="row" style="margin-bottom: 15px;">
+                        <div class="form-group"><label style="color:#1565C0;">Desde el día:</label><input type="date" id="fechaDesde"></div>
+                        <div class="form-group"><label style="color:#EF6C00;">Hasta el día:</label><input type="date" id="fechaHasta"></div>
+                    </div>
+
                     <div class="checkbox-group"><input type="checkbox" id="chkTinacos" checked><label for="chkTinacos">Mostrar Ventas de Tinacos</label></div>
                     <div class="checkbox-group"><input type="checkbox" id="chkTambos" checked><label for="chkTambos">Mostrar Ventas de Tambos</label></div>
-
+                    
                     <button class="btn btn-orange" onclick="generarCortePDF()" style="margin-top: 15px;">📄 Crear PDF del Corte</button>
                 </div>
             </div>
@@ -295,7 +288,7 @@
         <div class="header-pdf">
             TINACOS PLASTINOVA<br>
             VENDEDOR: <span id="r-vendedor"></span><br>
-            <span id="r-fechas"></span>. SEMANA <span id="r-semana"></span>
+            <span id="r-fechas"></span> <br>SEMANA <span id="r-semana"></span>
         </div>
 
         <div class="subtitle-pdf">VENTAS TINACOS</div>
@@ -308,8 +301,8 @@
                 <tr class="row-total">
                     <td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td>
                     <td><span id="r-sumQTinacos"></span></td>
-                    <td>$</td>
-                    <td><span id="r-sumDineroTinacos"></span></td>
+                    <td>$<span id="r-sumPrecioTinacos"></span></td>
+                    <td>$<span id="r-sumDineroTinacos"></span></td>
                 </tr>
             </tfoot>
         </table>
@@ -324,8 +317,8 @@
                 <tr class="row-total">
                     <td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td>
                     <td><span id="r-sumQTambos"></span></td>
-                    <td>$</td>
-                    <td><span id="r-sumDineroTambos"></span></td>
+                    <td>$<span id="r-sumPrecioTambos"></span></td>
+                    <td>$<span id="r-sumDineroTambos"></span></td>
                 </tr>
             </tfoot>
         </table>
@@ -349,11 +342,7 @@
                     <tr><td style="width: 70%; color: red;">TOTAL VENTAS</td><td style="color: red;"><span id="r-granTotalVentas"></span></td></tr>
                     <tr><td colspan="2" style="text-align: center; font-size:10px;">GASTOS</td></tr>
                 </table>
-                
-                <table class="tabla-gastos">
-                    <tbody id="r-tabla-gastos"></tbody>
-                </table>
-                
+                <table class="tabla-gastos"><tbody id="r-tabla-gastos"></tbody></table>
                 <table class="tabla-resumen">
                     <tr><td style="width: 70%;">GASTOS $</td><td><span id="r-totGastos"></span></td></tr>
                     <tr><td>SUB TOTAL $</td><td><span id="r-subTotal"></span></td></tr>
@@ -402,6 +391,7 @@
             document.getElementById('btn-tab-' + tab).classList.add('active');
             if(tab === 'bd') cargarBD();
             if(tab === 'dashboard') renderGraficas();
+            if(tab === 'cortes') actualizarFechasCorte(); // Ajusta fechas al entrar a Cortes
         }
 
         function formato(num) { return num.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
@@ -421,7 +411,6 @@
             const vend = document.getElementById('vendedor').value;
             const prod = document.getElementById('productor').value;
 
-            // Función interna para crear el ID único de cada registro
             const addRecord = (v, tipo, concepto, cant, precio, total) => {
                 const id = Date.now() + Math.floor(Math.random() * 1000);
                 db.push({ id, fecha, semana: sem, vendedor: v, tipo, concepto, cantidad: cant, precio, total });
@@ -454,7 +443,6 @@
 
             localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
             
-            // --- LIMPIEZA ABSOLUTA DE TODOS LOS CAMPOS ---
             ['qTinaco', 'pTinaco', 'qTambo', 'pTambo', 'qProdNormal', 'qProdExtra', 'montoGasto', 'descGasto'].forEach(id => {
                 if(document.getElementById(id)) { document.getElementById(id).value = ''; }
             });
@@ -462,7 +450,6 @@
             alert('¡Guardado!');
         }
 
-        // Nueva función para borrar solo un registro específico
         function borrarRegistro(id) {
             if(confirm('¿Seguro que deseas borrar solo este movimiento?')) {
                 let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
@@ -475,17 +462,14 @@
 
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-            
-            // Si hay registros viejos sin ID, se los ponemos para que no haya errores
             let necesitaGuardar = false;
             db.forEach((r, index) => { if(!r.id) { r.id = Date.now() + index; necesitaGuardar = true; } });
             if(necesitaGuardar) localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
 
-            // Ordenar por Fecha (Más reciente arriba)
             db.sort((a, b) => {
                 let dateA = new Date(a.fecha + "T00:00:00").getTime();
                 let dateB = new Date(b.fecha + "T00:00:00").getTime();
-                if(dateB === dateA) return b.id - a.id; // Si es el mismo día, el último ingresado va arriba
+                if(dateB === dateA) return b.id - a.id; 
                 return dateB - dateA;
             });
 
@@ -493,16 +477,10 @@
             tbody.innerHTML = '';
             db.forEach(row => {
                 tbody.innerHTML += `<tr>
-                    <td>${row.fecha}</td>
-                    <td>${row.vendedor}</td>
-                    <td><span class="badge-tipo">${getTipoAmigable(row.tipo)}</span></td>
-                    <td>${row.concepto}</td>
-                    <td>${row.cantidad}</td>
-                    <td>${row.precio>0?'$'+formato(row.precio):'-'}</td>
+                    <td>${row.fecha}</td><td>${row.vendedor}</td><td><span class="badge-tipo">${getTipoAmigable(row.tipo)}</span></td>
+                    <td>${row.concepto}</td><td>${row.cantidad}</td><td>${row.precio>0?'$'+formato(row.precio):'-'}</td>
                     <td>$${formato(row.total)}</td>
-                    <td style="text-align:center;">
-                        <button onclick="borrarRegistro(${row.id})" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-weight:bold;">❌</button>
-                    </td>
+                    <td style="text-align:center;"><button onclick="borrarRegistro(${row.id})" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-weight:bold;">❌</button></td>
                 </tr>`;
             });
         }
@@ -530,23 +508,44 @@
             document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
 
-        // --- EL CORAZÓN DEL REPORTE CLON DE EXCEL ---
+        // --- SISTEMA INTELIGENTE DE FECHAS DE CORTE ---
+        function actualizarFechasCorte() {
+            const v = document.getElementById('vendedorCorte').value;
+            let d = new Date();
+            let diaActual = d.getDay() === 0 ? 7 : d.getDay(); // 1 Lunes, 7 Domingo
+            
+            let fIni = new Date(d);
+            let fFin = new Date(d);
+
+            // Ajuste automático según el vendedor
+            if (v === 'ISIDRO') {
+                // Sábado pasado al Viernes actual
+                fIni.setDate(d.getDate() - diaActual - 1); 
+                fFin.setDate(d.getDate() - diaActual + 5);
+            } else if (v === 'OFELIA') {
+                // Martes a Domingo
+                fIni.setDate(d.getDate() - diaActual + 2);
+                fFin.setDate(d.getDate() - diaActual + 7);
+            } else {
+                // Fernando, Husai, etc: Lunes a Sábado
+                fIni.setDate(d.getDate() - diaActual + 1);
+                fFin.setDate(d.getDate() - diaActual + 6);
+            }
+
+            document.getElementById('fechaDesde').valueAsDate = fIni;
+            document.getElementById('fechaHasta').valueAsDate = fFin;
+        }
+
+        // --- MOTOR DE REPORTE CON RANGO MANUAL ---
         function generarCortePDF() {
             const vendedor = document.getElementById('vendedorCorte').value;
             const mostrarTinacos = document.getElementById('chkTinacos').checked;
             const mostrarTambos = document.getElementById('chkTambos').checked;
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             
-            let lunes = new Date(); lunes.setDate(lunes.getDate() - lunes.getDay() + (lunes.getDay()===0?-6:1));
-            
-            let fInicio = new Date(lunes); 
-            if(vendedor === 'ISIDRO') fInicio.setDate(lunes.getDate()-3); 
-            
-            let fFin = new Date(lunes); 
-            fFin.setDate(lunes.getDate()+6);
-
-            const startStr = fInicio.toISOString().split('T')[0];
-            const endStr = fFin.toISOString().split('T')[0];
+            // Jalar las fechas exactamente de lo que dice el calendario de la pantalla
+            const startStr = document.getElementById('fechaDesde').value;
+            const endStr = document.getElementById('fechaHasta').value;
 
             let registros = db.filter(r => {
                 let dentroFecha = (r.fecha >= startStr && r.fecha <= endStr);
@@ -558,27 +557,29 @@
             });
 
             let tTinacos = '', tTambos = '', tGastos = '';
-            let sumQTin = 0, sumDTin = 0, sumQTam = 0, sumDTam = 0, sumQExtTin = 0, sumQExtTinPedro = 0, sumGastos = 0;
+            let sumQTin = 0, sumPTin = 0, sumDTin = 0; 
+            let sumQTam = 0, sumPTam = 0, sumDTam = 0; 
+            let sumQExtTin = 0, sumQExtTinPedro = 0, sumGastos = 0;
             let countGastos = 0;
 
             registros.forEach(r => {
                 const fila = `<tr><td></td><td>${r.fecha.split('-').reverse().join('/')}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${r.cantidad.toFixed(2)}</td><td>$ ${formato(r.precio)}</td><td>$ ${formato(r.total)}</td></tr>`;
                 
-                if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += r.cantidad; sumDTin += r.total; }
-                if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += r.cantidad; sumDTam += r.total; }
+                if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { 
+                    tTinacos += fila; sumQTin += r.cantidad; sumPTin += parseFloat(r.precio) || 0; sumDTin += r.total; 
+                }
+                if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { 
+                    tTambos += fila; sumQTam += r.cantidad; sumPTam += parseFloat(r.precio) || 0; sumDTam += r.total; 
+                }
                 
-                if(r.tipo === 'PROD_EXTRA_TINACO') {
-                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') {
-                        sumQExtTinPedro += r.cantidad;
-                    } else {
-                        sumQExtTin += r.cantidad;
-                    }
+                if(r.tipo.includes('PROD_EXTRA')) {
+                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { sumQExtTinPedro += r.cantidad; } 
+                    else if (r.vendedor === vendedor) { sumQExtTin += r.cantidad; }
                 }
                 
                 if(r.tipo === 'GASTO') {
                     tGastos += `<tr><td style="text-align:left; width:70%;">${r.concepto}</td><td style="text-align:center;">$</td><td style="text-align:right;">${formato(r.total)}</td></tr>`;
-                    sumGastos += r.total;
-                    countGastos++;
+                    sumGastos += r.total; countGastos++;
                 }
             });
 
@@ -598,15 +599,18 @@
             const totalEfe = subTotal - totComs;
 
             document.getElementById('r-vendedor').innerText = vendedor;
-            document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')}`;
+            // El título del reporte ahora te dice exactamente qué fechas jaló
+            document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`;
             document.getElementById('r-semana').innerText = getNumeroSemana(new Date());
 
             document.getElementById('r-tabla-tinacos').innerHTML = tTinacos;
             document.getElementById('r-sumQTinacos').innerText = sumQTin.toFixed(2);
+            document.getElementById('r-sumPrecioTinacos').innerText = formato(sumPTin);
             document.getElementById('r-sumDineroTinacos').innerText = formato(sumDTin);
 
             document.getElementById('r-tabla-tambos').innerHTML = tTambos;
             document.getElementById('r-sumQTambos').innerText = sumQTam.toFixed(2);
+            document.getElementById('r-sumPrecioTambos').innerText = formato(sumPTam);
             document.getElementById('r-sumDineroTambos').innerText = formato(sumDTam);
 
             document.getElementById('r-tabla-gastos').innerHTML = tGastos;
@@ -633,6 +637,8 @@
 
             window.print();
         }
+        
+        window.onload = function() { actualizarFechasCorte(); }
     </script>
 </body>
 </html>
