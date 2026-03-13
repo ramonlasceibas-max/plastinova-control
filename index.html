@@ -43,30 +43,30 @@
         .bar-prod { background-color: #EF6C00; }
         .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
 
-        /* --- ESTILOS PDF (CLON EXCEL) --- */
+        /* --- ESTILOS PDF SÚPER COMPRIMIDOS PARA 1 SOLA HOJA --- */
         #pdf-report { display: none; }
         @media print {
-            @page { size: landscape; margin: 10mm; }
-            body { background-color: white; margin: 0; }
+            @page { size: landscape; margin: 3mm; } /* Margen mínimo absoluto */
+            body { background-color: white; margin: 0; padding: 0; }
             #app-ui { display: none !important; }
-            #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
+            #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 9px; }
             
-            .header-pdf { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
-            .subtitle-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; }
+            .header-pdf { text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 2px; line-height: 1; text-transform: uppercase; }
+            .subtitle-pdf { text-align: center; font-weight: bold; font-size: 10px; margin-top: 2px; margin-bottom: 2px; text-transform: uppercase; }
             
-            .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center; }
-            .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 9px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; }
-            .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 4px; }
+            .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 2px; text-align: center; }
+            .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 8px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 1px; }
+            .pdf-table td { border: 1px solid #000; font-size: 9px; font-weight: bold; padding: 1px; line-height: 1.1;}
             .row-total td { color: red !important; font-weight: bold; }
             
-            .bottom-container { display: flex; gap: 20px; margin-top: 15px; }
-            .tabla-extras { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; }
-            .tabla-extras td { border: 1px solid #000; padding: 3px; }
-            .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; text-align: right; }
-            .tabla-resumen td { padding: 3px; }
-            .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; margin-bottom: 5px;}
-            .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; }
-            .firma { margin-top: 30px; font-size: 10px; font-weight: normal; }
+            .bottom-container { display: flex; gap: 15px; margin-top: 5px; }
+            .tabla-extras { width: 100%; border-collapse: collapse; font-size: 8px; font-weight: bold; }
+            .tabla-extras td { border: 1px solid #000; padding: 1px; }
+            .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 9px; font-weight: bold; text-align: right; }
+            .tabla-resumen td { padding: 1px; }
+            .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 8px; font-weight: bold; margin-bottom: 2px;}
+            .tabla-gastos td { border: 1px solid #000; padding: 1px; height: 10px;}
+            .firma { margin-top: 10px; font-size: 9px; font-weight: normal; }
         }
     </style>
 </head>
@@ -87,10 +87,10 @@
                 <div class="card">
                     <div class="row">
                         <div class="form-group"><label>Fecha</label><input type="date" id="fecha"></div>
-                        <div class="form-group"><label>Semana (Auto)</label><input type="text" id="semana" readonly style="background:#eee;"></div>
+                        <div class="form-group"><label>Semana</label><input type="text" id="semana" readonly style="background:#eee;"></div>
                     </div>
                     <div class="form-group">
-                        <label>Vendedor (Para Ventas y Gastos)</label>
+                        <label>Vendedor</label>
                         <select id="vendedor">
                             <option value="FERNANDO">FERNANDO</option><option value="HUSAI" selected>HUSAI</option>
                             <option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option>
@@ -258,7 +258,7 @@
             <div id="tab-cortes" class="tab-content">
                 <div class="card">
                     <h3>✂️ Generar Reporte de Corte</h3>
-                    <p style="font-size: 11px; color: #666; margin-bottom: 15px;">La app ajusta los días según el vendedor, pero puedes cambiarlos si lo necesitas.</p>
+                    <p style="font-size: 11px; color: #666; margin-bottom: 15px;">Fechas ajustables a tu gusto.</p>
                     
                     <div class="form-group" style="margin-bottom: 10px;">
                         <label>Vendedor a Cortar</label>
@@ -288,7 +288,7 @@
         <div class="header-pdf">
             TINACOS PLASTINOVA<br>
             VENDEDOR: <span id="r-vendedor"></span><br>
-            <span id="r-fechas"></span> <br>SEMANA <span id="r-semana"></span>
+            <span id="r-fechas"></span> | SEMANA <span id="r-semana"></span>
         </div>
 
         <div class="subtitle-pdf">VENTAS TINACOS</div>
@@ -391,7 +391,7 @@
             document.getElementById('btn-tab-' + tab).classList.add('active');
             if(tab === 'bd') cargarBD();
             if(tab === 'dashboard') renderGraficas();
-            if(tab === 'cortes') actualizarFechasCorte(); // Ajusta fechas al entrar a Cortes
+            if(tab === 'cortes') actualizarFechasCorte(); 
         }
 
         function formato(num) { return num.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
@@ -508,26 +508,21 @@
             document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
 
-        // --- SISTEMA INTELIGENTE DE FECHAS DE CORTE ---
         function actualizarFechasCorte() {
             const v = document.getElementById('vendedorCorte').value;
             let d = new Date();
-            let diaActual = d.getDay() === 0 ? 7 : d.getDay(); // 1 Lunes, 7 Domingo
+            let diaActual = d.getDay() === 0 ? 7 : d.getDay(); 
             
             let fIni = new Date(d);
             let fFin = new Date(d);
 
-            // Ajuste automático según el vendedor
             if (v === 'ISIDRO') {
-                // Sábado pasado al Viernes actual
                 fIni.setDate(d.getDate() - diaActual - 1); 
                 fFin.setDate(d.getDate() - diaActual + 5);
             } else if (v === 'OFELIA') {
-                // Martes a Domingo
                 fIni.setDate(d.getDate() - diaActual + 2);
                 fFin.setDate(d.getDate() - diaActual + 7);
             } else {
-                // Fernando, Husai, etc: Lunes a Sábado
                 fIni.setDate(d.getDate() - diaActual + 1);
                 fFin.setDate(d.getDate() - diaActual + 6);
             }
@@ -536,14 +531,12 @@
             document.getElementById('fechaHasta').valueAsDate = fFin;
         }
 
-        // --- MOTOR DE REPORTE CON RANGO MANUAL ---
         function generarCortePDF() {
             const vendedor = document.getElementById('vendedorCorte').value;
             const mostrarTinacos = document.getElementById('chkTinacos').checked;
             const mostrarTambos = document.getElementById('chkTambos').checked;
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             
-            // Jalar las fechas exactamente de lo que dice el calendario de la pantalla
             const startStr = document.getElementById('fechaDesde').value;
             const endStr = document.getElementById('fechaHasta').value;
 
@@ -563,18 +556,18 @@
             let countGastos = 0;
 
             registros.forEach(r => {
-                const fila = `<tr><td></td><td>${r.fecha.split('-').reverse().join('/')}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${r.cantidad.toFixed(2)}</td><td>$ ${formato(r.precio)}</td><td>$ ${formato(r.total)}</td></tr>`;
+                const fila = `<tr><td></td><td>${r.fecha.split('-').reverse().join('/')}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${parseFloat(r.cantidad).toFixed(2)}</td><td>$ ${formato(r.precio)}</td><td>$ ${formato(r.total)}</td></tr>`;
                 
                 if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { 
-                    tTinacos += fila; sumQTin += r.cantidad; sumPTin += parseFloat(r.precio) || 0; sumDTin += r.total; 
+                    tTinacos += fila; sumQTin += parseFloat(r.cantidad); sumPTin += parseFloat(r.precio) || 0; sumDTin += r.total; 
                 }
                 if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { 
-                    tTambos += fila; sumQTam += r.cantidad; sumPTam += parseFloat(r.precio) || 0; sumDTam += r.total; 
+                    tTambos += fila; sumQTam += parseFloat(r.cantidad); sumPTam += parseFloat(r.precio) || 0; sumDTam += r.total; 
                 }
                 
                 if(r.tipo.includes('PROD_EXTRA')) {
-                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { sumQExtTinPedro += r.cantidad; } 
-                    else if (r.vendedor === vendedor) { sumQExtTin += r.cantidad; }
+                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { sumQExtTinPedro += parseFloat(r.cantidad); } 
+                    else if (r.vendedor === vendedor) { sumQExtTin += parseFloat(r.cantidad); }
                 }
                 
                 if(r.tipo === 'GASTO') {
@@ -583,7 +576,7 @@
                 }
             });
 
-            while(countGastos < 6) {
+            while(countGastos < 4) {
                 tGastos += `<tr><td style="text-align:left; width:70%;">&nbsp;</td><td style="text-align:center;">$</td><td style="text-align:right;">-</td></tr>`;
                 countGastos++;
             }
@@ -599,7 +592,6 @@
             const totalEfe = subTotal - totComs;
 
             document.getElementById('r-vendedor').innerText = vendedor;
-            // El título del reporte ahora te dice exactamente qué fechas jaló
             document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`;
             document.getElementById('r-semana').innerText = getNumeroSemana(new Date());
 
