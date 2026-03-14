@@ -66,31 +66,31 @@
             #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
             #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
             
-            /* MODO COMPACTO (10 a 17 ventas) */
-            #pdf-report.compact-mode { font-size: 9px; }
-            #pdf-report.compact-mode .header-pdf { font-size: 13px; margin-bottom: 2px; }
-            #pdf-report.compact-mode .subtitle-pdf { font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
-            #pdf-report.compact-mode .pdf-table th { font-size: 8px; padding: 2px; }
-            #pdf-report.compact-mode .pdf-table td { font-size: 9px; padding: 2px; line-height: 1.1; }
-            #pdf-report.compact-mode .bottom-container { margin-top: 8px; gap: 15px; }
-            #pdf-report.compact-mode .tabla-extras { font-size: 9px; }
-            #pdf-report.compact-mode .tabla-extras td { padding: 2px; }
-            #pdf-report.compact-mode .tabla-resumen { font-size: 10px; }
-            #pdf-report.compact-mode .tabla-resumen td { padding: 2px; }
-            #pdf-report.compact-mode .tabla-gastos { font-size: 9px; margin-bottom: 2px;}
-            #pdf-report.compact-mode .tabla-gastos td { padding: 1px; height: 11px;}
-            #pdf-report.compact-mode .firma { margin-top: 10px; }
+            /* MODO COMPACTO (De 16 a 24 filas) - Más grande y legible que antes */
+            #pdf-report.compact-mode { font-size: 10px; }
+            #pdf-report.compact-mode .header-pdf { font-size: 14px; margin-bottom: 3px; }
+            #pdf-report.compact-mode .subtitle-pdf { font-size: 12px; margin-top: 5px; margin-bottom: 3px; }
+            #pdf-report.compact-mode .pdf-table th { font-size: 9px; padding: 3px; }
+            #pdf-report.compact-mode .pdf-table td { font-size: 10px; padding: 3px; line-height: 1.1; }
+            #pdf-report.compact-mode .bottom-container { margin-top: 10px; gap: 15px; }
+            #pdf-report.compact-mode .tabla-extras { font-size: 10px; }
+            #pdf-report.compact-mode .tabla-extras td { padding: 3px; }
+            #pdf-report.compact-mode .tabla-resumen { font-size: 11px; }
+            #pdf-report.compact-mode .tabla-resumen td { padding: 3px; }
+            #pdf-report.compact-mode .tabla-gastos { font-size: 10px; margin-bottom: 3px;}
+            #pdf-report.compact-mode .tabla-gastos td { padding: 2px 3px; height: 13px;}
+            #pdf-report.compact-mode .firma { margin-top: 15px; }
 
-            /* MODO SUPER COMPACTO (+18 ventas - Exprime al máximo para caber en 1 hoja) */
-            #pdf-report.super-compact-mode { font-size: 8px; }
-            #pdf-report.super-compact-mode .header-pdf { font-size: 11px; margin-bottom: 1px; line-height: 1; }
-            #pdf-report.super-compact-mode .subtitle-pdf { font-size: 10px; margin-top: 2px; margin-bottom: 1px; }
-            #pdf-report.super-compact-mode .pdf-table th { font-size: 7px; padding: 1px; }
-            #pdf-report.super-compact-mode .pdf-table td { font-size: 8px; padding: 1px; line-height: 1; }
-            #pdf-report.super-compact-mode .bottom-container { margin-top: 4px; gap: 10px; }
-            #pdf-report.super-compact-mode .tabla-extras, #pdf-report.super-compact-mode .tabla-resumen, #pdf-report.super-compact-mode .tabla-gastos { font-size: 8px; }
-            #pdf-report.super-compact-mode .tabla-extras td, #pdf-report.super-compact-mode .tabla-resumen td, #pdf-report.super-compact-mode .tabla-gastos td { padding: 1px; }
-            #pdf-report.super-compact-mode .firma { margin-top: 5px; }
+            /* MODO SUPER COMPACTO (+25 filas - Exprime para caber en 1 hoja) */
+            #pdf-report.super-compact-mode { font-size: 9px; }
+            #pdf-report.super-compact-mode .header-pdf { font-size: 12px; margin-bottom: 2px; }
+            #pdf-report.super-compact-mode .subtitle-pdf { font-size: 11px; margin-top: 3px; margin-bottom: 2px; }
+            #pdf-report.super-compact-mode .pdf-table th { font-size: 8px; padding: 2px; }
+            #pdf-report.super-compact-mode .pdf-table td { font-size: 9px; padding: 2px; line-height: 1; }
+            #pdf-report.super-compact-mode .bottom-container { margin-top: 5px; gap: 10px; }
+            #pdf-report.super-compact-mode .tabla-extras, #pdf-report.super-compact-mode .tabla-resumen, #pdf-report.super-compact-mode .tabla-gastos { font-size: 9px; }
+            #pdf-report.super-compact-mode .tabla-extras td, #pdf-report.super-compact-mode .tabla-resumen td, #pdf-report.super-compact-mode .tabla-gastos td { padding: 2px; }
+            #pdf-report.super-compact-mode .firma { margin-top: 10px; }
 
             body.print-inv #pdf-report { display: none !important; }
             body.print-inv #pdf-inventario { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
@@ -622,7 +622,7 @@
         }
         function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        // --- EL NUEVO MOTOR DE GRÁFICAS CON DESGLOSE ---
+        // GRÁFICAS REPOTENCIADAS
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
             const fTiempo = document.getElementById('filtroTiempo').value; 
@@ -639,7 +639,6 @@
                         v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; 
                         if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; 
                     } 
-                    // SEPARADOR DE PRODUCCIÓN (Tinacos vs Tambos)
                     if(r.tipo.includes('PROD')) { 
                         if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0, tinacos: 0, tambos: 0 };
                         let c = parseFloat(r.cantidad);
@@ -653,7 +652,6 @@
             
             document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v]/maxV)*100:0}%;">$${formato(v_ventas[v])}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
             
-            // DIBUJA LA GRÁFICA DE PRODUCCIÓN CON EL DESGLOSE
             document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`
                 <div class="grafica-col" style="flex: 0 0 60px;">
                     <div style="font-size:8px; text-align:center; font-weight:bold; margin-bottom:3px; line-height:1.2;">
@@ -666,7 +664,7 @@
             `).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
         
-        // --- EL PDF INTELIGENTE DE CORTES ---
+        // MOTOR DE CORTES (CAJA DE CAMBIOS DE HOJA)
         function actualizarFechasCorte() {
             const v = document.getElementById('vendedorCorte').value; 
             let d = new Date(); 
@@ -731,14 +729,14 @@
             const subTotal = granTotal - sumGastos; 
             const totalEfe = subTotal - totComs;
             
-            // LA CAJA DE CAMBIOS INTELIGENTE (Para que no se parta la hoja)
+            // LA CAJA DE CAMBIOS INTELIGENTE RECALIBRADA
             const pdfContainer = document.getElementById('pdf-report'); 
             pdfContainer.classList.remove('compact-mode', 'super-compact-mode');
             
-            let totalFilas = totalVentasImpresas + countGastos;
-            if (totalFilas >= 18) { 
+            let totalFilas = totalVentasImpresas + (countGastos > 4 ? countGastos : 4);
+            if (totalFilas >= 25) { 
                 pdfContainer.classList.add('super-compact-mode'); 
-            } else if (totalFilas >= 10) { 
+            } else if (totalFilas >= 16) { 
                 pdfContainer.classList.add('compact-mode'); 
             }
             
