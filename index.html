@@ -411,7 +411,7 @@
         <div class="subtitle-pdf">VENTAS TAMBOS 235 LT</div>
         <table class="pdf-table"><thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAMBO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead><tbody id="r-tabla-tambos"></tbody><tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td><span id="r-sumQTambos"></span></td><td>$<span id="r-sumPrecioTambos"></span></td><td>$<span id="r-sumDineroTambos"></span></td></tr></tfoot></table>
         <div class="bottom-container">
-            <div style="width: 45%;"><div class="firma">FIRMA_______________________</div><table class="tabla-extras"><tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr><tr id="row-pedro"><td style="text-align:center;"><span id="r-qProdExtraTinPedro"></span></td><td>TINACOS EXTRA PEDRO</td><td style="text-align:right;"><span id="r-comExtraTinPedro"></span></td></tr><tr><td style="text-align:center;"><span id="r-qProdExtraTin"></span></td><td>TINACOS EXTRA <span id="r-vendLabelExtra"></span></td><td style="text-align:right;"><span id="r-comExtraTin"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTinacosCom"></span></td><td>VENTAS TINACOS</td><td style="text-align:right;"><span id="r-comTinacos"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTambosCom"></span></td><td>VENTAS TAMBOS</td><td style="text-align:right;"><span id="r-comTambos"></span></td></tr><tr><td colspan="2" style="text-align:center; color:red;">TOTAL</td><td style="color:red; text-align:right;"><span id="r-totComisiones"></span></td></tr></table></div>
+            <div style="width: 45%;"><div class="firma">FIRMA_______________________</div><table class="tabla-extras"><tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr><tr id="row-pedro"><td style="text-align:center;"><span id="r-qProdExtraTinPedro"></span></td><td>TINACOS EXTRA PEDRO</td><td style="text-align:right;"><span id="r-comExtraTinPedro"></span></td></tr><tr><td style="text-align:center;"><span id="r-qProdExtraTin"></span></td><td><span id="lbl-tipo-extra">TINACOS EXTRA</span> <span id="r-vendLabelExtra"></span></td><td style="text-align:right;"><span id="r-comExtraTin"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTinacosCom"></span></td><td>VENTAS TINACOS</td><td style="text-align:right;"><span id="r-comTinacos"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTambosCom"></span></td><td>VENTAS TAMBOS</td><td style="text-align:right;"><span id="r-comTambos"></span></td></tr><tr><td colspan="2" style="text-align:center; color:red;">TOTAL</td><td style="color:red; text-align:right;"><span id="r-totComisiones"></span></td></tr></table></div>
             <div style="width: 55%;"><table class="tabla-resumen"><tr><td style="width: 70%; color: red;">TOTAL VENTAS</td><td style="color: red;"><span id="r-granTotalVentas"></span></td></tr></table><table class="tabla-gastos"><tbody id="r-tabla-gastos"></tbody></table><table class="tabla-resumen"><tr><td style="width: 70%;">GASTOS $</td><td><span id="r-totGastos"></span></td></tr><tr><td>SUB TOTAL $</td><td><span id="r-subTotal"></span></td></tr><tr><td>EXTRA TRABAJADORES</td><td><span id="r-totComisionesFin"></span></td></tr><tr><td style="color: red; font-size: 13px;">TOTAL $</td><td style="color: red; font-size: 13px;"><span id="r-totalEfectivo"></span></td></tr></table></div>
         </div>
     </div>
@@ -636,8 +636,12 @@
                 
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
                     if(r.tipo.includes('VENTA')) { 
-                        v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; 
-                        if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; 
+                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0, tinacos: 0, tambos: 0 };
+                        v_ventas[r.vendedor].totalDinero += r.total; 
+                        let cV = parseFloat(r.cantidad) || 0;
+                        if(r.tipo === 'VENTA_TINACO') v_ventas[r.vendedor].tinacos += cV;
+                        if(r.tipo === 'VENTA_TAMBO') v_ventas[r.vendedor].tambos += cV;
+                        if(v_ventas[r.vendedor].totalDinero > maxV) maxV = v_ventas[r.vendedor].totalDinero; 
                     } 
                     if(r.tipo.includes('PROD')) { 
                         if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0, tinacos: 0, tambos: 0 };
@@ -650,7 +654,16 @@
                 } 
             });
             
-            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v]/maxV)*100:0}%;">$${formato(v_ventas[v])}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
+            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`
+                <div class="grafica-col" style="flex: 0 0 60px;">
+                    <div style="font-size:8px; text-align:center; font-weight:bold; margin-bottom:3px; line-height:1.2;">
+                        ${v_ventas[v].tinacos > 0 ? `<span style="color:#1565C0;">Tin: ${v_ventas[v].tinacos}</span><br>` : ''}
+                        ${v_ventas[v].tambos > 0 ? `<span style="color:#EF6C00;">Tam: ${v_ventas[v].tambos}</span>` : ''}
+                    </div>
+                    <div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v].totalDinero/maxV)*70:0}%;">$${formato(v_ventas[v].totalDinero)}</div>
+                    <div class="grafica-label">${v}</div>
+                </div>
+            `).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
             
             document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`
                 <div class="grafica-col" style="flex: 0 0 60px;">
@@ -702,6 +715,7 @@
             let sumQTin = 0, sumPTin = 0, sumDTin = 0; 
             let sumQTam = 0, sumPTam = 0, sumDTam = 0; 
             let sumQExtTin = 0, sumQExtTinPedro = 0, sumGastos = 0; 
+            let hizoTambosExtra = false, hizoTinacosExtra = false;
             let countGastos = 0; let totalVentasImpresas = 0;
             
             registros.forEach(r => {
@@ -714,7 +728,15 @@
                 
                 if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; }
                 if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; }
-                if((r.tipo || '').includes('PROD_EXTRA')) { if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { sumQExtTinPedro += cantNum; } else if (r.vendedor === vendedor) { sumQExtTin += cantNum; } }
+                if((r.tipo || '').includes('PROD_EXTRA')) { 
+                    if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { 
+                        sumQExtTinPedro += cantNum; 
+                    } else if (r.vendedor === vendedor) { 
+                        sumQExtTin += cantNum; 
+                        if (r.tipo === 'PROD_EXTRA_TAMBO') hizoTambosExtra = true;
+                        if (r.tipo === 'PROD_EXTRA_TINACO') hizoTinacosExtra = true;
+                    } 
+                }
                 if(r.tipo === 'GASTO') { tGastos += `<tr><td style="text-align:left; width:70%;">${r.concepto}</td><td style="text-align:center;">$</td><td style="text-align:right;">${formato(totalNum)}</td></tr>`; sumGastos += totalNum; countGastos++; }
             });
             
@@ -764,7 +786,15 @@
             document.getElementById('r-qProdExtraTinPedro').innerText = sumQExtTinPedro; 
             document.getElementById('r-comExtraTinPedro').innerText = '$' + formato(comExtTinPedro);
             
-            document.getElementById('r-vendLabelExtra').innerText = vendedor === 'FERNANDO' ? '' : vendedor; 
+            // Inteligencia para el nombre de los extras (Tinacos vs Tambos)
+            let textoExtras = "TINACOS EXTRAS";
+            if (hizoTambosExtra && !hizoTinacosExtra) textoExtras = "TAMBOS EXTRAS";
+            else if (hizoTambosExtra && hizoTinacosExtra) textoExtras = "TIN / TAM EXTRAS";
+            document.getElementById('lbl-tipo-extra').innerText = textoExtras;
+            
+            // Ahora siempre mostrará el nombre del vendedor (Ej: TINACOS EXTRAS FERNANDO)
+            document.getElementById('r-vendLabelExtra').innerText = vendedor; 
+            
             document.getElementById('r-qProdExtraTin').innerText = sumQExtTin; 
             document.getElementById('r-comExtraTin').innerText = '$' + formato(comExtTin);
             
