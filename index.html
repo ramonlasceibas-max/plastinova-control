@@ -64,6 +64,22 @@
             #pdf-report .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; margin-bottom: 5px;}
             #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
             #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
+            
+            /* COMPACT MODE PARA MUCHOS DATOS */
+            #pdf-report.compact-mode { font-size: 9px; }
+            #pdf-report.compact-mode .header-pdf { font-size: 13px; margin-bottom: 2px; }
+            #pdf-report.compact-mode .subtitle-pdf { font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
+            #pdf-report.compact-mode .pdf-table th { font-size: 8px; padding: 2px; }
+            #pdf-report.compact-mode .pdf-table td { font-size: 9px; padding: 2px; line-height: 1.1; }
+            #pdf-report.compact-mode .bottom-container { margin-top: 8px; gap: 15px; }
+            #pdf-report.compact-mode .tabla-extras { font-size: 9px; }
+            #pdf-report.compact-mode .tabla-extras td { padding: 2px; }
+            #pdf-report.compact-mode .tabla-resumen { font-size: 10px; }
+            #pdf-report.compact-mode .tabla-resumen td { padding: 2px; }
+            #pdf-report.compact-mode .tabla-gastos { font-size: 9px; margin-bottom: 2px;}
+            #pdf-report.compact-mode .tabla-gastos td { padding: 1px; height: 11px;}
+            #pdf-report.compact-mode .firma { margin-top: 10px; }
+
             body.print-inv #pdf-report { display: none !important; }
             body.print-inv #pdf-inventario { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
             body.print-inv .header-inv { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px;}
@@ -213,7 +229,6 @@
             </div>
 
             <div id="tab-inventario" class="tab-content">
-                
                 <div class="card" style="border: 2px solid #2E7D32;">
                     <h3 style="color: #2E7D32; margin-bottom: 5px;">📊 Stock Actual (Calculado Automático)</h3>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -411,22 +426,25 @@
             .catch(error => console.log("Aviso: Falló la conexión a la nube.", error));
         }
 
-        // FECHAS MÉXICO
-        const dateObj = new Date(); 
-        const offset = dateObj.getTimezoneOffset() * 60000;
-        const fechaLocal = new Date(dateObj.getTime() - offset).toISOString().split('T')[0];
-        document.getElementById('fecha').value = fechaLocal;
-        document.getElementById('invFecha').value = fechaLocal; 
-
-        const LISTA_PRECIOS = { "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400 }, "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200 }, "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200 }, "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495  } };
-
+        // FECHAS Y UTILIDADES
         function getNumeroSemana(d) { d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7)); var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1)); return Math.ceil((((d - yearStart) / 86400000) + 1)/7); }
-        document.getElementById('semana').value = getNumeroSemana(dateObj);
-        function formato(num) { return num.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+        function formato(num) { return parseFloat(num).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
         function getTipoAmigable(tipo) { 
             const m = { 'VENTA_TINACO': 'VENTA', 'VENTA_TAMBO': 'VENTA', 'PROD_NORMAL': 'PROD. NORMAL', 'PROD_EXTRA_TINACO': 'PROD. EXTRA', 'PROD_EXTRA_TAMBO': 'PROD. EXTRA', 'GASTO': 'GASTO', 'COMPRA': 'COMPRA', 'INVENTARIO_FISICO': 'AUDITORIA' };
             return m[tipo] || tipo; 
         }
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const dateObj = new Date(); 
+            const offset = dateObj.getTimezoneOffset() * 60000;
+            const fechaLocal = new Date(dateObj.getTime() - offset).toISOString().split('T')[0];
+            document.getElementById('fecha').value = fechaLocal;
+            document.getElementById('invFecha').value = fechaLocal; 
+            document.getElementById('semana').value = getNumeroSemana(dateObj);
+            actualizarFechasCorte(); // Se asegura de que las fechas del corte estén listas
+        });
+
+        const LISTA_PRECIOS = { "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400 }, "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200 }, "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200 }, "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495  } };
 
         function cambiarTab(tab) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tab).classList.add('active'); document.getElementById('btn-tab-' + tab).classList.add('active'); if(tab === 'bd') cargarBD(); if(tab === 'dashboard') renderGraficas(); if(tab === 'cortes') actualizarFechasCorte(); if(tab === 'inventario') verStockActual(); }
         function actualizarPrecios(tipoItem) { if(tipoItem === 'tinaco') { const cap = document.getElementById('capTinaco').value; const tipo = document.getElementById('tipoPrecioTinaco').value; document.getElementById('pTinaco').value = LISTA_PRECIOS[cap][tipo]; } else if (tipoItem === 'tambo') { const cap = document.getElementById('capTambo').value; const tipo = document.getElementById('tipoPrecioTambo').value; document.getElementById('pTambo').value = LISTA_PRECIOS[cap][tipo]; } }
@@ -497,7 +515,6 @@
             let sArray = Object.keys(stock).map(k => ({ m: k, q: stock[k] })).sort((a,b) => a.m.localeCompare(b.m));
             if (!sArray.length) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:10px;">Stock en 0.</td></tr>'; return; }
             sArray.forEach(i => {
-                // PARCHE: Forzar valor numérico para que el color ROJO funcione en accesorios
                 let valorNum = parseFloat(i.q);
                 tbody.innerHTML += `<tr><td style="font-weight:bold;">${i.m}</td><td style="color:${valorNum < 0 ? '#d32f2f' : 'black'}; font-weight:bold;">${valorNum.toFixed(2)}</td></tr>`;
             });
@@ -570,13 +587,21 @@
         }
         function borrarHistorialCierres() { if(confirm("¿Borrar archivo de cierres?")) { localStorage.removeItem('plastinova_inv_historial'); verHistorialCierres(); } }
 
-        // HISTORIAL GENERAL
+        // --- HISTORIAL GENERAL Y FORMATO DE PESOS ($) ---
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             db.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
             let tb = document.querySelector('#tablaBD tbody'); tb.innerHTML = '';
-            db.forEach(r => { tb.innerHTML += `<tr><td>${r.fecha}</td><td>${r.vendedor}</td><td>${getTipoAmigable(r.tipo)}</td><td>${r.concepto}</td><td>${r.cantidad}</td><td>${r.precio}</td><td>${r.total}</td><td><button onclick="borrarRegistro(${r.id})">❌</button></td></tr>`; });
+            db.forEach(r => { 
+                // LA CANTIDAD VA SIN $, LOS PRECIOS Y TOTALES VAN CON $
+                let pStr = parseFloat(r.precio) > 0 ? '$' + formato(r.precio) : '-';
+                let tStr = parseFloat(r.total) > 0 ? '$' + formato(r.total) : '-';
+                let cStr = parseFloat(r.cantidad) > 0 ? parseFloat(r.cantidad).toFixed(2) : '-';
+                
+                tb.innerHTML += `<tr><td>${r.fecha}</td><td>${r.vendedor}</td><td><span class="badge-tipo">${getTipoAmigable(r.tipo)}</span></td><td>${r.concepto}</td><td style="font-weight:bold;">${cStr}</td><td>${pStr}</td><td style="font-weight:bold; color:#1565C0;">${tStr}</td><td style="text-align:center;"><button onclick="borrarRegistro(${r.id})" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">❌</button></td></tr>`; 
+            });
         }
+
         function borrarRegistro(id) {
             if(confirm("¿Borrar este movimiento? Se devolverá material al stock.")) {
                 let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
@@ -588,19 +613,127 @@
         }
         function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        // GRÁFICAS Y CORTES
+        // GRÁFICAS
         function renderGraficas() {
-            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-            let v_v = {}, v_p = {}, maxV = 0, maxP = 0;
-            db.forEach(r => {
-                if(r.tipo.includes('VENTA')) { v_v[r.vendedor] = (v_v[r.vendedor]||0)+r.total; if(v_v[r.vendedor]>maxV) maxV=v_v[r.vendedor]; }
-                if(r.tipo.includes('PROD')) { v_p[r.vendedor] = (v_p[r.vendedor]||0)+r.cantidad; if(v_p[r.vendedor]>maxP) maxP=v_p[r.vendedor]; }
-            });
-            document.getElementById('graficaVentas').innerHTML = Object.keys(v_v).map(v => `<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${(v_v[v]/maxV)*100}%">$${v_v[v]}</div><div class="grafica-label">${v}</div></div>`).join('');
-            document.getElementById('graficaProd').innerHTML = Object.keys(v_p).map(v => `<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${(v_p[v]/maxP)*100}%">${v_p[v]}</div><div class="grafica-label">${v}</div></div>`).join('');
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
+            const fTiempo = document.getElementById('filtroTiempo').value; const fVend = document.getElementById('filtroVendedorGrafica').value; let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
+            db.forEach(r => { let rD = new Date(r.fecha + "T00:00:00"); let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
+                if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { if(r.tipo.includes('VENTA')) { v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; } if(r.tipo.includes('PROD')) { v_prod[r.vendedor] = (v_prod[r.vendedor]||0)+r.cantidad; if(v_prod[r.vendedor]>maxP) maxP=v_prod[r.vendedor]; } } });
+            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v]/maxV)*100:0}%;">$${formato(v_ventas[v])}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
+            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
-        function actualizarFechasCorte() { /* Lógica de fechas intacta */ }
-        function generarCortePDF() { /* Lógica de PDF ventas intacta */ window.print(); }
+        
+        // --- CEREBRO COMPLETO DEL PDF DE CORTES (RESTAURADO) ---
+        function actualizarFechasCorte() {
+            const v = document.getElementById('vendedorCorte').value; 
+            let d = new Date(); 
+            let diaActual = d.getDay() === 0 ? 7 : d.getDay(); 
+            let fIni = new Date(d); 
+            let fFin = new Date(d);
+            
+            if (v === 'ISIDRO') { fIni.setDate(d.getDate() - diaActual - 1); fFin.setDate(d.getDate() - diaActual + 5); } 
+            else if (v === 'OFELIA') { fIni.setDate(d.getDate() - diaActual + 2); fFin.setDate(d.getDate() - diaActual + 7); } 
+            else { fIni.setDate(d.getDate() - diaActual + 1); fFin.setDate(d.getDate() - diaActual + 6); }
+            
+            document.getElementById('fechaDesde').valueAsDate = fIni; 
+            document.getElementById('fechaHasta').valueAsDate = fFin;
+        }
+        
+        function generarCortePDF() {
+            const vendedor = document.getElementById('vendedorCorte').value; 
+            const mostrarTinacos = document.getElementById('chkTinacos').checked; 
+            const mostrarTambos = document.getElementById('chkTambos').checked; 
+            let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
+            
+            const startStr = document.getElementById('fechaDesde').value; 
+            const endStr = document.getElementById('fechaHasta').value;
+            
+            let registros = db.filter(r => { 
+                if (!r.fecha) return false;
+                let dentroFecha = (r.fecha >= startStr && r.fecha <= endStr); 
+                if (!dentroFecha) return false; 
+                if (r.vendedor === vendedor) return true; 
+                if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && (r.tipo || '').includes('PROD_EXTRA')) return true; 
+                return false; 
+            });
+            
+            let tTinacos = '', tTambos = '', tGastos = ''; 
+            let sumQTin = 0, sumPTin = 0, sumDTin = 0; 
+            let sumQTam = 0, sumPTam = 0, sumDTam = 0; 
+            let sumQExtTin = 0, sumQExtTinPedro = 0, sumGastos = 0; 
+            let countGastos = 0; let totalVentasImpresas = 0;
+            
+            registros.forEach(r => {
+                const fechaFormat = r.fecha.split('-').reverse().join('/');
+                const cantNum = parseFloat(r.cantidad) || 0;
+                const precioNum = parseFloat(r.precio) || 0;
+                const totalNum = parseFloat(r.total) || 0;
+
+                // Aqui la CANTIDAD va normal, PRECIO y TOTAL llevan $
+                const fila = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+                
+                if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; }
+                if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; }
+                if((r.tipo || '').includes('PROD_EXTRA')) { if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { sumQExtTinPedro += cantNum; } else if (r.vendedor === vendedor) { sumQExtTin += cantNum; } }
+                if(r.tipo === 'GASTO') { tGastos += `<tr><td style="text-align:left; width:70%;">${r.concepto}</td><td style="text-align:center;">$</td><td style="text-align:right;">${formato(totalNum)}</td></tr>`; sumGastos += totalNum; countGastos++; }
+            });
+            
+            while(countGastos < 4) { tGastos += `<tr><td style="text-align:left; width:70%;">&nbsp;</td><td style="text-align:center;">$</td><td style="text-align:right;">-</td></tr>`; countGastos++; }
+            
+            const granTotal = sumDTin + sumDTam; 
+            const comExtTinPedro = sumQExtTinPedro * 35; 
+            const comExtTin = sumQExtTin * 35; 
+            const comTin = sumQTin * 35; 
+            const comTam = sumQTam * 10; 
+            const totComs = comExtTinPedro + comExtTin + comTin + comTam; 
+            const subTotal = granTotal - sumGastos; 
+            const totalEfe = subTotal - totComs;
+            
+            const pdfContainer = document.getElementById('pdf-report'); 
+            if (totalVentasImpresas >= 10) { pdfContainer.classList.add('compact-mode'); } else { pdfContainer.classList.remove('compact-mode'); }
+            
+            document.getElementById('r-vendedor').innerText = vendedor; 
+            document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`; 
+            
+            // Calculamos el numero de semana en vivo para el reporte
+            let dObj = new Date();
+            let d_semana = getNumeroSemana(new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)));
+            document.getElementById('r-semana').innerText = d_semana;
+
+            document.getElementById('r-tabla-tinacos').innerHTML = tTinacos; 
+            document.getElementById('r-sumQTinacos').innerText = sumQTin.toFixed(2); 
+            document.getElementById('r-sumPrecioTinacos').innerText = formato(sumPTin); 
+            document.getElementById('r-sumDineroTinacos').innerText = formato(sumDTin);
+            
+            document.getElementById('r-tabla-tambos').innerHTML = tTambos; 
+            document.getElementById('r-sumQTambos').innerText = sumQTam.toFixed(2); 
+            document.getElementById('r-sumPrecioTambos').innerText = formato(sumPTam); 
+            document.getElementById('r-sumDineroTambos').innerText = formato(sumDTam);
+            
+            document.getElementById('r-tabla-gastos').innerHTML = tGastos; 
+            document.getElementById('r-totGastos').innerText = formato(sumGastos);
+            
+            document.getElementById('row-pedro').style.display = (vendedor === 'FERNANDO') ? 'table-row' : 'none'; 
+            document.getElementById('r-qProdExtraTinPedro').innerText = sumQExtTinPedro; 
+            document.getElementById('r-comExtraTinPedro').innerText = '$' + formato(comExtTinPedro);
+            
+            document.getElementById('r-vendLabelExtra').innerText = vendedor === 'FERNANDO' ? '' : vendedor; 
+            document.getElementById('r-qProdExtraTin').innerText = sumQExtTin; 
+            document.getElementById('r-comExtraTin').innerText = '$' + formato(comExtTin);
+            
+            document.getElementById('r-sumQTinacosCom').innerText = sumQTin.toFixed(2); 
+            document.getElementById('r-comTinacos').innerText = '$' + formato(comTin); 
+            document.getElementById('r-sumQTambosCom').innerText = sumQTam.toFixed(2); 
+            document.getElementById('r-comTambos').innerText = '$' + formato(comTam); 
+            document.getElementById('r-totComisiones').innerText = '$' + formato(totComs);
+            
+            document.getElementById('r-granTotalVentas').innerText = '$' + formato(granTotal); 
+            document.getElementById('r-subTotal').innerText = '$' + formato(subTotal); 
+            document.getElementById('r-totComisionesFin').innerText = '$' + formato(totComs); 
+            document.getElementById('r-totalEfectivo').innerText = '$' + formato(totalEfe);
+            
+            window.print();
+        }
     </script>
 </body>
 </html>
