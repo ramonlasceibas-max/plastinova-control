@@ -36,8 +36,8 @@
         table.db-table th { background-color: #2E7D32; color: white; }
         .badge-tipo { font-size: 9px; background-color: #e0e0e0; color: #333; padding: 3px 6px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;}
 
-        .grafica-container { display: flex; align-items: flex-end; justify-content: space-around; height: 200px; padding: 10px 5px 0 5px; border-bottom: 2px solid #ccc; gap: 15px; margin-top: 10px; overflow-x: auto; }
-        .grafica-col { flex: 0 0 50px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+        .grafica-container { display: flex; align-items: flex-end; justify-content: space-around; height: 220px; padding: 10px 5px 0 5px; border-bottom: 2px solid #ccc; gap: 15px; margin-top: 10px; overflow-x: auto; }
+        .grafica-col { flex: 0 0 60px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
         .grafica-bar { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.5s ease-in-out; display: flex; justify-content: center; align-items: flex-start; color: white; font-size: 10px; font-weight: bold; padding-top: 5px; overflow: hidden; box-shadow: 2px 0 5px rgba(0,0,0,0.2); }
         .bar-ventas { background-color: #1565C0; }
         .bar-prod { background-color: #EF6C00; }
@@ -49,10 +49,11 @@
             @page { size: landscape; margin: 3mm; } 
             body { background-color: white; margin: 0; padding: 0; }
             #app-ui { display: none !important; }
+            
             #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
             #pdf-report .header-pdf { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
             #pdf-report .subtitle-pdf { text-align: center; font-weight: bold; font-size: 13px; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; }
-            #pdf-report .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center; }
+            #pdf-report .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center; page-break-inside: avoid; }
             #pdf-report .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 10px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; }
             #pdf-report .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 4px; }
             #pdf-report .row-total td { color: red !important; font-weight: bold; }
@@ -65,7 +66,7 @@
             #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
             #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
             
-            /* COMPACT MODE PARA MUCHOS DATOS */
+            /* MODO COMPACTO (10 a 17 ventas) */
             #pdf-report.compact-mode { font-size: 9px; }
             #pdf-report.compact-mode .header-pdf { font-size: 13px; margin-bottom: 2px; }
             #pdf-report.compact-mode .subtitle-pdf { font-size: 11px; margin-top: 4px; margin-bottom: 2px; }
@@ -79,6 +80,17 @@
             #pdf-report.compact-mode .tabla-gastos { font-size: 9px; margin-bottom: 2px;}
             #pdf-report.compact-mode .tabla-gastos td { padding: 1px; height: 11px;}
             #pdf-report.compact-mode .firma { margin-top: 10px; }
+
+            /* MODO SUPER COMPACTO (+18 ventas - Exprime al máximo para caber en 1 hoja) */
+            #pdf-report.super-compact-mode { font-size: 8px; }
+            #pdf-report.super-compact-mode .header-pdf { font-size: 11px; margin-bottom: 1px; line-height: 1; }
+            #pdf-report.super-compact-mode .subtitle-pdf { font-size: 10px; margin-top: 2px; margin-bottom: 1px; }
+            #pdf-report.super-compact-mode .pdf-table th { font-size: 7px; padding: 1px; }
+            #pdf-report.super-compact-mode .pdf-table td { font-size: 8px; padding: 1px; line-height: 1; }
+            #pdf-report.super-compact-mode .bottom-container { margin-top: 4px; gap: 10px; }
+            #pdf-report.super-compact-mode .tabla-extras, #pdf-report.super-compact-mode .tabla-resumen, #pdf-report.super-compact-mode .tabla-gastos { font-size: 8px; }
+            #pdf-report.super-compact-mode .tabla-extras td, #pdf-report.super-compact-mode .tabla-resumen td, #pdf-report.super-compact-mode .tabla-gastos td { padding: 1px; }
+            #pdf-report.super-compact-mode .firma { margin-top: 5px; }
 
             body.print-inv #pdf-report { display: none !important; }
             body.print-inv #pdf-inventario { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
@@ -441,7 +453,7 @@
             document.getElementById('fecha').value = fechaLocal;
             document.getElementById('invFecha').value = fechaLocal; 
             document.getElementById('semana').value = getNumeroSemana(dateObj);
-            actualizarFechasCorte(); // Se asegura de que las fechas del corte estén listas
+            actualizarFechasCorte(); 
         });
 
         const LISTA_PRECIOS = { "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400 }, "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200 }, "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200 }, "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495  } };
@@ -508,7 +520,6 @@
             alert(`Sumados ${cant} de ${mat}.`);
         }
 
-        // STOCK Y AUDITORÍA
         function verStockActual() {
             let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
             let tbody = document.querySelector('#tablaStockActual tbody'); tbody.innerHTML = '';
@@ -587,13 +598,11 @@
         }
         function borrarHistorialCierres() { if(confirm("¿Borrar archivo de cierres?")) { localStorage.removeItem('plastinova_inv_historial'); verHistorialCierres(); } }
 
-        // --- HISTORIAL GENERAL Y FORMATO DE PESOS ($) ---
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             db.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
             let tb = document.querySelector('#tablaBD tbody'); tb.innerHTML = '';
             db.forEach(r => { 
-                // LA CANTIDAD VA SIN $, LOS PRECIOS Y TOTALES VAN CON $
                 let pStr = parseFloat(r.precio) > 0 ? '$' + formato(r.precio) : '-';
                 let tStr = parseFloat(r.total) > 0 ? '$' + formato(r.total) : '-';
                 let cStr = parseFloat(r.cantidad) > 0 ? parseFloat(r.cantidad).toFixed(2) : '-';
@@ -613,17 +622,51 @@
         }
         function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        // GRÁFICAS
+        // --- EL NUEVO MOTOR DE GRÁFICAS CON DESGLOSE ---
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
-            const fTiempo = document.getElementById('filtroTiempo').value; const fVend = document.getElementById('filtroVendedorGrafica').value; let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
-            db.forEach(r => { let rD = new Date(r.fecha + "T00:00:00"); let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
-                if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { if(r.tipo.includes('VENTA')) { v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; } if(r.tipo.includes('PROD')) { v_prod[r.vendedor] = (v_prod[r.vendedor]||0)+r.cantidad; if(v_prod[r.vendedor]>maxP) maxP=v_prod[r.vendedor]; } } });
+            const fTiempo = document.getElementById('filtroTiempo').value; 
+            const fVend = document.getElementById('filtroVendedorGrafica').value; 
+            let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); 
+            let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
+            
+            db.forEach(r => { 
+                let rD = new Date(r.fecha + "T00:00:00"); 
+                let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
+                
+                if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
+                    if(r.tipo.includes('VENTA')) { 
+                        v_ventas[r.vendedor] = (v_ventas[r.vendedor]||0)+r.total; 
+                        if(v_ventas[r.vendedor]>maxV) maxV=v_ventas[r.vendedor]; 
+                    } 
+                    // SEPARADOR DE PRODUCCIÓN (Tinacos vs Tambos)
+                    if(r.tipo.includes('PROD')) { 
+                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0, tinacos: 0, tambos: 0 };
+                        let c = parseFloat(r.cantidad);
+                        v_prod[r.vendedor].total += c;
+                        if(r.concepto.includes('TINACO')) v_prod[r.vendedor].tinacos += c;
+                        if(r.concepto.includes('TAMBO')) v_prod[r.vendedor].tambos += c;
+                        if(v_prod[r.vendedor].total > maxP) maxP = v_prod[r.vendedor].total; 
+                    } 
+                } 
+            });
+            
             document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v]/maxV)*100:0}%;">$${formato(v_ventas[v])}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
-            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p]/maxP)*100:0}%;">${v_prod[p]}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
+            
+            // DIBUJA LA GRÁFICA DE PRODUCCIÓN CON EL DESGLOSE
+            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`
+                <div class="grafica-col" style="flex: 0 0 60px;">
+                    <div style="font-size:8px; text-align:center; font-weight:bold; margin-bottom:3px; line-height:1.2;">
+                        ${v_prod[p].tinacos > 0 ? `<span style="color:#1565C0;">Tin: ${v_prod[p].tinacos}</span><br>` : ''}
+                        ${v_prod[p].tambos > 0 ? `<span style="color:#EF6C00;">Tam: ${v_prod[p].tambos}</span>` : ''}
+                    </div>
+                    <div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p].total/maxP)*70:0}%;">${v_prod[p].total}</div>
+                    <div class="grafica-label">${p}</div>
+                </div>
+            `).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
         
-        // --- CEREBRO COMPLETO DEL PDF DE CORTES (RESTAURADO) ---
+        // --- EL PDF INTELIGENTE DE CORTES ---
         function actualizarFechasCorte() {
             const v = document.getElementById('vendedorCorte').value; 
             let d = new Date(); 
@@ -669,7 +712,6 @@
                 const precioNum = parseFloat(r.precio) || 0;
                 const totalNum = parseFloat(r.total) || 0;
 
-                // Aqui la CANTIDAD va normal, PRECIO y TOTAL llevan $
                 const fila = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
                 
                 if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; }
@@ -689,13 +731,20 @@
             const subTotal = granTotal - sumGastos; 
             const totalEfe = subTotal - totComs;
             
+            // LA CAJA DE CAMBIOS INTELIGENTE (Para que no se parta la hoja)
             const pdfContainer = document.getElementById('pdf-report'); 
-            if (totalVentasImpresas >= 10) { pdfContainer.classList.add('compact-mode'); } else { pdfContainer.classList.remove('compact-mode'); }
+            pdfContainer.classList.remove('compact-mode', 'super-compact-mode');
+            
+            let totalFilas = totalVentasImpresas + countGastos;
+            if (totalFilas >= 18) { 
+                pdfContainer.classList.add('super-compact-mode'); 
+            } else if (totalFilas >= 10) { 
+                pdfContainer.classList.add('compact-mode'); 
+            }
             
             document.getElementById('r-vendedor').innerText = vendedor; 
             document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`; 
             
-            // Calculamos el numero de semana en vivo para el reporte
             let dObj = new Date();
             let d_semana = getNumeroSemana(new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)));
             document.getElementById('r-semana').innerText = d_semana;
