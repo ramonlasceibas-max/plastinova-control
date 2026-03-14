@@ -735,14 +735,17 @@
                 if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; }
                 if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; }
                 
-                // Aquí es donde sucede la magia matemática separada
+                // --- AQUI ESTA EL CANDADO INTELIGENTE A PRUEBA DE ERRORES ---
                 if((r.tipo || '').includes('PROD_EXTRA')) { 
+                    // Si el concepto dice TAMBO o 235LT, automáticamente lo forzamos a ser Tambo.
+                    let esTambo = r.tipo === 'PROD_EXTRA_TAMBO' || (r.concepto || '').includes('TAMBO') || (r.concepto || '').includes('235LT');
+
                     if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { 
-                        if (r.tipo === 'PROD_EXTRA_TINACO') { sumQExtTinPedro += cantNum; hizoTinacosExtraPedro = true; }
-                        if (r.tipo === 'PROD_EXTRA_TAMBO') { sumQExtTamPedro += cantNum; hizoTambosExtraPedro = true; }
+                        if (esTambo) { sumQExtTamPedro += cantNum; hizoTambosExtraPedro = true; }
+                        else { sumQExtTinPedro += cantNum; hizoTinacosExtraPedro = true; }
                     } else if (r.vendedor === vendedor) { 
-                        if (r.tipo === 'PROD_EXTRA_TINACO') { sumQExtTin += cantNum; hizoTinacosExtra = true; }
-                        if (r.tipo === 'PROD_EXTRA_TAMBO') { sumQExtTam += cantNum; hizoTambosExtra = true; }
+                        if (esTambo) { sumQExtTam += cantNum; hizoTambosExtra = true; }
+                        else { sumQExtTin += cantNum; hizoTinacosExtra = true; }
                     } 
                 }
                 
