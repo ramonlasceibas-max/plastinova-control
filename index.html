@@ -66,7 +66,7 @@
             #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
             #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
             
-            /* MODO COMPACTO (De 16 a 24 filas) - Más grande y legible que antes */
+            /* MODO COMPACTO */
             #pdf-report.compact-mode { font-size: 10px; }
             #pdf-report.compact-mode .header-pdf { font-size: 14px; margin-bottom: 3px; }
             #pdf-report.compact-mode .subtitle-pdf { font-size: 12px; margin-top: 5px; margin-bottom: 3px; }
@@ -81,7 +81,7 @@
             #pdf-report.compact-mode .tabla-gastos td { padding: 2px 3px; height: 13px;}
             #pdf-report.compact-mode .firma { margin-top: 15px; }
 
-            /* MODO SUPER COMPACTO (+25 filas - Exprime para caber en 1 hoja) */
+            /* MODO SUPER COMPACTO */
             #pdf-report.super-compact-mode { font-size: 9px; }
             #pdf-report.super-compact-mode .header-pdf { font-size: 12px; margin-bottom: 2px; }
             #pdf-report.super-compact-mode .subtitle-pdf { font-size: 11px; margin-top: 3px; margin-bottom: 2px; }
@@ -146,8 +146,16 @@
                     </div>
                     <div class="row">
                         <div class="form-group">
-                            <label>Tipo Precio</label>
-                            <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')"><option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option></select>
+                            <label>Operación / Precio</label>
+                            <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')">
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="segunda">SEGUNDA / REMATE</option>
+                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
+                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
+                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
+                            </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTinaco" placeholder="0"></div>
                         <div class="form-group"><label>Precio Uni ($)</label><input type="number" id="pTinaco" placeholder="0.00" class="input-precio"></div>
@@ -165,8 +173,16 @@
                     </div>
                     <div class="row">
                         <div class="form-group">
-                            <label>Tipo Precio</label>
-                            <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')"><option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option></select>
+                            <label>Operación / Precio</label>
+                            <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')">
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="segunda">SEGUNDA / REMATE</option>
+                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
+                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
+                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
+                            </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTambo" placeholder="0"></div>
                         <div class="form-group"><label>Precio Uni ($)</label><input type="number" id="pTambo" placeholder="0.00" class="input-precio"></div>
@@ -201,7 +217,7 @@
             <div id="tab-bd" class="tab-content">
                 <div class="card" style="background-color: #e8f5e9; border-left: 4px solid #2E7D32;">
                     <h3 style="color: #2E7D32; margin-top: 0; margin-bottom: 5px;">📥 Carga Masiva desde Excel (.CSV)</h3>
-                    <p style="font-size: 11px; color: #555; margin-bottom: 10px; margin-top: 0;">Tu Excel debe tener 7 columnas en este orden exacto: <b>Fecha (AAAA-MM-DD), Vendedor, Tipo, Concepto, Cantidad, Precio, Total</b></p>
+                    <p style="font-size: 11px; color: #555; margin-bottom: 10px; margin-top: 0;">Tu Excel debe tener columnas: <b>Fecha, Vendedor, Tipo(Opcional), Concepto, Cantidad, Precio, Total</b></p>
                     <div class="row">
                         <input type="file" id="archivoCSV" accept=".csv" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;">
                         <button class="btn btn-green" style="flex: 1; padding: 10px;" onclick="importarCSV()">Subir Archivo</button>
@@ -450,7 +466,7 @@
         function getNumeroSemana(d) { d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7)); var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1)); return Math.ceil((((d - yearStart) / 86400000) + 1)/7); }
         function formato(num) { return parseFloat(num).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
         function getTipoAmigable(tipo) { 
-            const m = { 'VENTA_TINACO': 'VENTA', 'VENTA_TAMBO': 'VENTA', 'PROD_NORMAL': 'PROD. NORMAL', 'PROD_EXTRA_TINACO': 'PROD. EXTRA', 'PROD_EXTRA_TAMBO': 'PROD. EXTRA', 'GASTO': 'GASTO', 'COMPRA': 'COMPRA', 'INVENTARIO_FISICO': 'AUDITORIA' };
+            const m = { 'VENTA_TINACO': 'VENTA', 'VENTA_TINACO_COBRO': 'COBRO CONSIG.', 'VENTA_TAMBO': 'VENTA', 'VENTA_TAMBO_COBRO': 'COBRO CONSIG.', 'PROD_NORMAL': 'PROD. NORMAL', 'PROD_EXTRA_TINACO': 'PROD. EXTRA', 'PROD_EXTRA_TAMBO': 'PROD. EXTRA', 'GASTO': 'GASTO', 'COMPRA': 'COMPRA', 'INVENTARIO_FISICO': 'AUDITORIA' };
             return m[tipo] || tipo; 
         }
 
@@ -464,12 +480,18 @@
             actualizarFechasCorte(); 
         });
 
-        const LISTA_PRECIOS = { "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400 }, "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200 }, "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200 }, "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495  } };
+        // NUEVAS OPCIONES DE PRECIO AÑADIDAS
+        const LISTA_PRECIOS = { 
+            "1200LT": { publico: 1600, mayoreo: 1450, distribuidor: 1400, segunda: 1000, consignacion_salida: 0, consignacion_cobro: 1450, garantia: 0 }, 
+            "1100LT": { publico: 1500, mayoreo: 1250, distribuidor: 1200, segunda: 900,  consignacion_salida: 0, consignacion_cobro: 1250, garantia: 0 }, 
+            "750LT":  { publico: 1450, mayoreo: 1200, distribuidor: 1200, segunda: 850,  consignacion_salida: 0, consignacion_cobro: 1200, garantia: 0 }, 
+            "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495,  segunda: 350,  consignacion_salida: 0, consignacion_cobro: 495,  garantia: 0 } 
+        };
 
         function cambiarTab(tab) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tab).classList.add('active'); document.getElementById('btn-tab-' + tab).classList.add('active'); if(tab === 'bd') cargarBD(); if(tab === 'dashboard') renderGraficas(); if(tab === 'cortes') actualizarFechasCorte(); if(tab === 'inventario') verStockActual(); }
         function actualizarPrecios(tipoItem) { if(tipoItem === 'tinaco') { const cap = document.getElementById('capTinaco').value; const tipo = document.getElementById('tipoPrecioTinaco').value; document.getElementById('pTinaco').value = LISTA_PRECIOS[cap][tipo]; } else if (tipoItem === 'tambo') { const cap = document.getElementById('capTambo').value; const tipo = document.getElementById('tipoPrecioTambo').value; document.getElementById('pTambo').value = LISTA_PRECIOS[cap][tipo]; } }
 
-        // ERP CEREBRO
+        // ERP CEREBRO (NADA MODIFICADO AQUÍ, EL REGLAMENTO DE POLVO/ACCESORIOS SE RESPETA)
         function obtenerRecetaMateriales(tipoMovimiento, capacidad, colorUI) {
             let consumo = {};
             const mapeoColor = { 'NEGRO': 'ROTOLENE NEGRO - BLACK', 'BEIGE': 'ROTOLENE BEIGE', 'AZUL': 'ROTOLENE AZUL #5', 'VERDE': 'ROTOLENE VERDE #15', 'NATURAL': 'ROTOLENE NATURAL', 'NARANJA': 'ROTOLENE NARANJA II', 'CAFÉ': 'ROTOLENE CAFÉ', 'BLANCO': 'ROTOLENE BLANCO', 'ROJO': 'ROTOLENE ROJO 14', 'VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUST.' };
@@ -496,7 +518,7 @@
             localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
         }
 
-        // GUARDADO
+        // GUARDADO CON CORTES QUIRÚRGICOS PARA CONSIGNACIONES Y GARANTÍAS
         function guardarRegistro() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const f = document.getElementById('fecha').value, sem = document.getElementById('semana').value, v = document.getElementById('vendedor').value, prod = document.getElementById('productor').value;
@@ -504,14 +526,49 @@
                 const reg = { id: Date.now()+Math.floor(Math.random()*1000), fecha:f, semana:sem, vendedor:vend, tipo, concepto:conc, cantidad:cant, precio:p, total:tot, capacidad:cap, colorUI:col };
                 db.push(reg); enviarNube(reg); 
             };
-            const qTin = parseFloat(document.getElementById('qTinaco').value)||0, pTin = parseFloat(document.getElementById('pTinaco').value)||0, capTin = document.getElementById('capTinaco').value, colTin = document.getElementById('colTinaco').value;
-            if(qTin > 0) { add(v, 'VENTA_TINACO', `TINACO ${capTin} ${colTin}`, qTin, pTin, qTin*pTin, capTin, colTin); actualizarStockGlobal('VENTA_TINACO', capTin, colTin, qTin, false); }
-            const qTam = parseFloat(document.getElementById('qTambo').value)||0, pTam = parseFloat(document.getElementById('pTambo').value)||0, capTam = document.getElementById('capTambo').value, colTam = document.getElementById('colTambo').value;
-            if(qTam > 0) { add(v, 'VENTA_TAMBO', `TAMBO ${capTam} ${colTam}`, qTam, pTam, qTam*pTam, capTam, colTam); actualizarStockGlobal('VENTA_TAMBO', capTam, colTam, qTam, false); }
+            
+            // --- LÓGICA TINACOS ---
+            const tipoOpTin = document.getElementById('tipoPrecioTinaco').value;
+            let qTin = parseFloat(document.getElementById('qTinaco').value)||0, pTin = parseFloat(document.getElementById('pTinaco').value)||0;
+            const capTin = document.getElementById('capTinaco').value, colTin = document.getElementById('colTinaco').value;
+            if(qTin > 0) { 
+                let tipoRealTin = 'VENTA_TINACO';
+                let descTin = `TINACO ${capTin} ${colTin}`;
+                let afectarStockTin = true;
+
+                if (tipoOpTin === 'consignacion_salida') { descTin = `ENTREGA CONSIGNACIÓN: ${capTin} ${colTin}`; pTin = 0; }
+                else if (tipoOpTin === 'consignacion_cobro') { tipoRealTin = 'VENTA_TINACO_COBRO'; descTin = `COBRO CONSIGNACIÓN: ${capTin} ${colTin}`; afectarStockTin = false; }
+                else if (tipoOpTin === 'garantia') { descTin = `GARANTÍA (CAMBIO): ${capTin} ${colTin}`; pTin = 0; }
+                else if (tipoOpTin === 'segunda') { descTin = `SEGUNDA (REMATE): ${capTin} ${colTin}`; }
+
+                add(v, tipoRealTin, descTin, qTin, pTin, qTin*pTin, capTin, colTin); 
+                if(afectarStockTin) actualizarStockGlobal('VENTA_TINACO', capTin, colTin, qTin, false); 
+            }
+
+            // --- LÓGICA TAMBOS ---
+            const tipoOpTam = document.getElementById('tipoPrecioTambo').value;
+            let qTam = parseFloat(document.getElementById('qTambo').value)||0, pTam = parseFloat(document.getElementById('pTambo').value)||0;
+            const capTam = document.getElementById('capTambo').value, colTam = document.getElementById('colTambo').value;
+            if(qTam > 0) { 
+                let tipoRealTam = 'VENTA_TAMBO';
+                let descTam = `TAMBO ${capTam} ${colTam}`;
+                let afectarStockTam = true;
+
+                if (tipoOpTam === 'consignacion_salida') { descTam = `ENTREGA CONSIGNACIÓN: ${capTam} ${colTam}`; pTam = 0; }
+                else if (tipoOpTam === 'consignacion_cobro') { tipoRealTam = 'VENTA_TAMBO_COBRO'; descTam = `COBRO CONSIGNACIÓN: ${capTam} ${colTam}`; afectarStockTam = false; }
+                else if (tipoOpTam === 'garantia') { descTam = `GARANTÍA (CAMBIO): ${capTam} ${colTam}`; pTam = 0; }
+                else if (tipoOpTam === 'segunda') { descTam = `SEGUNDA (REMATE): ${capTam} ${colTam}`; }
+
+                add(v, tipoRealTam, descTam, qTam, pTam, qTam*pTam, capTam, colTam); 
+                if(afectarStockTam) actualizarStockGlobal('VENTA_TAMBO', capTam, colTam, qTam, false); 
+            }
+
+            // Producción y Gastos (Intactos)
             const tP = document.getElementById('tipoProdFabricado').value, cP = document.getElementById('capProdFabricado').value, coP = document.getElementById('colProdFabricado').value;
             const qN = parseFloat(document.getElementById('qProdNormal').value)||0; if(qN > 0) { add(prod, 'PROD_NORMAL', `NORMAL: ${tP} ${cP} ${coP}`, qN, 0, 0, cP, coP); actualizarStockGlobal(`PROD_NORMAL_${tP}`, cP, coP, qN, false); }
             const qE = parseFloat(document.getElementById('qProdExtra').value)||0; if(qE > 0) { let tE = tP==='TINACO'?'PROD_EXTRA_TINACO':'PROD_EXTRA_TAMBO'; add(prod, tE, `EXTRA: ${tP} ${cP} ${coP}`, qE, 0, 0, cP, coP); actualizarStockGlobal(tE, cP, coP, qE, false); }
             const g = parseFloat(document.getElementById('montoGasto').value)||0; if(g > 0) add(v, 'GASTO', document.getElementById('descGasto').value.toUpperCase(), 1, g, g, null, null);
+            
             localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
             ['qTinaco', 'pTinaco', 'qTambo', 'pTambo', 'qProdNormal', 'qProdExtra', 'montoGasto', 'descGasto'].forEach(id => document.getElementById(id).value = '');
             alert('¡Guardado en Teléfono y Google Sheets!');
@@ -620,46 +677,62 @@
         }
 
         function borrarRegistro(id) {
-            if(confirm("¿Borrar este movimiento? Se devolverá material al stock.")) {
+            if(confirm("¿Borrar este movimiento? Se devolverá material al stock (si aplica).")) {
                 let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
                 let r = db.find(x => x.id === id);
-                if(r && (r.capacidad || r.tipo === 'COMPRA')) actualizarStockGlobal(r.tipo, r.capacidad, r.colorUI, r.cantidad, true);
+                // Evitamos devolver stock si se borra un "COBRO" (porque nunca descontó)
+                let esCobro = r && r.tipo && r.tipo.includes('_COBRO');
+                if(r && (r.capacidad || r.tipo === 'COMPRA') && !esCobro) {
+                    let tipoBase = r.tipo.replace('_COBRO', ''); 
+                    actualizarStockGlobal(tipoBase, r.capacidad, r.colorUI, r.cantidad, true);
+                }
                 db = db.filter(x => x.id !== id); localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
                 cargarBD(); verStockActual();
             }
         }
         function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        // FUNCION PARA LEER EXCEL (CSV)
+        // --- EL NUEVO IMPORTADOR CSV INTELIGENTE ---
         function importarCSV() {
             const input = document.getElementById('archivoCSV');
             const file = input.files[0];
-            if (!file) return alert("⚠️ Primero selecciona un archivo .csv de tu computadora o celular.");
+            if (!file) return alert("⚠️ Selecciona un archivo .csv primero.");
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 const texto = e.target.result;
-                const lineas = texto.split('\n'); // Separar por filas
+                const lineas = texto.split('\n');
                 let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
                 let contador = 0;
 
-                // Empezamos en la línea 1 para saltarnos los encabezados del Excel
                 for (let i = 1; i < lineas.length; i++) {
-                    if (lineas[i].trim() === '') continue; // Ignorar filas vacías
-
-                    // Separar por comas (formato CSV)
+                    if (lineas[i].trim() === '') continue;
                     let cols = lineas[i].split(',');
 
                     if (cols.length >= 7) {
                         let fechaStr = cols[0].trim();
-                        // Calcula la semana automáticamente basándose en la fecha del Excel
-                        let sem = getNumeroSemana(new Date(fechaStr + "T00:00:00")); 
+                        // 1. Traductor de fechas automático para Excel
+                        if (fechaStr.includes('/')) {
+                            let partes = fechaStr.split('/'); 
+                            let dia = partes[0].padStart(2, '0');
+                            let mes = partes[1].padStart(2, '0');
+                            let anio = partes[2];
+                            if (anio.length === 2) anio = "20" + anio; 
+                            fechaStr = `${anio}-${mes}-${dia}`;
+                        }
                         
+                        let sem = getNumeroSemana(new Date(fechaStr + "T00:00:00")); 
                         let tipoMov = cols[2].trim().toUpperCase();
                         let conceptoStr = cols[3].trim().toUpperCase();
-                        let cant = parseFloat(cols[4]) || 0;
                         
-                        // Intentar deducir la capacidad y el color para el inventario
+                        // 2. Autodetector de Tipo si viene vacío
+                        if (tipoMov === '') {
+                            if (conceptoStr.includes('TINACO')) tipoMov = 'VENTA_TINACO';
+                            else if (conceptoStr.includes('TAMBO') || conceptoStr.includes('235LT')) tipoMov = 'VENTA_TAMBO';
+                            else tipoMov = 'VENTA_TINACO'; 
+                        }
+
+                        let cant = parseFloat(cols[4]) || 0;
                         let cap = null; let col = null;
                         if(conceptoStr.includes('1200LT')) cap = '1200LT';
                         else if(conceptoStr.includes('1100LT')) cap = '1100LT';
@@ -670,7 +743,7 @@
                         coloresBase.forEach(c => { if(conceptoStr.includes(c)) col = c; });
 
                         const reg = {
-                            id: Date.now() + i, // ID único
+                            id: Date.now() + i, 
                             fecha: fechaStr,
                             semana: sem,
                             vendedor: cols[1].trim().toUpperCase(),
@@ -684,23 +757,15 @@
                         };
 
                         db.push(reg);
-                        enviarNube(reg); // Opcional: mandarlo también al Google Sheets si está activo
-                        
-                        // Actualiza el inventario en automático con los datos del Excel
-                        if(cap || tipoMov === 'COMPRA') {
-                            actualizarStockGlobal(tipoMov, cap, col || 'BEIGE', cant, false);
-                        }
-                        
+                        enviarNube(reg); 
+                        if(cap || tipoMov === 'COMPRA') { actualizarStockGlobal(tipoMov, cap, col || 'BEIGE', cant, false); }
                         contador++;
                     }
                 }
-
-                // Guardar la nueva base de datos y recargar
                 localStorage.setItem('plastinova_bd_v2', JSON.stringify(db));
-                cargarBD();
-                verStockActual();
+                cargarBD(); verStockActual();
                 alert(`✅ ¡Listo! Se subieron ${contador} movimientos a la aplicación con éxito.`);
-                input.value = ""; // Limpiar el botón
+                input.value = ""; 
             };
             reader.readAsText(file);
         }
@@ -722,6 +787,7 @@
                         if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0, tinacos: 0, tambos: 0 };
                         v_ventas[r.vendedor].totalDinero += r.total; 
                         let cV = parseFloat(r.cantidad) || 0;
+                        // Evitamos dobleteo de gráfica física (El cobro solo suma dinero, no piezas visuales repetidas)
                         if(r.tipo === 'VENTA_TINACO') v_ventas[r.vendedor].tinacos += cV;
                         if(r.tipo === 'VENTA_TAMBO') v_ventas[r.vendedor].tambos += cV;
                         if(v_ventas[r.vendedor].totalDinero > maxV) maxV = v_ventas[r.vendedor].totalDinero; 
@@ -798,11 +864,14 @@
             let sumQTin = 0, sumPTin = 0, sumDTin = 0; 
             let sumQTam = 0, sumPTam = 0, sumDTam = 0; 
             
-            // Contadores separados por tipo de producto extra
             let sumQExtTin = 0, sumQExtTam = 0;
             let sumQExtTinPedro = 0, sumQExtTamPedro = 0;
             let sumGastos = 0; 
             
+            // Filtro para comisiones justas (no pagar por garantías ni entregas de consignación a $0)
+            let sumComisionTinacos = 0;
+            let sumComisionTambos = 0;
+
             let hizoTambosExtra = false, hizoTinacosExtra = false;
             let hizoTambosExtraPedro = false, hizoTinacosExtraPedro = false;
             let countGastos = 0; let totalVentasImpresas = 0;
@@ -815,14 +884,21 @@
 
                 const fila = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
                 
-                if(r.tipo === 'VENTA_TINACO' && mostrarTinacos) { tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; }
-                if(r.tipo === 'VENTA_TAMBO' && mostrarTambos) { tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; }
-                
-                // --- AQUI ESTA EL CANDADO INTELIGENTE A PRUEBA DE ERRORES ---
-                if((r.tipo || '').includes('PROD_EXTRA')) { 
-                    // Si el concepto dice TAMBO o 235LT, automáticamente lo forzamos a ser Tambo.
-                    let esTambo = r.tipo === 'PROD_EXTRA_TAMBO' || (r.concepto || '').includes('TAMBO') || (r.concepto || '').includes('235LT');
+                // Si costó $0 y es Garantía o Consignación de salida, le quitamos la comisión a la venta
+                const noPagaComision = precioNum === 0 && ((r.concepto || '').includes('GARANTÍA') || (r.concepto || '').includes('ENTREGA CONSIGNACIÓN'));
 
+                if((r.tipo === 'VENTA_TINACO' || r.tipo === 'VENTA_TINACO_COBRO') && mostrarTinacos) { 
+                    tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; 
+                    if(!noPagaComision) sumComisionTinacos += (cantNum * 35);
+                }
+                if((r.tipo === 'VENTA_TAMBO' || r.tipo === 'VENTA_TAMBO_COBRO') && mostrarTambos) { 
+                    tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; 
+                    if(!noPagaComision) sumComisionTambos += (cantNum * 10);
+                }
+                
+                // Candado inteligente Pedro/Fernando
+                if((r.tipo || '').includes('PROD_EXTRA')) { 
+                    let esTambo = r.tipo === 'PROD_EXTRA_TAMBO' || (r.concepto || '').includes('TAMBO') || (r.concepto || '').includes('235LT');
                     if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { 
                         if (esTambo) { sumQExtTamPedro += cantNum; hizoTambosExtraPedro = true; }
                         else { sumQExtTinPedro += cantNum; hizoTinacosExtraPedro = true; }
@@ -839,26 +915,19 @@
             
             const granTotal = sumDTin + sumDTam; 
             
-            // Matemáticas corregidas ($35 Tinacos, $10 Tambos)
             const comExtPedro = (sumQExtTinPedro * 35) + (sumQExtTamPedro * 10); 
             const comExtVendedor = (sumQExtTin * 35) + (sumQExtTam * 10); 
-            const comTin = sumQTin * 35; 
-            const comTam = sumQTam * 10; 
             
-            const totComs = comExtPedro + comExtVendedor + comTin + comTam; 
+            const totComs = comExtPedro + comExtVendedor + sumComisionTinacos + sumComisionTambos; 
             const subTotal = granTotal - sumGastos; 
             const totalEfe = subTotal - totComs;
             
-            // LA CAJA DE CAMBIOS INTELIGENTE RECALIBRADA
             const pdfContainer = document.getElementById('pdf-report'); 
             pdfContainer.classList.remove('compact-mode', 'super-compact-mode');
             
             let totalFilas = totalVentasImpresas + (countGastos > 4 ? countGastos : 4);
-            if (totalFilas >= 25) { 
-                pdfContainer.classList.add('super-compact-mode'); 
-            } else if (totalFilas >= 16) { 
-                pdfContainer.classList.add('compact-mode'); 
-            }
+            if (totalFilas >= 25) { pdfContainer.classList.add('super-compact-mode'); } 
+            else if (totalFilas >= 16) { pdfContainer.classList.add('compact-mode'); }
             
             document.getElementById('r-vendedor').innerText = vendedor; 
             document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`; 
@@ -882,7 +951,6 @@
             
             document.getElementById('row-pedro').style.display = (vendedor === 'FERNANDO') ? 'table-row' : 'none'; 
             
-            // Etiqueta inteligente y totales para los extras de Pedro
             let textoExtrasPedro = "TINACOS EXTRA";
             if (hizoTambosExtraPedro && !hizoTinacosExtraPedro) textoExtrasPedro = "TAMBOS EXTRA";
             else if (hizoTambosExtraPedro && hizoTinacosExtraPedro) textoExtrasPedro = "TIN / TAM EXTRA";
@@ -890,7 +958,6 @@
             document.getElementById('r-qProdExtraTinPedro').innerText = sumQExtTinPedro + sumQExtTamPedro; 
             document.getElementById('r-comExtraTinPedro').innerText = '$' + formato(comExtPedro);
             
-            // Etiqueta inteligente y totales para los extras del vendedor principal
             let textoExtras = "TINACOS EXTRAS";
             if (hizoTambosExtra && !hizoTinacosExtra) textoExtras = "TAMBOS EXTRAS";
             else if (hizoTambosExtra && hizoTinacosExtra) textoExtras = "TIN / TAM EXTRAS";
@@ -899,10 +966,11 @@
             document.getElementById('r-qProdExtraTin').innerText = sumQExtTin + sumQExtTam; 
             document.getElementById('r-comExtraTin').innerText = '$' + formato(comExtVendedor);
             
-            document.getElementById('r-sumQTinacosCom').innerText = sumQTin.toFixed(2); 
-            document.getElementById('r-comTinacos').innerText = '$' + formato(comTin); 
-            document.getElementById('r-sumQTambosCom').innerText = sumQTam.toFixed(2); 
-            document.getElementById('r-comTambos').innerText = '$' + formato(comTam); 
+            // Ya no usamos el total crudo para no regalar dinero por garantías
+            document.getElementById('r-sumQTinacosCom').innerText = (sumComisionTinacos / 35).toFixed(2); 
+            document.getElementById('r-comTinacos').innerText = '$' + formato(sumComisionTinacos); 
+            document.getElementById('r-sumQTambosCom').innerText = (sumComisionTambos / 10).toFixed(2); 
+            document.getElementById('r-comTambos').innerText = '$' + formato(sumComisionTambos); 
             document.getElementById('r-totComisiones').innerText = '$' + formato(totComs);
             
             document.getElementById('r-granTotalVentas').innerText = '$' + formato(granTotal); 
