@@ -24,7 +24,7 @@
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; background-color: #f9f9f9; }
         .input-precio { border: 2px solid #4CAF50 !important; font-weight: bold; color: #2E7D32; background-color: #e8f5e9 !important; }
         
-        .btn { background-color: #1565C0; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn { background-color: #1565C0; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
         .btn-green { background-color: #2E7D32; }
         .btn-orange { background-color: #EF6C00; }
         .btn-small { padding: 8px 12px; font-size: 12px; border-radius: 5px; width: auto; display: inline-block;}
@@ -56,13 +56,12 @@
             /* FORMATO DE IMPRESIÓN UNIVERSAL (Cualquier tabla) */
             body.print-dinamico #print-dinamico { display: block !important; width: 100%; font-family: 'Arial', sans-serif; }
             .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 10px; margin-bottom: 15px; }
-            .print-header-global img { height: 60px; }
             .print-header-info { text-align: right; font-size: 11px; color: #333; line-height: 1.4; }
             .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase; }
             #print-dyn-content table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: center; }
             #print-dyn-content th { background-color: #2E7D32 !important; color: white !important; padding: 5px; border: 1px solid #000; -webkit-print-color-adjust: exact;}
             #print-dyn-content td { padding: 4px; border: 1px solid #000; }
-            #print-dyn-content th:last-child, #print-dyn-content td:last-child { display: none; } /* Ocultar columna borrar */
+            #print-dyn-content th:last-child, #print-dyn-content td:last-child { display: none; } /* Ocultar columna acciones */
 
             /* FORMATO CORTES VENDEDOR */
             body.print-corte #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
@@ -81,31 +80,17 @@
             #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
             #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
             
-            /* MODO COMPACTO */
+            /* MODO COMPACTO CORTE */
             #pdf-report.compact-mode { font-size: 10px; }
-            #pdf-report.compact-mode .header-pdf { font-size: 14px; margin-bottom: 3px; }
-            #pdf-report.compact-mode .subtitle-pdf { font-size: 12px; margin-top: 5px; margin-bottom: 3px; }
             #pdf-report.compact-mode .pdf-table th { font-size: 9px; padding: 3px; }
             #pdf-report.compact-mode .pdf-table td { font-size: 10px; padding: 3px; line-height: 1.1; }
-            #pdf-report.compact-mode .bottom-container { margin-top: 10px; gap: 15px; }
-            #pdf-report.compact-mode .tabla-extras { font-size: 10px; }
-            #pdf-report.compact-mode .tabla-extras td { padding: 3px; }
-            #pdf-report.compact-mode .tabla-resumen { font-size: 11px; }
-            #pdf-report.compact-mode .tabla-resumen td { padding: 3px; }
-            #pdf-report.compact-mode .tabla-gastos { font-size: 10px; margin-bottom: 3px;}
             #pdf-report.compact-mode .tabla-gastos td { padding: 2px 3px; height: 13px;}
-            #pdf-report.compact-mode .firma { margin-top: 15px; }
 
-            /* MODO SUPER COMPACTO */
+            /* MODO SUPER COMPACTO CORTE */
             #pdf-report.super-compact-mode { font-size: 9px; }
-            #pdf-report.super-compact-mode .header-pdf { font-size: 12px; margin-bottom: 2px; }
-            #pdf-report.super-compact-mode .subtitle-pdf { font-size: 11px; margin-top: 3px; margin-bottom: 2px; }
             #pdf-report.super-compact-mode .pdf-table th { font-size: 8px; padding: 2px; }
             #pdf-report.super-compact-mode .pdf-table td { font-size: 9px; padding: 2px; line-height: 1; }
-            #pdf-report.super-compact-mode .bottom-container { margin-top: 5px; gap: 10px; }
-            #pdf-report.super-compact-mode .tabla-extras, #pdf-report.super-compact-mode .tabla-resumen, #pdf-report.super-compact-mode .tabla-gastos { font-size: 9px; }
-            #pdf-report.super-compact-mode .tabla-extras td, #pdf-report.super-compact-mode .tabla-resumen td, #pdf-report.super-compact-mode .tabla-gastos td { padding: 2px; }
-            #pdf-report.super-compact-mode .firma { margin-top: 10px; }
+            #pdf-report.super-compact-mode .tabla-gastos td { padding: 2px; }
 
             body.print-inv #pdf-report { display: none !important; }
             body.print-inv #pdf-inventario { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
@@ -274,12 +259,12 @@
                     <h3>📊 Filtros del Tablero</h3>
                     <div class="row">
                         <div class="form-group"><label>Periodo</label><select id="filtroTiempo" onchange="renderGraficas()"><option value="semana">Esta Semana Corriente</option><option value="mes">Este Mes</option><option value="anio">Este Año</option></select></div>
-                        <div class="form-group"><label>Vendedor</label><select id="filtroVendedorGrafica" onchange="renderGraficas()"><option value="TODOS">TODOS</option><option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option></select></div>
+                        <div class="form-group"><label>Vendedor/Productor</label><select id="filtroVendedorGrafica" onchange="renderGraficas()"><option value="TODOS">TODOS</option><option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option></select></div>
                     </div>
-                    <button class="btn" style="margin-top: 10px;" onclick="imprimirReporteVentasVSProduccion()">🖨️ Generar Reporte Ventas vs Producción</button>
+                    <button class="btn" style="margin-top: 10px; background-color: #EF6C00; color: white;" onclick="imprimirReportePro()">🖨️ Generar Reporte Pro (Ventas VS Producción DETALLADO)</button>
                 </div>
-                <div class="card"><h3 style="color: #1565C0;">💰 Ventas Totales</h3><div class="grafica-container" id="graficaVentas"></div></div>
-                <div class="card"><h3 style="color: #EF6C00;">🏭 Producción Total</h3><div class="grafica-container" id="graficaProd"></div></div>
+                <div class="card"><h3 style="color: #1565C0;">💰 Ingreso Ventas ($)</h3><div class="grafica-container" id="graficaVentas"></div></div>
+                <div class="card"><h3 style="color: #EF6C00;">🏭 Producción Total (PZAS)</h3><div class="grafica-container" id="graficaProd"></div></div>
             </div>
 
             <div id="tab-cortes" class="tab-content">
@@ -311,7 +296,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table class="db-table" id="tablaStockActual">
-                            <thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th></tr></thead>
+                            <thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th><th>Acciones (Ajuste Manual)</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -464,6 +449,10 @@
     </div>
 
     <script>
+        // --- LOGO PLASTINOVA BASE64 ---
+        // Pega aquí la cadena Base64 larga de tu imagen image_2.png
+        const LOGO_PLASTINOVA_BASE64 = ""; 
+
         // CONFIGURACIÓN DE NUBE
         const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbzRpyFi3tp65WTEye3zV5q8iPPDPm8ZRmn-cX-Wqc9eQpYS1NGtjItSBy5Y6KEgR3iG/exec";
 
@@ -686,18 +675,50 @@
             let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
             let tbody = document.querySelector('#tablaStockActual tbody'); tbody.innerHTML = '';
             let sArray = Object.keys(stock).map(k => ({ m: k, q: stock[k] })).sort((a,b) => a.m.localeCompare(b.m));
-            if (!sArray.length) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:10px;">Stock en 0.</td></tr>'; }
+            if (!sArray.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:10px;">Stock en 0.</td></tr>'; }
             else {
                 sArray.forEach(i => {
                     let valorNum = parseFloat(i.q);
                     let esKg = i.m.includes('ROTO') || i.m.includes('MERMA');
                     let unidadStr = esKg ? 'KG' : 'PZAS';
                     let valorFmt = esKg ? valorNum.toFixed(2) : Math.round(valorNum);
-                    tbody.innerHTML += `<tr><td style="font-weight:bold;">${i.m}</td><td style="color:${valorNum < 0 ? '#d32f2f' : 'black'}; font-weight:bold;">${valorFmt} <span class="lbl-unidad">${unidadStr}</span></td></tr>`;
+                    
+                    // Colores para visualización rápida
+                    let colorVal = valorNum < 0 ? '#d32f2f' : (valorNum < 10 ? '#EF6C00' : 'black');
+                    
+                    tbody.innerHTML += `<tr>
+                        <td style="font-weight:bold;">${i.m}</td>
+                        <td style="color:${colorVal}; font-weight:bold;">${valorFmt} <span class="lbl-unidad">${unidadStr}</span></td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-small" style="background:#1976D2; padding: 4px 8px; margin-right:4px;" onclick="promptEditarStock('${i.m}', ${valorNum}, '${unidadStr}')">✏️</button>
+                            <button class="btn btn-small" style="background:#d32f2f; padding: 4px 8px;" onclick="promptBorrarStock('${i.m}')">🗑️</button>
+                        </td>
+                    </tr>`;
                 });
             }
             // Actualizar también el radar de ruta
             verStockRuta();
+        }
+        
+        // FUNCIONES DE AJUSTE MANUAL DE INVENTARIO
+        function promptEditarStock(material, actualVal, unidad) {
+            let newValStr = prompt(`✏️ AJUSTE MANUAL\nEl stock actual de '${material}' es ${actualVal} ${unidad}.\nIngrese la NUEVA cantidad exacta que hay físicamente:`, actualVal);
+            if (newValStr !== null && !isNaN(parseFloat(newValStr))) {
+                let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
+                stock[material] = parseFloat(newValStr);
+                localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
+                verStockActual();
+                alert('✅ ¡Stock ajustado manualmente!');
+            }
+        }
+        function promptBorrarStock(material) {
+            if (confirm(`🗑️ ¿ESTÁS SEGURO?\nEsto borrará permanentemente '${material}' de la vista de stock.\n(Si vuelves a capturar movimientos de este material, reaparecerá con saldo 0).`)) {
+                let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
+                delete stock[material];
+                localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
+                verStockActual();
+                alert(`✅ Se ha borrado '${material}' del inventario.`);
+            }
         }
 
         function resetearStock() { if(confirm("🚨 ¿Limpiar Almacén a CEROS?")) { localStorage.removeItem('plastinova_stock_v1'); verStockActual(); } }
@@ -810,7 +831,7 @@
                         table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px;}
                         th { background-color: #2E7D32; color: white; padding: 6px; border: 1px solid #000; -webkit-print-color-adjust: exact;}
                         td { padding: 5px; border: 1px solid #000; }
-                        th:last-child, td:last-child { display: ${tablaId === 'tablaBD' ? 'none' : 'table-cell'}; }
+                        th:last-child, td:last-child { display: ${ (tablaId === 'tablaBD' || tablaId === 'tablaStockActual') ? 'none' : 'table-cell'}; }
                         .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 10px; margin-bottom: 15px; }
                         .print-header-info { text-align: right; font-size: 12px; }
                         .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;}
@@ -818,7 +839,7 @@
                 </head>
                 <body>
                     <div class="print-header-global">
-                        <div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO PLASTINOVA]</b></div>
+                        ${LOGO_PLASTINOVA_BASE64 ? `<img src="${LOGO_PLASTINOVA_BASE64}" alt="Logo">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO PLASTINOVA]</b></div>`}
                         <div class="print-header-info">
                             <h2>${titulo}</h2>
                             Generado: <b>${fStr}</b><br>
@@ -896,7 +917,7 @@
             reader.readAsText(file);
         }
 
-        // GRÁFICAS REPOTENCIADAS
+        // GRÁFICAS DEL TABLERO (Visuales)
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
             const fTiempo = document.getElementById('filtroTiempo').value; 
@@ -910,48 +931,25 @@
                 
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
                     if(r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) { 
-                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0, tinacos: 0, tambos: 0 };
+                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0 };
                         v_ventas[r.vendedor].totalDinero += parseFloat(r.total) || 0; 
-                        let cV = parseFloat(r.cantidad) || 0;
-                        if(r.tipo.includes('TINACO')) v_ventas[r.vendedor].tinacos += cV;
-                        if(r.tipo.includes('TAMBO')) v_ventas[r.vendedor].tambos += cV;
                         if(v_ventas[r.vendedor].totalDinero > maxV) maxV = v_ventas[r.vendedor].totalDinero; 
                     } 
                     if(r.tipo.includes('PROD')) { 
-                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0, tinacos: 0, tambos: 0 };
+                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0 };
                         let c = parseFloat(r.cantidad) || 0;
                         v_prod[r.vendedor].total += c;
-                        if((r.concepto||'').includes('TINACO')) v_prod[r.vendedor].tinacos += c;
-                        if((r.concepto||'').includes('TAMBO')) v_prod[r.vendedor].tambos += c;
                         if(v_prod[r.vendedor].total > maxP) maxP = v_prod[r.vendedor].total; 
                     } 
                 } 
             });
             
-            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`
-                <div class="grafica-col" style="flex: 0 0 60px;">
-                    <div style="font-size:8px; text-align:center; font-weight:bold; margin-bottom:3px; line-height:1.2;">
-                        ${v_ventas[v].tinacos > 0 ? `<span style="color:#1565C0;">Tin: ${v_ventas[v].tinacos}</span><br>` : ''}
-                        ${v_ventas[v].tambos > 0 ? `<span style="color:#EF6C00;">Tam: ${v_ventas[v].tambos}</span>` : ''}
-                    </div>
-                    <div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v].totalDinero/maxV)*70:0}%;">$${formato(v_ventas[v].totalDinero)}</div>
-                    <div class="grafica-label">${v}</div>
-                </div>
-            `).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
-            
-            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`
-                <div class="grafica-col" style="flex: 0 0 60px;">
-                    <div style="font-size:8px; text-align:center; font-weight:bold; margin-bottom:3px; line-height:1.2;">
-                        ${v_prod[p].tinacos > 0 ? `<span style="color:#1565C0;">Tin: ${v_prod[p].tinacos}</span><br>` : ''}
-                        ${v_prod[p].tambos > 0 ? `<span style="color:#EF6C00;">Tam: ${v_prod[p].tambos}</span>` : ''}
-                    </div>
-                    <div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p].total/maxP)*70:0}%;">${v_prod[p].total}</div>
-                    <div class="grafica-label">${p}</div>
-                </div>
-            `).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
+            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col" style="flex: 0 0 60px;"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v].totalDinero/maxV)*100:0}%;">$${formato(v_ventas[v].totalDinero)}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
+            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col" style="flex: 0 0 60px;"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p].total/maxP)*100:0}%;">${v_prod[p].total}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
 
-        function imprimirReporteVentasVSProduccion() {
+        // --- NUEVO REPORTE PRO (Ventas VS Producción DETALLADO) ---
+        function imprimirReportePro() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
             const fTiempo = document.getElementById('filtroTiempo').value; 
             const fVend = document.getElementById('filtroVendedorGrafica').value; 
@@ -959,78 +957,94 @@
             const textoTiempo = selTiempo.options[selTiempo.selectedIndex].text;
             
             let d_sem = getNumeroSemana(new Date()); let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); 
-            let v_ventas = {}; let v_prod = {};
-            let totalVentasDinero = 0; let totalVentasPiezas = 0; let totalProdPiezas = 0;
+            
+            let r_ventas = {}; // Por vendedor: { dinero, tinacos, tambos }
+            let r_prod = {};   // Por productor: { tinacos, tambos, macetas }
+            let global = { tinVendidos: 0, tamVendidos: 0, tinProd: 0, tamProd: 0, macProd: 0, dinero: 0 };
 
             db.forEach(r => { 
                 let rD = new Date(r.fecha + "T00:00:00"); 
                 let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
                 
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
+                    const cant = parseFloat(r.cantidad) || 0;
+                    const tot = parseFloat(r.total) || 0;
+                    const conc = r.concepto || '';
+                    
+                    // Lógica de Ventas / Traspasos
                     if(r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) { 
-                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { dinero: 0, piezas: 0 };
-                        v_ventas[r.vendedor].dinero += parseFloat(r.total) || 0; 
-                        let cV = parseFloat(r.cantidad) || 0;
-                        v_ventas[r.vendedor].piezas += cV;
-                        totalVentasDinero += parseFloat(r.total) || 0;
-                        totalVentasPiezas += cV;
+                        if(!r_ventas[r.vendedor]) r_ventas[r.vendedor] = { dinero: 0, tinacos: 0, tambos: 0 };
+                        r_ventas[r.vendedor].dinero += tot;
+                        global.dinero += tot;
+
+                        if(conc.includes('TINACO')) { r_ventas[r.vendedor].tinacos += cant; global.tinVendidos += cant; }
+                        else if(conc.includes('TAMBO') || conc.includes('235LT')) { r_ventas[r.vendedor].tambos += cant; global.tamVendidos += cant; }
                     } 
+                    
+                    // Lógica de Producción
                     if(r.tipo.includes('PROD')) { 
-                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { piezas: 0 };
-                        let c = parseFloat(r.cantidad) || 0;
-                        v_prod[r.vendedor].piezas += c;
-                        totalProdPiezas += c;
+                        if(!r_prod[r.vendedor]) r_prod[r.vendedor] = { tinacos: 0, tambos: 0, macetas: 0 };
+
+                        if(conc.includes('TINACO')) { r_prod[r.vendedor].tinacos += cant; global.tinProd += cant; }
+                        else if(conc.includes('TAMBO') || conc.includes('235LT')) { r_prod[r.vendedor].tambos += cant; global.tamProd += cant; }
+                        else if(conc.includes('MACETA')) { r_prod[r.vendedor].macetas += cant; global.macProd += cant; }
                     } 
                 } 
             });
 
-            let htmlTabla = `<table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;">
-                <thead><tr>
-                    <th style="background:#2E7D32; color:white; padding:8px; border:1px solid #000;">VENDEDOR / PRODUCTOR</th>
-                    <th style="background:#1565C0; color:white; padding:8px; border:1px solid #000;">VENTAS / TRASPASOS (PZAS)</th>
-                    <th style="background:#1565C0; color:white; padding:8px; border:1px solid #000;">INGRESO ($)</th>
-                    <th style="background:#EF6C00; color:white; padding:8px; border:1px solid #000;">PRODUCCIÓN (PZAS)</th>
-                </tr></thead><tbody>`;
-            
-            let todosLosEmpleados = new Set([...Object.keys(v_ventas), ...Object.keys(v_prod)]);
-            if(todosLosEmpleados.size === 0) {
-                htmlTabla += `<tr><td colspan="4" style="padding:10px; border:1px solid #000;">No hay movimientos en este periodo.</td></tr>`;
-            } else {
-                todosLosEmpleados.forEach(emp => {
-                    let vPzas = v_ventas[emp] ? v_ventas[emp].piezas : 0;
-                    let vDin = v_ventas[emp] ? v_ventas[emp].dinero : 0;
-                    let pPzas = v_prod[emp] ? v_prod[emp].piezas : 0;
-                    htmlTabla += `<tr>
-                        <td style="padding:6px; border:1px solid #000; font-weight:bold; text-align:left;">${emp}</td>
-                        <td style="padding:6px; border:1px solid #000;">${vPzas}</td>
-                        <td style="padding:6px; border:1px solid #000;">$${formato(vDin)}</td>
-                        <td style="padding:6px; border:1px solid #000;">${pPzas}</td>
-                    </tr>`;
-                });
-            }
-            
-            htmlTabla += `</tbody><tfoot><tr>
-                <td style="padding:8px; border:1px solid #000; font-weight:bold; color:red; text-align:right;">TOTAL GLOBAL</td>
-                <td style="padding:8px; border:1px solid #000; font-weight:bold; color:red;">${totalVentasPiezas}</td>
-                <td style="padding:8px; border:1px solid #000; font-weight:bold; color:red;">$${formato(totalVentasDinero)}</td>
-                <td style="padding:8px; border:1px solid #000; font-weight:bold; color:red;">${totalProdPiezas}</td>
-            </tr></tfoot></table>`;
+            // --- CONSTRUIR TABLAS HTML ---
+            const estH = 'style="background:#ddd; padding:6px; border:1px solid #000; font-size:10px; text-transform:uppercase;"';
+            const estD = 'style="padding:5px; border:1px solid #000;"';
 
+            // 1. Tabla de Ventas
+            let htmlVentas = `<h3 style="color:#1565C0; text-align:center; text-transform:uppercase; margin-bottom:5px;">Tabla A: Ventas por Vendedor</h3>
+                <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; margin-bottom:15px;">
+                <thead><tr><th ${estH}>Vendedor</th><th ${estH}>Tinacos (Pzas)</th><th ${estH}>Tambos (Pzas)</th><th ${estH}>Ingreso Total ($)</th></tr></thead><tbody>`;
+            
+            if(Object.keys(r_ventas).length === 0) htmlVentas += `<tr><td colspan="4" ${estD}>Sin ventas en este periodo.</td></tr>`;
+            else {
+                for(let v in r_ventas) { htmlVentas += `<tr><td ${estD}><b>${v}</b></td><td ${estD}>${r_ventas[v].tinacos}</td><td ${estD}>${r_ventas[v].tambos}</td><td ${estD}>$${formato(r_ventas[v].dinero)}</td></tr>`; }
+            }
+            htmlVentas += `</tbody></table>`;
+
+            // 2. Tabla de Producción
+            let htmlProd = `<h3 style="color:#EF6C00; text-align:center; text-transform:uppercase; margin-bottom:5px;">Tabla B: Producción por Productor</h3>
+                <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:center; margin-bottom:15px;">
+                <thead><tr><th ${estH}>Productor</th><th ${estH}>Tinacos (Pzas)</th><th ${estH}>Tambos (Pzas)</th><th ${estH}>Macetas (Pzas)</th></tr></thead><tbody>`;
+            
+            if(Object.keys(r_prod).length === 0) htmlProd += `<tr><td colspan="4" ${estD}>Sin producción en este periodo.</td></tr>`;
+            else {
+                for(let p in r_prod) { htmlProd += `<tr><td ${estD}><b>${p}</b></td><td ${estD}>${r_prod[p].tinacos}</td><td ${estD}>${r_prod[p].tambos}</td><td ${estD}>${r_prod[p].macetas}</td></tr>`; }
+            }
+            htmlProd += `</tbody></table>`;
+
+            // 3. Tabla Resumen Global
+            let htmlGlobal = `<div style="border: 2px solid #2E7D32; padding: 10px; border-radius: 5px; background: #e8f5e9;">
+                <h3 style="color:#2E7D32; text-align:center; text-transform:uppercase; margin-top:0;">Resumen Global de la Fábrica</h3>
+                <div style="display:flex; justify-content:space-around; font-size:12px; font-weight:bold;">
+                    <div>Tinacos Sold vs Prod: <span style="color:red;">${global.tinVendidos}</span> vs <span style="color:blue;">${global.tinProd}</span> PZAS</div>
+                    <div>Tambos Sold vs Prod: <span style="color:red;">${global.tamVendidos}</span> vs <span style="color:blue;">${global.tamProd}</span> PZAS</div>
+                    <div>Total Ingreso: <span style="color:red; font-size:14px;">$${formato(global.dinero)}</span></div>
+                </div>
+            </div>`;
+
+            // --- IMPRIMIR ---
             let d = new Date();
-            let fStr = d.toLocaleDateString('es-MX') + ' ' + d.toLocaleTimeString('es-MX');
             let printWindow = window.open('', '_blank');
             printWindow.document.write(`
-                <html><head><title>Reporte Ventas vs Producción</title></head>
+                <html><head><title>Reporte Pro - Ventas VS Producción Detallado</title></head>
                 <body style="font-family: Arial, sans-serif; padding: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 10px; margin-bottom: 15px;">
-                        <div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO PLASTINOVA]</b></div>
-                        <div style="text-align: right; font-size: 12px;">
-                            <h2 style="margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;">REPORTE: VENTAS VS PRODUCCIÓN</h2>
+                        ${LOGO_PLASTINOVA_BASE64 ? `<img src="${LOGO_PLASTINOVA_BASE64}" style="height:60px;">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO]</b></div>`}
+                        <div style="text-align: right; font-size: 11px;">
+                            <h2 style="margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;">REPORTE: VENTAS VS PRODUCCIÓN (PRO)</h2>
                             Periodo: <b>${textoTiempo}</b> | Filtro: <b>${fVend}</b><br>
-                            Generado: <b>${fStr}</b>
+                            Generado: <b>${d.toLocaleDateString('es-MX')} ${d.toLocaleTimeString('es-MX')}</b>
                         </div>
                     </div>
-                    ${htmlTabla}
+                    ${htmlVentas}
+                    ${htmlProd}
+                    ${htmlGlobal}
                 </body></html>
             `);
             printWindow.document.close();
@@ -1038,6 +1052,7 @@
             setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
         }
         
+        // --- CORTES DE CAJA (Originales) ---
         function actualizarFechasCorte() {
             const v = document.getElementById('vendedorCorte').value; 
             let d = new Date(); let diaActual = d.getDay() === 0 ? 7 : d.getDay(); 
@@ -1090,10 +1105,12 @@
                 const fila = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
                 const noPagaComision = precioNum === 0 && ((r.concepto || '').includes('GARANTÍA') || (r.concepto || '').includes('ENTREGA CONSIGNACIÓN') || (r.concepto || '').includes('TRASPASO SUCURSAL'));
 
+                // Tinacos y Cobros de Sucursal (TINACOS)
                 if((r.tipo === 'VENTA_TINACO' || r.tipo === 'VENTA_TINACO_COBRO' || r.tipo === 'TRASPASO_TINACO' || r.tipo === 'TRASPASO_TINACO_COBRO') && mostrarTinacos) { 
                     tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; totalVentasImpresas++; 
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TINACO')) sumComisionTinacos += (cantNum * 35);
                 }
+                // Tambos y Cobros de Sucursal (TAMBOS)
                 if((r.tipo === 'VENTA_TAMBO' || r.tipo === 'VENTA_TAMBO_COBRO' || r.tipo === 'TRASPASO_TAMBO' || r.tipo === 'TRASPASO_TAMBO_COBRO') && mostrarTambos) { 
                     tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; totalVentasImpresas++; 
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TAMBO')) sumComisionTambos += (cantNum * 10);
