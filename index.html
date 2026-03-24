@@ -45,6 +45,7 @@
         .bar-ventas { background-color: #1565C0; }
         .bar-prod { background-color: #EF6C00; }
         .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
+        .info-arriba { font-size: 10px; font-weight: bold; text-align: center; margin-bottom: 4px; line-height: 1.2; }
 
         /* --- ESTILOS PDF Y DE IMPRESIÓN DINÁMICA --- */
         #pdf-report, #pdf-inventario, #print-dinamico, #pdf-fifo { display: none; }
@@ -361,8 +362,9 @@
                                     <option value="ROTOFOAM NEGRO AR">ROTOFOAM NEGRO AR</option><option value="ROTOFOAM BLANCO AR">ROTOFOAM BLANCO AR</option>
                                     <option value="ROTOLENE BEIGE">ROTOLENE BEIGE</option><option value="ROTOLENE NEGRO - BLACK">ROTOLENE NEGRO - BLACK</option>
                                     <option value="ROTOLENE AZUL #5">ROTOLENE AZUL #5</option><option value="ROTOLENE VERDE #15">ROTOLENE VERDE #15</option>
-                                    <option value="ROTOLENE BLANCO">ROTOLENE BLANCO</option><option value="ROTOLENE RETAZO/MERMA">ROTOLENE RETAZO/MERMA</option>
+                                    <option value="ROTOLENE BLANCO">ROTOLENE BLANCO</option><option value="RECICLADO / MERMA">RECICLADO / MERMA</option>
                                     <option value="ROTOLENE ROJO 14">ROTOLENE ROJO 14</option><option value="ROTOLENE NATURAL">ROTOLENE NATURAL</option>
+                                    <option value="ROTOLENE CAFÉ">ROTOLENE CAFÉ</option><option value="ROTOLENE NARANJA II">ROTOLENE NARANJA II</option>
                                 </optgroup>
                                 <optgroup label="ACCESORIOS (KITS)">
                                     <option value="KIT COMPLETO (PIEZAS)">KIT COMPLETO (PIEZAS)</option><option value="TAPA (PIEZAS)">TAPA (PIEZAS)</option>
@@ -487,11 +489,32 @@
             return m[tipo] || tipo; 
         }
 
+        // --- LISTA COMPLETA DE MERMAS GENERADA AUTOMÁTICAMENTE ---
         const LISTA_MATERIALES = {
-            "POLVOS": ["ROTOFOAM NEGRO AR", "ROTOFOAM BLANCO AR", "ROTOLENE BEIGE", "ROTOLENE NEGRO - BLACK", "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", "ROTOLENE BLANCO", "ROTOLENE RETAZO/MERMA", "ROTOLENE ROJO 14", "ROTOLENE NATURAL"],
-            "ACCESORIOS": ["KIT COMPLETO (PIEZAS)", "TAPA (PIEZAS)", "VALVULA (PIEZAS)", "JARRO DE AIRE (PIEZAS)", "BRIDA (PIEZAS)", "CAPUCHON (PIEZAS)", "FILTRO (PIEZAS)", "ETIQUETA (PIEZAS)"],
-            "TERMINADOS": ["TINACO 1100LT NEGRO", "TINACO 1100LT BEIGE", "TINACO 1200LT NEGRO", "TINACO 1200LT BEIGE", "TAMBO 235LT AZUL", "MACETA GRANDE NEGRO"]
+            "POLVOS": [
+                "ROTOFOAM NEGRO AR", "ROTOFOAM BLANCO AR", 
+                "ROTOLENE BEIGE", "ROTOLENE NEGRO - BLACK", 
+                "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", 
+                "ROTOLENE BLANCO", "RECICLADO / MERMA", 
+                "ROTOLENE ROJO 14", "ROTOLENE NATURAL", 
+                "ROTOLENE CAFÉ", "ROTOLENE NARANJA II"
+            ],
+            "ACCESORIOS": [
+                "KIT COMPLETO (PIEZAS)", "TAPA (PIEZAS)", 
+                "VALVULA (PIEZAS)", "JARRO DE AIRE (PIEZAS)", 
+                "BRIDA (PIEZAS)", "CAPUCHON (PIEZAS)", 
+                "FILTRO (PIEZAS)", "ETIQUETA (PIEZAS)"
+            ],
+            "TERMINADOS": [] 
         };
+
+        // Generar todas las combinaciones de terminados para mermas
+        const capsTin = ["1200LT", "1100LT", "750LT"];
+        const colsTin = ["BEIGE", "NEGRO", "AZUL", "ROJO", "VERDE", "NATURAL", "NARANJA", "CAFÉ", "BLANCO", "VERDE INDUSTRIAL"];
+        capsTin.forEach(cap => colsTin.forEach(col => LISTA_MATERIALES["TERMINADOS"].push(`TINACO ${cap} ${col}`)));
+        const colsTam = ["AZUL", "NEGRO", "BEIGE", "ROJO", "VERDE", "NATURAL", "NARANJA", "VERDE INDUSTRIAL", "CAFÉ", "BLANCO", "ROJO CON BLANCO", "VERDE CON BLANCO", "AZUL CON BLANCO", "TERRACOTA", "MENTA", "PISTACHE", "GRANITO BEIGE", "GRANITO", "DUVALIN", "UVA", "MELON", "OXFORD"];
+        colsTam.forEach(col => LISTA_MATERIALES["TERMINADOS"].push(`TAMBO 235LT ${col}`));
+        colsTam.forEach(col => { LISTA_MATERIALES["TERMINADOS"].push(`MACETA GRANDE ${col}`); LISTA_MATERIALES["TERMINADOS"].push(`MACETA CHICA ${col}`); });
 
         window.addEventListener('DOMContentLoaded', (event) => {
             const dateObj = new Date(); 
@@ -567,7 +590,7 @@
             let mult = esReversa ? -1 : 1; 
             
             if(tipo === 'COMPRA' || tipo === 'MERMA') {
-                let mod = tipo === 'MERMA' ? -1 : 1; // Merma resta, Compra suma
+                let mod = tipo === 'MERMA' ? -1 : 1; 
                 stock[color] = (stock[color] || 0) + (cant * mod * mult);
             } else { 
                 let receta = obtenerRecetaMateriales(tipo, capacidad, color); 
@@ -586,7 +609,7 @@
             localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
         }
 
-        // CIRUGÍA 4: CANDADO DE CONSIGNACIONES
+        // CANDADO DE CONSIGNACIONES
         function obtenerDeudaConsignacion(vendedor, productoName) {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             let deuda = 0;
@@ -607,12 +630,10 @@
                 db.push(reg); enviarNube(reg); 
             };
             
-            // --- LÓGICA TINACOS ---
             const tipoOpTin = document.getElementById('tipoPrecioTinaco').value;
             let qTin = parseFloat(document.getElementById('qTinaco').value)||0, pTin = parseFloat(document.getElementById('pTinaco').value)||0;
             const capTin = document.getElementById('capTinaco').value, colTin = document.getElementById('colTinaco').value;
             
-            // Verificación de Candado (Tinacos)
             if(qTin > 0 && tipoOpTin === 'consignacion_cobro') {
                 let deudaReal = obtenerDeudaConsignacion(v, `${capTin} ${colTin}`);
                 if(qTin > deudaReal) return alert(`🚨 ERROR (Candado Activo): Intentas cobrar ${qTin} Tinacos ${capTin} ${colTin}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes por pagar. Operación bloqueada.`);
@@ -631,12 +652,10 @@
                 actualizarStockGlobal(tipoRealTin, capTin, colTin, qTin, false); 
             }
 
-            // --- LÓGICA TAMBOS ---
             const tipoOpTam = document.getElementById('tipoPrecioTambo').value;
             let qTam = parseFloat(document.getElementById('qTambo').value)||0, pTam = parseFloat(document.getElementById('pTambo').value)||0;
             const capTam = document.getElementById('capTambo').value, colTam = document.getElementById('colTambo').value;
             
-            // Verificación de Candado (Tambos)
             if(qTam > 0 && tipoOpTam === 'consignacion_cobro') {
                 let deudaReal = obtenerDeudaConsignacion(v, `${capTam} ${colTam}`);
                 if(qTam > deudaReal) return alert(`🚨 ERROR (Candado Activo): Intentas cobrar ${qTam} Tambos ${capTam} ${colTam}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes por pagar. Operación bloqueada.`);
@@ -655,7 +674,6 @@
                 actualizarStockGlobal(tipoRealTam, capTam, colTam, qTam, false); 
             }
 
-            // --- LÓGICA PRODUCCIÓN Y GASTOS ---
             const tP = document.getElementById('tipoProdFabricado').value, cP = document.getElementById('capProdFabricado').value, coP = document.getElementById('colProdFabricado').value;
             const qN = parseFloat(document.getElementById('qProdNormal').value)||0; 
             if(qN > 0) { let tN = `PROD_NORMAL_${tP}`; add(prod, tN, `NORMAL: ${tP} ${cP} ${coP}`, qN, 0, 0, cP, coP); actualizarStockGlobal(tN, cP, coP, qN, false); }
@@ -671,11 +689,12 @@
             alert('¡Guardado en Teléfono y Google Sheets!');
         }
 
-        // CIRUGÍA 3: REGISTRO DE MERMAS
+        // REGISTRO DE MERMAS
         function actualizarListaMermas() {
             const cat = document.getElementById('mermaCategoria').value;
             const select = document.getElementById('mermaProducto');
-            select.innerHTML = LISTA_MATERIALES[cat].map(m => `<option value="${m}">${m}</option>`).join('');
+            select.innerHTML = `<option value="" disabled selected>SELECCIONAR...</option>` +
+            LISTA_MATERIALES[cat].map(m => `<option value="${m}">${m}</option>`).join('');
         }
 
         function registrarMerma() {
@@ -826,11 +845,18 @@
             let dG = sF - sS; document.getElementById('pdf-inv-total-dif').innerHTML = `<span style="color:${dG<0?'red':(dG>0?'blue':'black')}">${dG>0?'+':''}${dG.toFixed(2)}</span>`;
             localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
             document.getElementById('r-inv-fecha-impresion').innerText = "FECHA: " + f.split('-').reverse().join('/');
-            document.body.classList.add('print-inv'); window.print(); document.body.classList.remove('print-inv');
-            if(confirm("¿PDF generado? Limpiando carrito...")) { vaciarCarritoInv(); verStockActual(); }
+            
+            document.body.classList.add('print-inv'); 
+            // Fix IOS: Tiempo de espera para renderizado
+            setTimeout(() => {
+                window.print(); 
+                setTimeout(() => {
+                    document.body.classList.remove('print-inv');
+                    if(confirm("¿PDF generado? Limpiando carrito...")) { vaciarCarritoInv(); verStockActual(); }
+                }, 1000);
+            }, 100);
         }
 
-        // CIRUGÍA 5: BORRADO INTELIGENTE Y RETROACTIVO
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             db.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
@@ -849,7 +875,6 @@
                 let r = db.find(x => x.id === id);
                 let esCobro = r && r.tipo && r.tipo.includes('_COBRO');
                 
-                // Efecto Reversa Matemático (Retroactivo)
                 if(r && (r.capacidad || r.tipo === 'COMPRA' || r.tipo === 'MERMA') && !esCobro) {
                     let tipoBase = r.tipo.replace('_COBRO', ''); 
                     actualizarStockGlobal(tipoBase, r.capacidad, r.colorUI, r.cantidad, true);
@@ -860,7 +885,6 @@
         }
         function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        // CIRUGÍA 2: RESCATAR NUBE
         function importarCSV(esRescate) {
             const input = document.getElementById('archivoCSV');
             const file = input.files[0];
@@ -875,7 +899,6 @@
                 const texto = e.target.result;
                 const lineas = texto.split('\n');
                 
-                // Si es rescate, vaciamos la base de datos y el stock
                 let db = esRescate ? [] : (JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []);
                 if(esRescate) localStorage.removeItem('plastinova_stock_v1');
 
@@ -920,11 +943,9 @@
 
                         const reg = { id: Date.now() + i, fecha: fechaStr, semana: sem, vendedor: cols[1].trim().toUpperCase(), tipo: tipoMov, concepto: conceptoStr, cantidad: cant, precio: parseFloat(cols[5]) || 0, total: parseFloat(cols[6]) || 0, capacidad: cap, colorUI: col || 'BEIGE' };
                         
-                        // Solo sube si no existe ya un registro igual en la misma fecha y concepto (Evitar clones)
                         let existe = db.find(x => x.fecha === reg.fecha && x.concepto === reg.concepto && x.cantidad === reg.cantidad);
                         if(esRescate || !existe) {
                             db.push(reg); 
-                            // Si estamos rescatando, recalcula el stock por cada línea
                             if(cap || tipoMov === 'COMPRA' || tipoMov === 'MERMA') { actualizarStockGlobal(tipoMov, cap, col || 'BEIGE', cant, false); }
                             contador++;
                         }
@@ -938,51 +959,64 @@
             reader.readAsText(file);
         }
 
-        // CIRUGÍA 1: AUDITORÍA POR LOTES (FIFO)
+        // AUDITORÍA POR LOTES (FIFO MATEMÁTICO REAL)
         function generarPDFFifo() {
             const fechaCorte = document.getElementById('fechaLoteNuevo').value;
             if(!fechaCorte) return alert("Ingresa la fecha de llegada del nuevo lote para continuar.");
             
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-            // Ordenar por fecha cronológica para aplicar PEPS
             db.sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
 
-            // Variables de cálculo matemático
-            let invViejo = {}; // Stock que se acumuló ANTES de la fecha
+            let invViejo = {}; 
             
-            // 1. Calcular el Stock de Productos Terminados ANTES de la fechaCorte
+            // 1. Calcular el stock exacto ANTES de la fecha de corte
             db.forEach(r => {
-                if(r.fecha < fechaCorte && r.tipo.includes('PROD_')) {
-                    let itemName = `${getTipoProducto(r.concepto)} ${r.capacidad} ${r.colorUI}`;
-                    invViejo[itemName] = (invViejo[itemName] || 0) + parseFloat(r.cantidad);
+                let itemName = null;
+                if(r.concepto && (r.concepto.includes('TINACO') || r.concepto.includes('TAMBO') || r.concepto.includes('235LT') || r.concepto.includes('MACETA'))) {
+                     if(r.concepto.includes('TINACO')) itemName = `TINACO ${r.capacidad} ${r.colorUI}`;
+                     else if(r.concepto.includes('TAMBO') || r.concepto.includes('235LT')) itemName = `TAMBO ${r.capacidad} ${r.colorUI}`;
+                     else if(r.concepto.includes('MACETA')) itemName = `MACETA ${r.capacidad} ${r.colorUI}`;
+                } else if (r.tipo === 'COMPRA' || r.tipo === 'MERMA') {
+                     itemName = r.colorUI; 
                 }
-                // Si vendió antes del corte, se resta de lo viejo
-                if(r.fecha < fechaCorte && r.tipo.includes('VENTA') && !r.tipo.includes('_COBRO')) {
-                    let itemName = `${getTipoProducto(r.concepto)} ${r.capacidad} ${r.colorUI}`;
-                    invViejo[itemName] = (invViejo[itemName] || 0) - parseFloat(r.cantidad);
+
+                if(!itemName) return;
+
+                let q = parseFloat(r.cantidad) || 0;
+                
+                if(r.fecha < fechaCorte) {
+                    if(r.tipo.includes('PROD_') || r.tipo === 'COMPRA') { 
+                        invViejo[itemName] = (invViejo[itemName] || 0) + q; 
+                    }
+                    else if((r.tipo.includes('VENTA') && !r.tipo.includes('_COBRO')) || r.tipo === 'MERMA' || (r.tipo.includes('TRASPASO') && !r.tipo.includes('_COBRO'))) { 
+                        invViejo[itemName] = (invViejo[itemName] || 0) - q; 
+                    }
                 }
             });
 
-            // Guardar foto original del stock viejo para la tabla de resumen
             let fotoInvViejo = JSON.parse(JSON.stringify(invViejo)); 
             
             let tViejoHTML = ''; let tNuevoHTML = '';
             let resumenViejo = {}; let resumenNuevo = {};
 
-            // 2. Procesar las ventas DESDE la fecha de corte
+            // 2. Descontar las salidas DESDE la fecha de corte
             db.forEach(r => {
-                if(r.fecha >= fechaCorte && r.tipo.includes('VENTA') && !r.tipo.includes('_COBRO')) {
-                    let itemName = `${getTipoProducto(r.concepto)} ${r.capacidad} ${r.colorUI}`;
-                    let qSolicitada = parseFloat(r.cantidad);
+                if(r.fecha >= fechaCorte && (r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) && !r.tipo.includes('_COBRO')) {
+                    let itemName = null;
+                    if(r.concepto.includes('TINACO')) itemName = `TINACO ${r.capacidad} ${r.colorUI}`;
+                    else if(r.concepto.includes('TAMBO') || r.concepto.includes('235LT')) itemName = `TAMBO ${r.capacidad} ${r.colorUI}`;
+                    else if(r.concepto.includes('MACETA')) itemName = `MACETA ${r.capacidad} ${r.colorUI}`;
+                    
+                    if(!itemName) return;
+
+                    let qSolicitada = parseFloat(r.cantidad) || 0;
                     let qDisponibleViejo = invViejo[itemName] || 0;
 
                     if(qDisponibleViejo >= qSolicitada) {
-                        // Alcanza todo del lote viejo
                         tViejoHTML += `<tr><td>${r.fecha.split('-').reverse().join('/')}</td><td>${r.vendedor}</td><td>${itemName}</td><td><b>${qSolicitada}</b></td></tr>`;
                         invViejo[itemName] -= qSolicitada;
                         resumenViejo[itemName] = (resumenViejo[itemName] || 0) + qSolicitada;
                     } else if (qDisponibleViejo > 0) {
-                        // Se acaba el viejo y se parte la orden
                         let faltante = qSolicitada - qDisponibleViejo;
                         tViejoHTML += `<tr><td>${r.fecha.split('-').reverse().join('/')}</td><td>${r.vendedor}</td><td>${itemName} <span style="color:#d32f2f; font-size:8px;">(Agotó lote)</span></td><td><b>${qDisponibleViejo}</b></td></tr>`;
                         tNuevoHTML += `<tr><td>${r.fecha.split('-').reverse().join('/')}</td><td>${r.vendedor}</td><td>${itemName}</td><td><b>${faltante}</b></td></tr>`;
@@ -990,20 +1024,17 @@
                         resumenNuevo[itemName] = (resumenNuevo[itemName] || 0) + faltante;
                         invViejo[itemName] = 0;
                     } else {
-                        // Ya no hay lote viejo, todo es nuevo
                         tNuevoHTML += `<tr><td>${r.fecha.split('-').reverse().join('/')}</td><td>${r.vendedor}</td><td>${itemName}</td><td><b>${qSolicitada}</b></td></tr>`;
                         resumenNuevo[itemName] = (resumenNuevo[itemName] || 0) + qSolicitada;
                     }
                 }
             });
 
-            // Llenar HTMLs
             if(!tViejoHTML) tViejoHTML = '<tr><td colspan="4">No hay salidas del lote viejo.</td></tr>';
             if(!tNuevoHTML) tNuevoHTML = '<tr><td colspan="4">No hay salidas del lote nuevo.</td></tr>';
             document.getElementById('fifo-body-viejo').innerHTML = tViejoHTML;
             document.getElementById('fifo-body-nuevo').innerHTML = tNuevoHTML;
 
-            // Llenar tabla resumen
             let tResumenHTML = '';
             let keysProductos = [...new Set([...Object.keys(fotoInvViejo), ...Object.keys(resumenNuevo)])];
             
@@ -1012,25 +1043,22 @@
                 let usedO = resumenViejo[p] || 0;
                 let restO = init - usedO;
                 let usedN = resumenNuevo[p] || 0;
-                if(init > 0 || usedN > 0) {
+                if(init > 0 || usedN > 0 || usedO > 0) {
                     tResumenHTML += `<tr><td><b>${p}</b></td><td>${init}</td><td style="color:#d32f2f;">-${usedO}</td><td style="font-weight:bold; color:${restO>0?'blue':'black'};">${restO}</td><td style="color:#8E24AA;">${usedN}</td></tr>`;
                 }
             });
             document.getElementById('fifo-body-resumen').innerHTML = tResumenHTML;
             document.getElementById('fifo-fecha-corte').innerText = fechaCorte.split('-').reverse().join('/');
 
-            // Mandar a imprimir el DIV
-            document.body.classList.add('print-fifo'); window.print(); document.body.classList.remove('print-fifo');
+            document.body.classList.add('print-fifo'); 
+            // Fix IOS
+            setTimeout(() => {
+                window.print(); 
+                setTimeout(() => { document.body.classList.remove('print-fifo'); }, 1000);
+            }, 100);
         }
 
-        function getTipoProducto(concepto) {
-            if(concepto.includes('TINACO')) return 'TINACO';
-            if(concepto.includes('TAMBO') || concepto.includes('235LT')) return 'TAMBO';
-            if(concepto.includes('MACETA')) return 'MACETA';
-            return 'PROD';
-        }
-
-        // --- FUNCIONES ORIGINALES RESTANTES (Gráficas, Impresión Excel) ---
+        // FUNCIONES GRÁFICAS Y REPORTES
         function imprimirTablaDinamica(tablaId, titulo) {
             let htmlTabla = document.getElementById(tablaId).outerHTML;
             let d = new Date(); let user = document.getElementById('vendedor').value; let fStr = d.toLocaleDateString('es-MX') + ' ' + d.toLocaleTimeString('es-MX');
@@ -1039,6 +1067,7 @@
             printWindow.document.close(); printWindow.focus(); setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
         }
 
+        // --- GRÁFICAS DETALLADAS (RESTAURADAS A ORIGINAL) ---
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
             const fTiempo = document.getElementById('filtroTiempo').value; 
@@ -1050,20 +1079,47 @@
                 let rD = new Date(r.fecha + "T00:00:00"); 
                 let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
+                    let isTin = (r.concepto||'').includes('TINACO');
+                    let isTam = (r.concepto||'').includes('TAMBO') || (r.concepto||'').includes('235LT');
+                    let isMac = (r.concepto||'').includes('MACETA');
+                    let cant = parseFloat(r.cantidad)||0;
+
                     if(r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) { 
-                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0 };
+                        if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0, tin: 0, tam: 0, mac: 0 };
                         v_ventas[r.vendedor].totalDinero += parseFloat(r.total) || 0; 
+                        if(isTin) v_ventas[r.vendedor].tin += cant;
+                        if(isTam) v_ventas[r.vendedor].tam += cant;
+                        if(isMac) v_ventas[r.vendedor].mac += cant;
                         if(v_ventas[r.vendedor].totalDinero > maxV) maxV = v_ventas[r.vendedor].totalDinero; 
                     } 
                     if(r.tipo.includes('PROD')) { 
-                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0 };
-                        let c = parseFloat(r.cantidad) || 0; v_prod[r.vendedor].total += c;
+                        if(!v_prod[r.vendedor]) v_prod[r.vendedor] = { total: 0, tin: 0, tam: 0, mac: 0 };
+                        v_prod[r.vendedor].total += cant;
+                        if(isTin) v_prod[r.vendedor].tin += cant;
+                        if(isTam) v_prod[r.vendedor].tam += cant;
+                        if(isMac) v_prod[r.vendedor].mac += cant;
                         if(v_prod[r.vendedor].total > maxP) maxP = v_prod[r.vendedor].total; 
                     } 
                 } 
             });
-            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v=>`<div class="grafica-col" style="flex: 0 0 60px;"><div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v].totalDinero/maxV)*100:0}%;">$${formato(v_ventas[v].totalDinero)}</div><div class="grafica-label">${v}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
-            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p=>`<div class="grafica-col" style="flex: 0 0 60px;"><div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p].total/maxP)*100:0}%;">${v_prod[p].total}</div><div class="grafica-label">${p}</div></div>`).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
+
+            document.getElementById('graficaVentas').innerHTML = Object.keys(v_ventas).map(v => {
+                let info = `<div class="info-arriba" style="color:#1565C0;">`;
+                if(v_ventas[v].tin > 0) info += `Tin: ${v_ventas[v].tin}<br>`;
+                if(v_ventas[v].tam > 0) info += `<span style="color:#EF6C00;">Tam: ${v_ventas[v].tam}</span><br>`;
+                if(v_ventas[v].mac > 0) info += `<span style="color:#2E7D32;">Mac: ${v_ventas[v].mac}</span>`;
+                info += `</div>`;
+                return `<div class="grafica-col">${info}<div class="grafica-bar bar-ventas" style="height:${maxV>0?(v_ventas[v].totalDinero/maxV)*100:0}%;">$${formato(v_ventas[v].totalDinero)}</div><div class="grafica-label">${v}</div></div>`;
+            }).join('') || '<p style="font-size:12px;color:#888;">Sin ventas.</p>';
+
+            document.getElementById('graficaProd').innerHTML = Object.keys(v_prod).map(p => {
+                let info = `<div class="info-arriba" style="color:#EF6C00;">`;
+                if(v_prod[p].tin > 0) info += `<span style="color:#1565C0;">Tin: ${v_prod[p].tin}</span><br>`;
+                if(v_prod[p].tam > 0) info += `Tam: ${v_prod[p].tam}<br>`;
+                if(v_prod[p].mac > 0) info += `<span style="color:#2E7D32;">Mac: ${v_prod[p].mac}</span>`;
+                info += `</div>`;
+                return `<div class="grafica-col">${info}<div class="grafica-bar bar-prod" style="height:${maxP>0?(v_prod[p].total/maxP)*100:0}%;">${v_prod[p].total}</div><div class="grafica-label">${p}</div></div>`;
+            }).join('') || '<p style="font-size:12px;color:#888;">Sin prod.</p>';
         }
 
         function imprimirReportePro() {
@@ -1182,7 +1238,12 @@
             
             document.getElementById('r-granTotalVentas').innerText = '$' + formato(granTotal); document.getElementById('r-subTotal').innerText = '$' + formato(subTotal); document.getElementById('r-totComisionesFin').innerText = '$' + formato(totComs); document.getElementById('r-totalEfectivo').innerText = '$' + formato(totalEfe);
             
-            document.body.classList.add('print-corte'); window.print(); document.body.classList.remove('print-corte');
+            document.body.classList.add('print-corte'); 
+            // Fix IOS: Tiempo de espera para renderizado
+            setTimeout(() => {
+                window.print(); 
+                setTimeout(() => { document.body.classList.remove('print-corte'); }, 1000);
+            }, 100);
         }
     </script>
 </body>
