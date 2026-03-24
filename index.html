@@ -28,7 +28,6 @@
         .btn-green { background-color: #2E7D32; }
         .btn-orange { background-color: #EF6C00; }
         .btn-red { background-color: #d32f2f; }
-        .btn-small { padding: 8px 12px; font-size: 12px; border-radius: 5px; width: auto; display: inline-block;}
         
         .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 10px; padding: 10px; background: #e8f5e9; border-radius: 5px; border: 1px solid #c8e6c9;}
         .checkbox-group input { width: 20px; height: 20px; }
@@ -46,7 +45,6 @@
         .bar-prod { background-color: #EF6C00; }
         .grafica-label { font-size: 9px; font-weight: bold; margin-top: 8px; text-align: center; color: #333; text-transform: uppercase;}
         .info-arriba { font-size: 10px; font-weight: bold; text-align: center; margin-bottom: 4px; line-height: 1.2; }
-
     </style>
 </head>
 <body>
@@ -63,7 +61,6 @@
         </div>
 
         <div class="container">
-            
             <div id="tab-registro" class="tab-content active">
                 <div class="card">
                     <div class="row">
@@ -83,28 +80,14 @@
                 <div class="card">
                     <h3>📦 Venta / Traspaso Tinacos</h3>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Capacidad</label>
-                            <select id="capTinaco" onchange="actualizarPrecios('tinaco')"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Color</label>
-                            <select id="colTinaco"><option value="BEIGE">BEIGE</option><option value="NEGRO" selected>NEGRO</option><option value="AZUL">AZUL</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option></select>
-                        </div>
+                        <div class="form-group"><label>Capacidad</label><select id="capTinaco" onchange="actualizarPrecios('tinaco')"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option></select></div>
+                        <div class="form-group"><label>Color</label><select id="colTinaco"><option value="BEIGE">BEIGE</option><option value="NEGRO" selected>NEGRO</option><option value="AZUL">AZUL</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option></select></div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Operación / Precio</label>
                             <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')">
-                                <option value="publico">PÚBLICO</option>
-                                <option value="mayoreo" selected>MAYOREO</option>
-                                <option value="distribuidor">DISTRIBUIDOR</option>
-                                <option value="segunda">SEGUNDA / REMATE</option>
-                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
-                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
-                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
-                                <option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option>
-                                <option value="traspaso_cobro">COBRO DE TRASPASO</option>
+                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option><option value="segunda">SEGUNDA / REMATE</option><option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option><option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option><option value="garantia">CAMBIO GARANTÍA ($0)</option><option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option><option value="traspaso_cobro">COBRO DE TRASPASO</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTinaco" placeholder="0"></div>
@@ -125,15 +108,7 @@
                         <div class="form-group">
                             <label>Operación / Precio</label>
                             <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')">
-                                <option value="publico">PÚBLICO</option>
-                                <option value="mayoreo" selected>MAYOREO</option>
-                                <option value="distribuidor">DISTRIBUIDOR</option>
-                                <option value="segunda">SEGUNDA / REMATE</option>
-                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
-                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
-                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
-                                <option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option>
-                                <option value="traspaso_cobro">COBRO DE TRASPASO</option>
+                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option><option value="segunda">SEGUNDA / REMATE</option><option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option><option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option><option value="garantia">CAMBIO GARANTÍA ($0)</option><option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option><option value="traspaso_cobro">COBRO DE TRASPASO</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTambo" placeholder="0"></div>
@@ -144,48 +119,24 @@
                 <div class="card" style="border: 2px solid #d32f2f; background-color: #fff5f5;">
                     <h3 style="color: #d32f2f;">🚨 Registro de Mermas / Daños</h3>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Categoría</label>
-                            <select id="mermaCategoria" onchange="actualizarListaMermas()">
-                                <option value="POLVOS">POLVOS / MATERIA PRIMA</option>
-                                <option value="ACCESORIOS">ACCESORIOS</option>
-                                <option value="TERMINADOS">PRODUCTOS TERMINADOS</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Material o Producto</label>
-                            <select id="mermaProducto" style="border: 2px solid #d32f2f;"></select>
-                        </div>
+                        <div class="form-group"><label>Categoría</label><select id="mermaCategoria" onchange="actualizarListaMermas()"><option value="POLVOS">POLVOS / MATERIA PRIMA</option><option value="ACCESORIOS">ACCESORIOS</option><option value="TERMINADOS">PRODUCTOS TERMINADOS</option></select></div>
+                        <div class="form-group"><label>Material o Producto</label><select id="mermaProducto" style="border: 2px solid #d32f2f;"></select></div>
                     </div>
                     <div class="row">
                         <div class="form-group"><label>Cantidad a descontar (KG o Pza)</label><input type="number" id="qMerma" placeholder="0"></div>
                         <div class="form-group"><label>Causa o Motivo</label><input type="text" id="descMerma" placeholder="Ej. Pinchado, Derramado..."></div>
                     </div>
-                    <button class="btn btn-red" onclick="registrarMerma()">⚠️ Descontar de Bodega</button>
+                    <button class="btn" style="background-color: #d32f2f;" onclick="registrarMerma()">⚠️ Descontar de Bodega</button>
                 </div>
 
                 <div class="card">
                     <h3>🏭 Registro de Producción</h3>
                     <div class="row">
                         <div class="form-group"><label>Productor</label><select id="productor"><option value="PEDRO">PEDRO</option><option value="FERNANDO">FERNANDO</option><option value="IVAN">IVAN</option><option value="HUSAI">HUSAI</option></select></div>
-                        <div class="form-group">
-                            <label>Producto Fabricado</label>
-                            <select id="tipoProdFabricado" onchange="autoCompletarCapacidadProd()">
-                                <option value="TINACO">TINACO</option>
-                                <option value="TAMBO">TAMBO</option>
-                                <option value="MACETA">MACETA CUADRADA</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>Producto Fabricado</label><select id="tipoProdFabricado" onchange="autoCompletarCapacidadProd()"><option value="TINACO">TINACO</option><option value="TAMBO">TAMBO</option><option value="MACETA">MACETA CUADRADA</option></select></div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Capacidad / Tamaño</label>
-                            <select id="capProdFabricado">
-                                <option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option>
-                                <option value="235LT">235LT (Tambo)</option>
-                                <option value="GRANDE">GRANDE (Maceta)</option><option value="CHICA">CHICA (Maceta)</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>Capacidad / Tamaño</label><select id="capProdFabricado"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option><option value="235LT">235LT (Tambo)</option><option value="GRANDE">GRANDE (Maceta)</option><option value="CHICA">CHICA (Maceta)</option></select></div>
                         <div class="form-group"><label>Color</label><select id="colProdFabricado"><option value="AZUL" selected>AZUL</option><option value="NEGRO">NEGRO</option><option value="BEIGE">BEIGE</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="ROJO CON BLANCO">ROJO CON BLANCO</option><option value="VERDE CON BLANCO">VERDE CON BLANCO</option><option value="AZUL CON BLANCO">AZUL CON BLANCO</option><option value="TERRACOTA">TERRACOTA</option><option value="MENTA">MENTA</option><option value="PISTACHE">PISTACHE</option><option value="GRANITO BEIGE">GRANITO BEIGE</option><option value="GRANITO">GRANITO</option><option value="DUVALIN">DUVALIN</option><option value="UVA">UVA</option><option value="MELON">MELON</option><option value="OXFORD">OXFORD</option></select></div>
                     </div>
                     <div class="row">
@@ -207,9 +158,7 @@
                 <div class="card" style="background-color: #e8f5e9; border-left: 4px solid #2E7D32;">
                     <h3 style="color: #2E7D32; margin-top: 0; margin-bottom: 5px;">📥 Recuperación y Carga (Desde Nube)</h3>
                     <p style="font-size: 11px; color: #555; margin-bottom: 10px; margin-top: 0;">Selecciona el CSV descargado de Google Sheets para añadir datos o reconstruir todo.</p>
-                    <div class="row">
-                        <input type="file" id="archivoCSV" accept=".csv" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;">
-                    </div>
+                    <div class="row"><input type="file" id="archivoCSV" accept=".csv" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;"></div>
                     <div class="row">
                         <button class="btn btn-green" style="flex: 1; padding: 10px;" onclick="importarCSV(false)">➕ Añadir a DB Actual</button>
                         <button class="btn btn-orange" style="flex: 1; padding: 10px;" onclick="importarCSV(true)">☁️ Rescatar (Reconstruir Todo)</button>
@@ -217,10 +166,7 @@
                 </div>
                 <div class="card" style="overflow-x: auto;">
                     <h3>🗄️ Historial de Movimientos</h3>
-                    <table class="db-table" id="tablaBD">
-                        <thead><tr><th>Fecha</th><th>Resp.</th><th>Movimiento</th><th>Concepto</th><th>Cant.</th><th>P. Uni</th><th>Total</th><th>Borrar</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+                    <table class="db-table" id="tablaBD"><thead><tr><th>Fecha</th><th>Resp.</th><th>Movimiento</th><th>Concepto</th><th>Cant.</th><th>P. Uni</th><th>Total</th><th>Borrar</th></tr></thead><tbody></tbody></table>
                     <div style="display: flex; gap:10px; margin-top: 15px;">
                         <button class="btn btn-orange" style="flex: 1;" onclick="imprimirReporteDirecto('tablaBD', 'REPORTE DE MOVIMIENTOS HISTÓRICOS')">🖨️ Imprimir Historial</button>
                         <button class="btn" style="background-color: #d32f2f; flex: 1;" onclick="limpiarBD()">🗑️ Borrar Todo</button>
@@ -246,9 +192,7 @@
                     <h3>✂️ Generar Reporte de Corte</h3>
                     <div class="form-group" style="margin-bottom: 10px;">
                         <label>Vendedor a Cortar</label>
-                        <select id="vendedorCorte" onchange="actualizarFechasCorte()">
-                            <option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
-                        </select>
+                        <select id="vendedorCorte" onchange="actualizarFechasCorte()"><option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option></select>
                     </div>
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="form-group"><label style="color:#1565C0;">Desde:</label><input type="date" id="fechaDesde"></div>
@@ -263,12 +207,8 @@
             <div id="tab-inventario" class="tab-content">
                 <div class="card" style="border: 2px solid #8E24AA; background-color: #f3e5f5;">
                     <h3 style="color: #8E24AA; margin-bottom: 5px;">🔍 Auditoría por Lotes (Método PEPS)</h3>
-                    <p style="font-size:11px; color:#555; margin-top:0;">Determina si las ventas salieron del lote viejo o del lote nuevo basado en la fecha de llegada.</p>
                     <div class="row">
-                        <div class="form-group">
-                            <label style="color: #8E24AA; font-weight: bold;">Fecha de llegada de NUEVO lote</label>
-                            <input type="date" id="fechaLoteNuevo" style="border: 2px solid #8E24AA;">
-                        </div>
+                        <div class="form-group"><label style="color: #8E24AA; font-weight: bold;">Fecha de llegada de NUEVO lote</label><input type="date" id="fechaLoteNuevo" style="border: 2px solid #8E24AA;"></div>
                     </div>
                     <button class="btn" style="background-color: #8E24AA;" onclick="generarPDFFifo()">📄 Generar PDF de Lotes (FIFO)</button>
                 </div>
@@ -281,10 +221,7 @@
                         <button class="btn" onclick="resetearStock()" style="background-color: #d32f2f; color: white; padding: 10px; font-size: 14px; flex: 1;">🚨 Poner Ceros</button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="db-table" id="tablaStockActual">
-                            <thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th><th>Acciones (Ajuste Manual)</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                        <table class="db-table" id="tablaStockActual"><thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th><th>Acciones (Ajuste Manual)</th></tr></thead><tbody></tbody></table>
                     </div>
                 </div>
 
@@ -294,10 +231,7 @@
                         <button class="btn btn-orange" onclick="imprimirReporteDirecto('tablaStockRuta', 'REPORTE DE MERCANCÍA EN RUTA')" style="padding: 8px; font-size: 12px; flex: 1;">🖨️ Imprimir Reporte de Ruta</button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="db-table" id="tablaStockRuta">
-                            <thead><tr><th>Responsable / Ubicación</th><th>Producto Pendiente</th><th>Cantidad</th></tr></thead>
-                            <tbody></tbody>
-                        </table>
+                        <table class="db-table" id="tablaStockRuta"><thead><tr><th>Responsable / Ubicación</th><th>Producto Pendiente</th><th>Cantidad</th></tr></thead><tbody></tbody></table>
                     </div>
                 </div>
 
@@ -369,8 +303,8 @@
     <script>
         // ==========================================
         // 🟢 CONFIGURACIÓN DEL LOGO
-        // Pon el nombre exacto de tu archivo de imagen (Ej: logo.png o logo.jpg)
-        // y guárdalo en la MISMA CARPETA que esta app.
+        // Pon el nombre exacto de tu archivo de imagen (Ej: logo.png) 
+        // en la MISMA CARPETA que esta app.
         // ==========================================
         const LOGO_PLASTINOVA = "logo.png"; 
 
@@ -382,7 +316,7 @@
         }
 
         // ==========================================
-        // 🟢 MOTOR DE IMPRESIÓN SEGURO (VENTANA NUEVA)
+        // 🟢 MOTOR DE IMPRESIÓN SEGURO (VENTANA NUEVA CON BOTÓN DE REGRESO)
         // ==========================================
         function imprimirDocumento(htmlContent, tituloDocumento) {
             let logoHTML = LOGO_PLASTINOVA ? `<img src="${LOGO_PLASTINOVA}" style="height:60px; max-width: 150px; object-fit: contain;">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO]</b></div>`;
@@ -394,38 +328,57 @@
                 <head>
                     <title>${tituloDocumento}</title>
                     <style>
-                        @page { size: auto; margin: 5mm; }
+                        /* Forzamos a Horizontal */
+                        @page { size: landscape; margin: 10mm; }
                         body { font-family: 'Arial Narrow', Arial, sans-serif; margin: 0; padding: 0; }
                         
-                        .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 5px; margin-bottom: 5px; }
+                        /* Estilos para el botón de Regreso */
+                        .btn-volver { display: block; width: 90%; margin: 10px auto 20px auto; padding: 15px; background-color: #d32f2f; color: white; text-align: center; font-size: 18px; text-decoration: none; font-weight: bold; border-radius: 8px; border: 2px solid #b71c1c; }
+                        
+                        /* Cabecera */
+                        .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 5px; margin-bottom: 10px; }
                         .print-header-info { text-align: right; font-size: 11px; }
-                        .print-header-info h2 { margin: 0; font-size: 14px; color: #2E7D32; text-transform: uppercase;}
+                        .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;}
                         
-                        .header-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 2px; text-transform: uppercase; }
-                        .subtitle-pdf { text-align: center; font-weight: bold; font-size: 11px; margin-top: 2px; text-transform: uppercase; background-color: #eee; border: 1px solid #000; }
+                        /* Tablas de Corte Restauradas (Colores y Columnas Exactas) */
+                        .header-pdf { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 10px; text-transform: uppercase; }
+                        .subtitle-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-top: 5px; margin-bottom: 2px; text-transform: uppercase; border: 1px solid #000; border-bottom: none; }
                         
-                        .pdf-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 5px; }
-                        .pdf-table th { background-color: #388E3C !important; color: white !important; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 2px; font-size: 10px; }
-                        .pdf-table td { border: 1px solid #000; font-weight: bold; padding: 2px; font-size: 11px; }
+                        .pdf-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 10px; }
+                        .pdf-table th { background-color: #388E3C !important; color: white !important; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; font-size: 11px; font-weight: bold; }
+                        .pdf-table td { border: 1px solid #000; font-weight: bold; padding: 4px; font-size: 12px; }
                         .row-total td { color: red !important; font-weight: bold; }
                         
-                        .bottom-container { display: flex; justify-content: space-between; gap: 10px; margin-top: 5px; }
-                        .tabla-extras, .tabla-resumen { width: 48%; border-collapse: collapse; font-weight: bold; font-size: 10px; }
-                        .tabla-extras td, .tabla-resumen td { border: 1px solid #000; padding: 2px; }
-                        .tabla-gastos { width: 100%; border-collapse: collapse; margin-bottom: 2px; font-size: 10px; }
-                        .tabla-gastos td { border: 1px solid #000; padding: 2px; }
-                        .firma { margin-top: 5px; font-size: 10px; text-align: center; font-weight: bold; }
+                        /* Contenedores de Totales y Firmas alineados lado a lado */
+                        .bottom-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-top: 10px; page-break-inside: avoid; }
+                        .left-panel { width: 45%; }
+                        .right-panel { width: 50%; }
+
+                        .tabla-extras, .tabla-resumen { width: 100%; border-collapse: collapse; font-weight: bold; font-size: 11px; }
+                        .tabla-extras td, .tabla-resumen td { border: 1px solid #000; padding: 4px; }
+                        .tabla-gastos { width: 100%; border-collapse: collapse; margin-bottom: 5px; font-size: 11px; }
+                        .tabla-gastos td { border: 1px solid #000; padding: 4px; height: 18px;}
+                        .firma { margin-bottom: 5px; font-size: 12px; text-align: left; font-weight: normal; }
                         
-                        table.gen-table { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 11px; }
-                        table.gen-table th { background-color: #2E7D32 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact; }
-                        table.gen-table td { border: 1px solid #000; padding: 4px; }
+                        /* Tablas Generales */
+                        table.gen-table { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 12px; }
+                        table.gen-table th { background-color: #2E7D32 !important; color: white !important; border: 1px solid #000; padding: 5px; -webkit-print-color-adjust: exact; }
+                        table.gen-table td { border: 1px solid #000; padding: 5px; }
                         
-                        table.fifo-table th { background-color: #757575 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact;}
+                        /* Tablas FIFO */
+                        table.fifo-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 11px; margin-bottom: 15px;}
+                        table.fifo-table th { background-color: #757575 !important; color: white !important; border: 1px solid #000; padding: 5px; -webkit-print-color-adjust: exact;}
+                        table.fifo-table td { border: 1px solid #000; padding: 5px;}
                         table.fifo-table.nuevo th { background-color: #8E24AA !important; }
                         table.fifo-table.resumen th { background-color: #2E7D32 !important; }
+
+                        /* Ocultar el botón rojo a la hora de imprimir en papel */
+                        @media print { .btn-volver { display: none !important; } }
                     </style>
                 </head>
                 <body>
+                    <a href="#" class="btn-volver" onclick="window.close(); return false;">❌ CERRAR VISTA PREVIA Y VOLVER A LA APP</a>
+                    
                     <div class="print-header-global">
                         ${logoHTML}
                         <div class="print-header-info">
@@ -436,22 +389,43 @@
                     <div>
                         ${htmlContent}
                     </div>
+                    
+                    <script>
+                        // Al cargar la ventana, lanzamos la impresión automáticamente
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                            }, 500);
+                        };
+                        // Al terminar de imprimir (o cancelar), cerramos la ventana automáticamente
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                    <\/script>
                 </body>
                 </html>
             `);
             printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
+            // Ya no le damos focus desde la app, dejamos que la nueva ventana haga su trabajo
         }
 
+        // ==========================================
+        // 🟢 CÁLCULO DE SEMANA CORREGIDO (Zona Horaria Local de México)
+        // ==========================================
         function getNumeroSemana(fechaInput) {
-            let d = new Date(fechaInput + "T00:00:00");
+            // Separa la fecha YYYY-MM-DD para evitar el error de huso horario UTC vs Local
+            let partes = fechaInput.split('-');
+            if(partes.length !== 3) return 0;
+            // Año, Mes (0-11), Día
+            let d = new Date(partes[0], partes[1] - 1, partes[2]);
             d.setHours(0,0,0,0);
-            d.setDate(d.getDate() + 4 - (d.getUTCDay()||7));
-            var yearStart = new Date(d.getFullYear(),0,1);
-            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            // Día de la semana (Lunes=1, Domingo=7)
+            let diaSemana = d.getDay() || 7;
+            // Jueves de esa semana (ISO 8601)
+            d.setDate(d.getDate() + 4 - diaSemana);
+            let yearStart = new Date(d.getFullYear(), 0, 1);
+            // Días de diferencia / 7
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
         function formato(num) { return parseFloat(num).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
@@ -462,18 +436,13 @@
 
         const LISTA_MATERIALES = {
             "POLVOS": [
-                "ROTOFOAM NEGRO AR", "ROTOFOAM BLANCO AR", 
-                "ROTOLENE BEIGE", "ROTOLENE NEGRO - BLACK", 
-                "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", 
-                "ROTOLENE BLANCO", "RECICLADO / MERMA", 
-                "ROTOLENE ROJO 14", "ROTOLENE NATURAL", 
-                "ROTOLENE CAFÉ", "ROTOLENE NARANJA II"
+                "ROTOFOAM NEGRO AR", "ROTOFOAM BLANCO AR", "ROTOLENE BEIGE", "ROTOLENE NEGRO - BLACK", 
+                "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", "ROTOLENE BLANCO", "RECICLADO / MERMA", 
+                "ROTOLENE ROJO 14", "ROTOLENE NATURAL", "ROTOLENE CAFÉ", "ROTOLENE NARANJA II"
             ],
             "ACCESORIOS": [
-                "KIT COMPLETO (PIEZAS)", "TAPA (PIEZAS)", 
-                "VALVULA (PIEZAS)", "JARRO DE AIRE (PIEZAS)", 
-                "BRIDA (PIEZAS)", "CAPUCHON (PIEZAS)", 
-                "FILTRO (PIEZAS)", "ETIQUETA (PIEZAS)"
+                "KIT COMPLETO (PIEZAS)", "TAPA (PIEZAS)", "VALVULA (PIEZAS)", "JARRO DE AIRE (PIEZAS)", 
+                "BRIDA (PIEZAS)", "CAPUCHON (PIEZAS)", "FILTRO (PIEZAS)", "ETIQUETA (PIEZAS)"
             ],
             "TERMINADOS": [] 
         };
@@ -553,18 +522,22 @@
 
         function actualizarStockGlobal(tipo, capacidad, color, cant, esReversa) {
             if(tipo.includes('_COBRO')) return;
+
             let stock = JSON.parse(localStorage.getItem('plastinova_stock_v1')) || {};
             let mult = esReversa ? -1 : 1; 
+            
             if(tipo === 'COMPRA' || tipo === 'MERMA') {
                 let mod = tipo === 'MERMA' ? -1 : 1; 
                 stock[color] = (stock[color] || 0) + (cant * mod * mult);
             } else { 
                 let receta = obtenerRecetaMateriales(tipo, capacidad, color); 
                 for(let mat in receta) { stock[mat] = (stock[mat] || 0) - (receta[mat] * cant * mult); }
+                
                 let nombreProductoTerminado = null;
                 if(tipo.includes('TINACO')) nombreProductoTerminado = `TINACO ${capacidad} ${color}`;
                 else if(tipo.includes('TAMBO')) nombreProductoTerminado = `TAMBO ${capacidad} ${color}`;
                 else if(tipo.includes('MACETA')) nombreProductoTerminado = `MACETA ${capacidad} ${color}`;
+                
                 if (nombreProductoTerminado) {
                     if (tipo.includes('PROD_')) { stock[nombreProductoTerminado] = (stock[nombreProductoTerminado] || 0) + (cant * mult); } 
                     else if (tipo.includes('VENTA') || tipo.includes('TRASPASO')) { stock[nombreProductoTerminado] = (stock[nombreProductoTerminado] || 0) - (cant * mult); }
@@ -955,7 +928,13 @@
                 </table>
             `;
 
-            imprimirDocumento(htmlFIFO, "REPORTE DE AUDITORÍA (FIFO)");
+            imprimirDocumento(htmlFIFO, "REPORTE DE AUDITORÍA (FIFO/PEPS)");
+        }
+
+        function imprimirReporteDirecto(tablaId, titulo) {
+            let htmlTabla = document.getElementById(tablaId).outerHTML;
+            htmlTabla = htmlTabla.replace('class="db-table"', 'class="gen-table"');
+            imprimirDocumento(htmlTabla, titulo);
         }
 
         function renderGraficas() {
@@ -1069,6 +1048,7 @@
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const startStr = document.getElementById('fechaDesde').value, endStr = document.getElementById('fechaHasta').value;
             
+            // LA SEMANA SE CALCULA SEGÚN LA FECHA DE INICIO DEL CORTE
             const semanaCalculada = getNumeroSemana(startStr);
 
             let registros = db.filter(r => { 
@@ -1084,15 +1064,18 @@
             
             registros.forEach(r => {
                 const fechaFormat = r.fecha.split('-').reverse().join('/'), cantNum = parseFloat(r.cantidad) || 0, precioNum = parseFloat(r.precio) || 0, totalNum = parseFloat(r.total) || 0;
-                const fila = `<tr><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+                // COLUMNAS: FOLIO(vacio), FECHA, CONCEPTO, #TINACO(vacio), CANTIDAD, PRECIO UNI, TOTAL
+                const filaTin = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+                const filaTam = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+
                 const noPagaComision = precioNum === 0 && ((r.concepto || '').includes('GARANTÍA') || (r.concepto || '').includes('ENTREGA CONSIGNACIÓN') || (r.concepto || '').includes('TRASPASO SUCURSAL'));
 
                 if((r.tipo === 'VENTA_TINACO' || r.tipo === 'VENTA_TINACO_COBRO' || r.tipo === 'TRASPASO_TINACO' || r.tipo === 'TRASPASO_TINACO_COBRO') && mostrarTinacos) { 
-                    tTinacos += fila; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; 
+                    tTinacos += filaTin; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; 
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TINACO')) sumComisionTinacos += (cantNum * 35);
                 }
                 if((r.tipo === 'VENTA_TAMBO' || r.tipo === 'VENTA_TAMBO_COBRO' || r.tipo === 'TRASPASO_TAMBO' || r.tipo === 'TRASPASO_TAMBO_COBRO') && mostrarTambos) { 
-                    tTambos += fila; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; 
+                    tTambos += filaTam; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; 
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TAMBO')) sumComisionTambos += (cantNum * 10);
                 }
                 if((r.tipo || '').includes('PROD_EXTRA')) { 
@@ -1104,12 +1087,10 @@
             });
             
             while(countGastos < 4) { tGastos += `<tr><td style="text-align:left;">&nbsp;</td><td style="text-align:right;">-</td></tr>`; countGastos++; }
-            if(!tTinacos) tTinacos = '<tr><td colspan="5">Sin ventas registradas</td></tr>';
-            if(!tTambos) tTambos = '<tr><td colspan="5">Sin ventas registradas</td></tr>';
+            if(!tTinacos) tTinacos = '<tr><td colspan="7">Sin ventas registradas</td></tr>';
+            if(!tTambos) tTambos = '<tr><td colspan="7">Sin ventas registradas</td></tr>';
 
             const granTotal = sumDTin + sumDTam, comExtPedro = (sumQExtTinPedro * 35) + (sumQExtTamPedro * 10), comExtVendedor = (sumQExtTin * 35) + (sumQExtTam * 10), totComs = comExtPedro + comExtVendedor + sumComisionTinacos + sumComisionTambos, subTotal = granTotal - sumGastos;
-            
-            // CORRECCIÓN FINAL: Total Efectivo en lugar de Variable Inexistente
             const totalEfe = subTotal - totComs; 
             
             let textoExtrasPedro = "TIN EXTRA PEDRO"; if (hizoTambosExtraPedro && !hizoTinacosExtraPedro) textoExtrasPedro = "TAM EXTRA PEDRO"; else if (hizoTambosExtraPedro && hizoTinacosExtraPedro) textoExtrasPedro = "TIN/TAM EXT PEDRO";
@@ -1121,13 +1102,21 @@
                 <div class="header-pdf">TINACOS PLASTINOVA<br>VENDEDOR: ${vendedor}<br>${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')} | SEMANA ${semanaCalculada}</div>
                 
                 <div class="subtitle-pdf">VENTAS TINACOS</div>
-                <table class="pdf-table"><thead><tr><th>FECHA</th><th>CONCEPTO</th><th>CANT</th><th>PRECIO</th><th>TOTAL</th></tr></thead><tbody>${tTinacos}</tbody><tfoot><tr class="row-total"><td colspan="2" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTin.toFixed(2)}</td><td>-</td><td>$${formato(sumDTin)}</td></tr></tfoot></table>
+                <table class="pdf-table">
+                    <thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TINACO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead>
+                    <tbody>${tTinacos}</tbody>
+                    <tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTin.toFixed(2)}</td><td>-</td><td>$${formato(sumDTin)}</td></tr></tfoot>
+                </table>
                 
                 <div class="subtitle-pdf">VENTAS TAMBOS Y MACETAS</div>
-                <table class="pdf-table"><thead><tr><th>FECHA</th><th>CONCEPTO</th><th>CANT</th><th>PRECIO</th><th>TOTAL</th></tr></thead><tbody>${tTambos}</tbody><tfoot><tr class="row-total"><td colspan="2" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTam.toFixed(2)}</td><td>-</td><td>$${formato(sumDTam)}</td></tr></tfoot></table>
+                <table class="pdf-table">
+                    <thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAM/MAC</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead>
+                    <tbody>${tTambos}</tbody>
+                    <tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTam.toFixed(2)}</td><td>-</td><td>$${formato(sumDTam)}</td></tr></tfoot>
+                </table>
                 
                 <div class="bottom-container">
-                    <div style="width: 48%;">
+                    <div class="left-panel">
                         <table class="tabla-extras">
                             <tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr>
                             ${filaPedro}
@@ -1138,7 +1127,7 @@
                         </table>
                         <div class="firma">FIRMA RECIBIDO: _______________________</div>
                     </div>
-                    <div style="width: 48%;">
+                    <div class="right-panel">
                         <table class="tabla-resumen"><tr><td style="width: 60%; color: red;">TOTAL VENTAS</td><td style="color: red;">$${formato(granTotal)}</td></tr></table>
                         <table class="tabla-gastos"><tbody>${tGastos}</tbody></table>
                         <table class="tabla-resumen">
