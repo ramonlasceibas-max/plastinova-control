@@ -51,42 +51,53 @@
         #pdf-report, #pdf-inventario, #print-dinamico, #pdf-fifo { display: none; }
         
         @media print {
-            @page { size: portrait; margin: 10mm; } 
+            /* SE CONFIGURA HORIZONTAL (LANDSCAPE) PARA TODOS LOS REPORTES */
+            @page { size: landscape; margin: 5mm; } 
             body { background-color: white; margin: 0; padding: 0; }
             #app-ui { display: none !important; }
             
             body.print-dinamico #print-dinamico { display: block !important; width: 100%; font-family: 'Arial', sans-serif; }
-            .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 10px; margin-bottom: 15px; }
-            .print-header-info { text-align: right; font-size: 11px; color: #333; line-height: 1.4; }
-            .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase; }
-            #print-dyn-content table { width: 100%; border-collapse: collapse; font-size: 10px; text-align: center; }
-            #print-dyn-content th { background-color: #2E7D32 !important; color: white !important; padding: 5px; border: 1px solid #000; -webkit-print-color-adjust: exact;}
-            #print-dyn-content td { padding: 4px; border: 1px solid #000; }
-            #print-dyn-content th:last-child, #print-dyn-content td:last-child { display: none; }
+            
+            /* =========================================
+               NUEVO FORMATO DE CORTES (EFECTO LIGA - AUTOAJUSTABLE A 1 HOJA)
+               ========================================= */
+            body.print-corte #pdf-report { 
+                display: flex !important; 
+                flex-direction: column; 
+                height: 98vh; /* Fuerza a llenar exactamente 1 hoja de alto */
+                width: 100%; 
+                font-family: 'Arial Narrow', Arial, sans-serif; 
+                page-break-inside: avoid;
+            }
+            #pdf-report .header-pdf { flex: 0 0 auto; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
+            
+            /* Contenedor elástico para las tablas */
+            #pdf-report .table-wrapper { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; margin-bottom: 5px; }
+            
+            #pdf-report .subtitle-pdf { flex: 0 0 auto; text-align: center; font-weight: bold; font-size: 14px; text-transform: uppercase; background-color: #eee; border: 1px solid #000; border-bottom: none;}
+            
+            /* Tablas que se estiran solas */
+            #pdf-report .pdf-table { flex: 1 1 auto; width: 100%; border-collapse: collapse; text-align: center; height: 100%; }
+            #pdf-report .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 12px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; height: 20px;}
+            #pdf-report .pdf-table td { border: 1px solid #000; font-size: 13px; font-weight: bold; padding: 4px; }
+            #pdf-report .row-total td { color: red !important; font-weight: bold; height: 25px; }
+            
+            #pdf-report .bottom-container { flex: 0 0 auto; display: flex; gap: 20px; margin-top: 10px; page-break-inside: avoid; }
+            #pdf-report .tabla-extras { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; }
+            #pdf-report .tabla-extras td { border: 1px solid #000; padding: 4px; }
+            #pdf-report .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 12px; font-weight: bold; text-align: right; }
+            #pdf-report .tabla-resumen td { padding: 4px; }
+            #pdf-report .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; margin-bottom: 5px;}
+            #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 3px 4px; height: 18px;}
+            #pdf-report .firma { margin-top: 25px; font-size: 12px; font-weight: normal; }
 
-            body.print-corte #pdf-report { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; font-size: 11px; }
-            #pdf-report .header-pdf { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
-            #pdf-report .subtitle-pdf { text-align: center; font-weight: bold; font-size: 13px; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; }
-            #pdf-report .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center; page-break-inside: avoid; }
-            #pdf-report .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 10px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 4px; }
-            #pdf-report .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 4px; }
-            #pdf-report .row-total td { color: red !important; font-weight: bold; }
-            #pdf-report .bottom-container { display: flex; gap: 20px; margin-top: 15px; page-break-inside: avoid; }
-            #pdf-report .tabla-extras { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; }
-            #pdf-report .tabla-extras td { border: 1px solid #000; padding: 3px; }
-            #pdf-report .tabla-resumen { width: 100%; border-collapse: collapse; font-size: 11px; font-weight: bold; text-align: right; }
-            #pdf-report .tabla-resumen td { padding: 3px; }
-            #pdf-report .tabla-gastos { width: 100%; border-collapse: collapse; font-size: 10px; font-weight: bold; margin-bottom: 5px;}
-            #pdf-report .tabla-gastos td { border: 1px solid #000; padding: 2px 4px; height: 14px;}
-            #pdf-report .firma { margin-top: 20px; font-size: 10px; font-weight: normal; }
-
+            /* FORMATOS DE INVENTARIO Y FIFO (También en Horizontal) */
             body.print-inv #pdf-inventario { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
             body.print-inv .header-inv { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 5px;}
             body.print-inv .audit-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 12px; margin-top: 10px; }
             body.print-inv .audit-table th { background-color: #333 !important; color: white !important; font-weight: bold; border: 1px solid #000; padding: 6px; -webkit-print-color-adjust: exact;}
             body.print-inv .audit-table td { border: 1px solid #000; padding: 6px; }
 
-            /* FORMATO FIFO LOTES */
             body.print-fifo #pdf-fifo { display: block !important; width: 100%; font-family: 'Arial Narrow', Arial, sans-serif; }
             #pdf-fifo h2 { text-align: center; color: #8E24AA; margin-bottom: 5px; }
             #pdf-fifo .fifo-header { text-align: center; margin-bottom: 15px; font-size: 12px; border-bottom: 2px solid #8E24AA; padding-bottom: 10px;}
@@ -420,10 +431,17 @@
 
     <div id="pdf-report">
         <div class="header-pdf">TINACOS PLASTINOVA<br>VENDEDOR: <span id="r-vendedor"></span><br><span id="r-fechas"></span> | SEMANA <span id="r-semana"></span></div>
-        <div class="subtitle-pdf">VENTAS TINACOS</div>
-        <table class="pdf-table"><thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TINACO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead><tbody id="r-tabla-tinacos"></tbody><tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td><span id="r-sumQTinacos"></span></td><td>$<span id="r-sumPrecioTinacos"></span></td><td>$<span id="r-sumDineroTinacos"></span></td></tr></tfoot></table>
-        <div class="subtitle-pdf">VENTAS TAMBOS Y MACETAS</div>
-        <table class="pdf-table"><thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAM/MAC</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead><tbody id="r-tabla-tambos"></tbody><tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td><span id="r-sumQTambos"></span></td><td>$<span id="r-sumPrecioTambos"></span></td><td>$<span id="r-sumDineroTambos"></span></td></tr></tfoot></table>
+        
+        <div class="table-wrapper">
+            <div class="subtitle-pdf">VENTAS TINACOS</div>
+            <table class="pdf-table"><thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TINACO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead><tbody id="r-tabla-tinacos"></tbody><tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td><span id="r-sumQTinacos"></span></td><td>$<span id="r-sumPrecioTinacos"></span></td><td>$<span id="r-sumDineroTinacos"></span></td></tr></tfoot></table>
+        </div>
+        
+        <div class="table-wrapper">
+            <div class="subtitle-pdf">VENTAS TAMBOS Y MACETAS</div>
+            <table class="pdf-table"><thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAM/MAC</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead><tbody id="r-tabla-tambos"></tbody><tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td><span id="r-sumQTambos"></span></td><td>$<span id="r-sumPrecioTambos"></span></td><td>$<span id="r-sumDineroTambos"></span></td></tr></tfoot></table>
+        </div>
+
         <div class="bottom-container">
             <div style="width: 45%;"><div class="firma">FIRMA_______________________</div><table class="tabla-extras"><tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr><tr id="row-pedro"><td style="text-align:center;"><span id="r-qProdExtraTinPedro"></span></td><td><span id="lbl-tipo-extra-pedro">TINACOS EXTRA</span> PEDRO</td><td style="text-align:right;"><span id="r-comExtraTinPedro"></span></td></tr><tr><td style="text-align:center;"><span id="r-qProdExtraTin"></span></td><td><span id="lbl-tipo-extra">TINACOS EXTRA</span> <span id="r-vendLabelExtra"></span></td><td style="text-align:right;"><span id="r-comExtraTin"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTinacosCom"></span></td><td>VENTAS TINACOS</td><td style="text-align:right;"><span id="r-comTinacos"></span></td></tr><tr><td style="text-align:center;"><span id="r-sumQTambosCom"></span></td><td>VENTAS TAMBOS</td><td style="text-align:right;"><span id="r-comTambos"></span></td></tr><tr><td colspan="2" style="text-align:center; color:red;">TOTAL</td><td style="color:red; text-align:right;"><span id="r-totComisiones"></span></td></tr></table></div>
             <div style="width: 55%;"><table class="tabla-resumen"><tr><td style="width: 70%; color: red;">TOTAL VENTAS</td><td style="color: red;"><span id="r-granTotalVentas"></span></td></tr></table><table class="tabla-gastos"><tbody id="r-tabla-gastos"></tbody></table><table class="tabla-resumen"><tr><td style="width: 70%;">GASTOS $</td><td><span id="r-totGastos"></span></td></tr><tr><td>SUB TOTAL $</td><td><span id="r-subTotal"></span></td></tr><tr><td>EXTRA TRABAJADORES</td><td><span id="r-totComisionesFin"></span></td></tr><tr><td style="color: red; font-size: 13px;">TOTAL $</td><td style="color: red; font-size: 13px;"><span id="r-totalEfectivo"></span></td></tr></table></div>
@@ -508,7 +526,7 @@
             "TERMINADOS": [] 
         };
 
-        // Generar todas las combinaciones de terminados para mermas
+        // Generador Automático de Todos los Terminados
         const capsTin = ["1200LT", "1100LT", "750LT"];
         const colsTin = ["BEIGE", "NEGRO", "AZUL", "ROJO", "VERDE", "NATURAL", "NARANJA", "CAFÉ", "BLANCO", "VERDE INDUSTRIAL"];
         capsTin.forEach(cap => colsTin.forEach(col => LISTA_MATERIALES["TERMINADOS"].push(`TINACO ${cap} ${col}`)));
@@ -527,6 +545,11 @@
             document.getElementById('invMaterial').innerHTML = document.getElementById('compraMaterial').innerHTML;
             actualizarFechasCorte(); 
             actualizarListaMermas();
+
+            // VIGILANTE DE IMPRESIÓN (El Fix de la Hoja Blanca)
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('print-corte', 'print-inv', 'print-fifo', 'print-dinamico');
+            });
         });
 
         const LISTA_PRECIOS = { 
@@ -609,7 +632,6 @@
             localStorage.setItem('plastinova_stock_v1', JSON.stringify(stock));
         }
 
-        // CANDADO DE CONSIGNACIONES
         function obtenerDeudaConsignacion(vendedor, productoName) {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             let deuda = 0;
@@ -636,7 +658,7 @@
             
             if(qTin > 0 && tipoOpTin === 'consignacion_cobro') {
                 let deudaReal = obtenerDeudaConsignacion(v, `${capTin} ${colTin}`);
-                if(qTin > deudaReal) return alert(`🚨 ERROR (Candado Activo): Intentas cobrar ${qTin} Tinacos ${capTin} ${colTin}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes por pagar. Operación bloqueada.`);
+                if(qTin > deudaReal) return alert(`🚨 ERROR: Intentas cobrar ${qTin} Tinacos ${capTin} ${colTin}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes. Bloqueado.`);
             }
 
             if(qTin > 0) { 
@@ -658,7 +680,7 @@
             
             if(qTam > 0 && tipoOpTam === 'consignacion_cobro') {
                 let deudaReal = obtenerDeudaConsignacion(v, `${capTam} ${colTam}`);
-                if(qTam > deudaReal) return alert(`🚨 ERROR (Candado Activo): Intentas cobrar ${qTam} Tambos ${capTam} ${colTam}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes por pagar. Operación bloqueada.`);
+                if(qTam > deudaReal) return alert(`🚨 ERROR: Intentas cobrar ${qTam} Tambos ${capTam} ${colTam}, pero el vendedor ${v} solo tiene ${deudaReal} pendientes. Bloqueado.`);
             }
 
             if(qTam > 0) { 
@@ -689,7 +711,7 @@
             alert('¡Guardado en Teléfono y Google Sheets!');
         }
 
-        // REGISTRO DE MERMAS
+        // REGISTRO DE MERMAS REPARADO
         function actualizarListaMermas() {
             const cat = document.getElementById('mermaCategoria').value;
             const select = document.getElementById('mermaProducto');
@@ -847,14 +869,10 @@
             document.getElementById('r-inv-fecha-impresion').innerText = "FECHA: " + f.split('-').reverse().join('/');
             
             document.body.classList.add('print-inv'); 
-            // Fix IOS: Tiempo de espera para renderizado
             setTimeout(() => {
                 window.print(); 
-                setTimeout(() => {
-                    document.body.classList.remove('print-inv');
-                    if(confirm("¿PDF generado? Limpiando carrito...")) { vaciarCarritoInv(); verStockActual(); }
-                }, 1000);
-            }, 100);
+                // El EventListener 'afterprint' quitará la clase automáticamente
+            }, 300);
         }
 
         function cargarBD() {
@@ -959,7 +977,7 @@
             reader.readAsText(file);
         }
 
-        // AUDITORÍA POR LOTES (FIFO MATEMÁTICO REAL)
+        // AUDITORÍA POR LOTES (FIFO MATEMÁTICO REAL REPARADO)
         function generarPDFFifo() {
             const fechaCorte = document.getElementById('fechaLoteNuevo').value;
             if(!fechaCorte) return alert("Ingresa la fecha de llegada del nuevo lote para continuar.");
@@ -969,7 +987,7 @@
 
             let invViejo = {}; 
             
-            // 1. Calcular el stock exacto ANTES de la fecha de corte
+            // 1. RECALCULAR STOCK EXACTO PREVIO
             db.forEach(r => {
                 let itemName = null;
                 if(r.concepto && (r.concepto.includes('TINACO') || r.concepto.includes('TAMBO') || r.concepto.includes('235LT') || r.concepto.includes('MACETA'))) {
@@ -1051,14 +1069,12 @@
             document.getElementById('fifo-fecha-corte').innerText = fechaCorte.split('-').reverse().join('/');
 
             document.body.classList.add('print-fifo'); 
-            // Fix IOS
             setTimeout(() => {
                 window.print(); 
-                setTimeout(() => { document.body.classList.remove('print-fifo'); }, 1000);
-            }, 100);
+                // El EventListener 'afterprint' quitará la clase
+            }, 300);
         }
 
-        // FUNCIONES GRÁFICAS Y REPORTES
         function imprimirTablaDinamica(tablaId, titulo) {
             let htmlTabla = document.getElementById(tablaId).outerHTML;
             let d = new Date(); let user = document.getElementById('vendedor').value; let fStr = d.toLocaleDateString('es-MX') + ' ' + d.toLocaleTimeString('es-MX');
@@ -1067,7 +1083,7 @@
             printWindow.document.close(); printWindow.focus(); setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
         }
 
-        // --- GRÁFICAS DETALLADAS (RESTAURADAS A ORIGINAL) ---
+        // GRÁFICAS RESTAURADAS AL ORIGINAL (Con Textos Azules y Naranjas)
         function renderGraficas() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
             const fTiempo = document.getElementById('filtroTiempo').value; 
@@ -1215,10 +1231,6 @@
             
             const granTotal = sumDTin + sumDTam, comExtPedro = (sumQExtTinPedro * 35) + (sumQExtTamPedro * 10), comExtVendedor = (sumQExtTin * 35) + (sumQExtTam * 10), totComs = comExtPedro + comExtVendedor + sumComisionTinacos + sumComisionTambos, subTotal = granTotal - sumGastos, totalEfe = subTotal - totComs;
             
-            const pdfContainer = document.getElementById('pdf-report'); pdfContainer.classList.remove('compact-mode', 'super-compact-mode');
-            let totalFilas = totalVentasImpresas + (countGastos > 4 ? countGastos : 4);
-            if (totalFilas >= 25) { pdfContainer.classList.add('super-compact-mode'); } else if (totalFilas >= 16) { pdfContainer.classList.add('compact-mode'); }
-            
             document.getElementById('r-vendedor').innerText = vendedor; 
             document.getElementById('r-fechas').innerText = `${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')}`; 
             let dObj = new Date(); document.getElementById('r-semana').innerText = getNumeroSemana(new Date(dObj.getTime() - (dObj.getTimezoneOffset() * 60000)));
@@ -1239,11 +1251,10 @@
             document.getElementById('r-granTotalVentas').innerText = '$' + formato(granTotal); document.getElementById('r-subTotal').innerText = '$' + formato(subTotal); document.getElementById('r-totComisionesFin').innerText = '$' + formato(totComs); document.getElementById('r-totalEfectivo').innerText = '$' + formato(totalEfe);
             
             document.body.classList.add('print-corte'); 
-            // Fix IOS: Tiempo de espera para renderizado
             setTimeout(() => {
                 window.print(); 
-                setTimeout(() => { document.body.classList.remove('print-corte'); }, 1000);
-            }, 100);
+                // El EventListener 'afterprint' quitará la clase
+            }, 300);
         }
     </script>
 </body>
