@@ -334,6 +334,36 @@
             return local.toISOString().split('T')[0];
         }
 
+        function syncSemanaDesdeFecha() {
+            const fechaEl = document.getElementById('fecha');
+            const semanaEl = document.getElementById('semana');
+            if (!fechaEl || !semanaEl) return;
+            semanaEl.value = getNumeroSemana(fechaEl.value || hoyLocalISO());
+        }
+
+        function fechaOrdenValor(fechaStr) {
+            const d = parseLocalDate(fechaStr);
+            return d ? d.getTime() : 0;
+        }
+
+        function esMovimientoConIngreso(r) {
+            const tipo = String((r && r.tipo) || '').trim();
+            const concepto = String((r && r.concepto) || '').toUpperCase();
+
+            if (concepto.includes('ENTREGA CONSIGNACIÓN')) return false;
+            if (concepto.includes('TRASPASO SUCURSAL')) return false;
+            if (concepto.includes('GARANTÍA')) return false;
+
+            return (
+                tipo === 'VENTA_TINACO' ||
+                tipo === 'VENTA_TINACO_COBRO' ||
+                tipo === 'VENTA_TAMBO' ||
+                tipo === 'VENTA_TAMBO_COBRO' ||
+                tipo === 'TRASPASO_TINACO_COBRO' ||
+                tipo === 'TRASPASO_TAMBO_COBRO'
+            );
+        }
+
         function escJsStr(str) { return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
         function escHtml(str) { return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
@@ -444,7 +474,7 @@
         function imprimirDocumento(htmlContent, tituloDocumento, modoImpresion = 'spacious-mode', escalaImpresion = 1) {
             let logoHTML = LOGO_PLASTINOVA ? `<img src="${LOGO_PLASTINOVA}" style="height:60px; max-width: 150px; object-fit: contain;">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO]</b></div>`;
             let fStr = new Date().toLocaleString('es-MX');
-            const escalaSegura = Math.max(0.58, Math.min(parseFloat(escalaImpresion) || 1, 1));
+            const escalaSegura = Math.max(0.84, Math.min(parseFloat(escalaImpresion) || 1, 1));
             const anchoEscala = (100 / escalaSegura).toFixed(2) + '%';
 
             let printWindow = window.open('', '_blank');
@@ -893,11 +923,15 @@
             const fechaLocal = hoyLocalISO();
             document.getElementById('fecha').value = fechaLocal;
             document.getElementById('invFecha').value = fechaLocal; 
-            document.getElementById('semana').value = getNumeroSemana(fechaLocal);
-            
+            syncSemanaDesdeFecha();
+            document.getElementById('fecha').addEventListener('change', syncSemanaDesdeFecha);
+
             document.getElementById('invMaterial').innerHTML = document.getElementById('compraMaterial').innerHTML;
             actualizarFechasCorte(); 
             actualizarListaMermas();
+            autoCompletarPesoInv();
+            actualizarPrecios('tinaco');
+            actualizarPrecios('tambo');
             verStockActual();
         });
 
@@ -1292,27 +1326,46 @@
 
         function cargarBD() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-            db.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+            db = db
+                .map((r, idx) => ({ ...r, _ord: idx }))
+                .sort((a, b) => {
+                    const ta = fechaOrdenValor(a.fecha);
+                    const tbv = fechaOrdenValor(b.fecha);
+                    if (ta !== tbv) return tbv - ta;
+                    return b._ord - a._ord;
+                })
+                .map(({ _ord, ...r }) => r);
+
             let tb = document.querySelector('#tablaBD tbody'); tb.innerHTML = '';
             db.forEach(r => { 
-                let pStr = parseFloat(r.precio) > 0 ? '$' + formato(r.precio) : '-'; let tStr = parseFloat(r.total) > 0 ? '$' + formato(r.total) : '-'; let cStr = parseFloat(r.cantidad) > 0 ? parseFloat(r.cantidad).toFixed(2) : '-';
-                tb.innerHTML += `<tr><td>${r.fecha}</td><td>${r.vendedor}</td><td><span class="badge-tipo">${getTipoAmigable(r.tipo)}</span></td><td>${r.concepto}</td><td style="font-weight:bold;">${cStr}</td><td>${pStr}</td><td style="font-weight:bold; color:#1565C0;">${tStr}</td><td style="text-align:center;"><button onclick="borrarRegistro(${r.id})" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">❌</button></td></tr>`; 
+                let pStr = parseFloat(r.precio) > 0 ? '$' + formato(r.precio) : '-';
+                let tStr = parseFloat(r.total) > 0 ? '$' + formato(r.total) : '-';
+                let cStr = parseFloat(r.cantidad) > 0 ? parseFloat(r.cantidad).toFixed(2) : '-';
+                tb.innerHTML += `<tr><td>${escHtml(r.fecha || '')}</td><td>${escHtml(r.vendedor || '')}</td><td><span class="badge-tipo">${escHtml(getTipoAmigable(r.tipo))}</span></td><td>${escHtml(r.concepto || '')}</td><td style="font-weight:bold;">${cStr}</td><td>${pStr}</td><td style="font-weight:bold; color:#1565C0;">${tStr}</td><td style="text-align:center;"><button onclick="borrarRegistro('${escJsStr(String(r.id))}')" style="background:#d32f2f; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer;">❌</button></td></tr>`; 
             });
         }
 
         function borrarRegistro(id) {
             if(confirm("¿Borrar este movimiento?\nAl borrarlo, los materiales de esta operación VOLVERÁN a la bodega de forma inteligente y los historiales se recalcularán automáticamente.")) {
                 let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
-                db = db.filter(x => x.id !== id); 
+                db = db.filter(x => String(x.id) !== String(id)); 
                 localStorage.setItem('plastinova_bd_v2', JSON.stringify(db)); 
                 reconstruirStockDesdeBD(db);
                 cargarBD(); 
             }
         }
-        
-        function limpiarBD() { if(confirm("¿Borrar TODO el historial?")) { localStorage.removeItem('plastinova_bd_v2'); cargarBD(); } }
 
-        function importarCSV(esRescate) {
+        function limpiarBD() {
+            if(confirm("¿Borrar TODO el historial?")) {
+                localStorage.removeItem('plastinova_bd_v2');
+                localStorage.removeItem('plastinova_stock_v1');
+                cargarBD();
+                verStockActual();
+                renderGraficas();
+            }
+        }
+
+                function importarCSV(esRescate) {
             const input = document.getElementById('archivoCSV'); const file = input.files[0];
             if (!file) return alert("⚠️ Selecciona el archivo .csv descargado de Google Sheets.");
             
@@ -1541,15 +1594,16 @@
             let d_sem = getNumeroSemana(document.getElementById('fecha').value); 
             let d_mes = new Date().getMonth(); let d_anio = new Date().getFullYear(); 
             let v_ventas = {}; let v_prod = {}; let maxV = 0; let maxP = 0;
-            
+
             db.forEach(r => { 
-                let rD = new Date(r.fecha + "T00:00:00"); 
+                let rD = parseLocalDate(r.fecha); 
+                if (!rD) return;
                 let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
                     let isTin = (r.concepto||'').includes('TINACO'); let isTam = (r.concepto||'').includes('TAMBO') || (r.concepto||'').includes('235LT'); let isMac = (r.concepto||'').includes('MACETA');
                     let cant = parseFloat(r.cantidad)||0;
 
-                    if(r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) { 
+                    if(esMovimientoConIngreso(r)) { 
                         if(!v_ventas[r.vendedor]) v_ventas[r.vendedor] = { totalDinero: 0, tin: 0, tam: 0, mac: 0 };
                         v_ventas[r.vendedor].totalDinero += parseFloat(r.total) || 0; 
                         if(isTin) v_ventas[r.vendedor].tin += cant; if(isTam) v_ventas[r.vendedor].tam += cant; if(isMac) v_ventas[r.vendedor].mac += cant;
@@ -1585,15 +1639,17 @@
 
         function imprimirReportePro() {
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || []; 
-            const fTiempo = document.getElementById('filtroTiempo').value, fVend = document.getElementById('filtroVendedorGrafica').value, selTiempo = document.getElementById('filtroTiempo'), textoTiempo = selTiempo.options[selTiempo.selectedIndex].text;
+            const fTiempo = document.getElementById('filtroTiempo').value, fVend = document.getElementById('filtroVendedorGrafica').value, selTiempo = document.getElementById('filtroTiempo');
             let d_sem = getNumeroSemana(document.getElementById('fecha').value), d_mes = new Date().getMonth(), d_anio = new Date().getFullYear(); 
             let r_ventas = {}, r_prod = {}, global = { tinVendidos: 0, tamVendidos: 0, tinProd: 0, tamProd: 0, macProd: 0, dinero: 0 };
 
             db.forEach(r => { 
-                let rD = new Date(r.fecha + "T00:00:00"), valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
+                let rD = parseLocalDate(r.fecha);
+                if (!rD) return;
+                let valid = (fTiempo==='semana'&&r.semana==d_sem&&rD.getFullYear()==d_anio) || (fTiempo==='mes'&&rD.getMonth()==d_mes&&rD.getFullYear()==d_anio) || (fTiempo==='anio'&&rD.getFullYear()==d_anio);
                 if(valid && (fVend==='TODOS'||r.vendedor===fVend)) { 
                     const cant = parseFloat(r.cantidad) || 0, tot = parseFloat(r.total) || 0, conc = r.concepto || '';
-                    if(r.tipo.includes('VENTA') || r.tipo.includes('TRASPASO')) { 
+                    if(esMovimientoConIngreso(r)) { 
                         if(!r_ventas[r.vendedor]) r_ventas[r.vendedor] = { dinero: 0, tinacos: 0, tambos: 0 };
                         r_ventas[r.vendedor].dinero += tot; global.dinero += tot;
                         if(conc.includes('TINACO')) { r_ventas[r.vendedor].tinacos += cant; global.tinVendidos += cant; }
@@ -1610,12 +1666,12 @@
 
             let htmlVentas = `<h3 class="header-pdf">Tabla A: Ventas por Vendedor</h3><table class="gen-table"><thead><tr><th>Vendedor</th><th>Tinacos</th><th>Tambos</th><th>Ingreso Total</th></tr></thead><tbody>`;
             if(Object.keys(r_ventas).length === 0) htmlVentas += `<tr><td colspan="4">Sin ventas en este periodo.</td></tr>`;
-            else { for(let v in r_ventas) { htmlVentas += `<tr><td><b>${v}</b></td><td>${r_ventas[v].tinacos}</td><td>${r_ventas[v].tambos}</td><td>$${formato(r_ventas[v].dinero)}</td></tr>`; } }
+            else { for(let v in r_ventas) { htmlVentas += `<tr><td><b>${escHtml(v)}</b></td><td>${r_ventas[v].tinacos}</td><td>${r_ventas[v].tambos}</td><td>$${formato(r_ventas[v].dinero)}</td></tr>`; } }
             htmlVentas += `</tbody></table>`;
 
             let htmlProd = `<h3 class="header-pdf" style="margin-top:10px;">Tabla B: Producción por Productor</h3><table class="gen-table"><thead><tr><th>Productor</th><th>Tinacos</th><th>Tambos</th><th>Macetas</th></tr></thead><tbody>`;
             if(Object.keys(r_prod).length === 0) htmlProd += `<tr><td colspan="4">Sin producción en este periodo.</td></tr>`;
-            else { for(let p in r_prod) { htmlProd += `<tr><td><b>${p}</b></td><td>${r_prod[p].tinacos}</td><td>${r_prod[p].tambos}</td><td>${r_prod[p].macetas}</td></tr>`; } }
+            else { for(let p in r_prod) { htmlProd += `<tr><td><b>${escHtml(p)}</b></td><td>${r_prod[p].tinacos}</td><td>${r_prod[p].tambos}</td><td>${r_prod[p].macetas}</td></tr>`; } }
             htmlProd += `</tbody></table>`;
 
             let htmlGlobal = `<div style="border: 2px solid #2E7D32; padding: 5px; margin-top: 15px; text-align:center;">
@@ -1630,7 +1686,7 @@
             imprimirDocumento(htmlVentas + htmlProd + htmlGlobal, "REPORTE PRO - VENTAS VS PROD.");
         }
 
-        function actualizarFechasCorte() {
+                function actualizarFechasCorte() {
             const v = document.getElementById('vendedorCorte').value; 
             let d = new Date(); let diaActual = d.getDay() === 0 ? 7 : d.getDay(); 
             let fIni = new Date(d); let fFin = new Date(d);
@@ -1644,78 +1700,94 @@
             const vendedor = document.getElementById('vendedorCorte').value, mostrarTinacos = document.getElementById('chkTinacos').checked, mostrarTambos = document.getElementById('chkTambos').checked; 
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const startStr = document.getElementById('fechaDesde').value, endStr = document.getElementById('fechaHasta').value;
-            
+
             const semanaCalculada = getNumeroSemana(startStr);
 
-            let registros = db.filter(r => { 
-                if (!r.fecha || !(r.fecha >= startStr && r.fecha <= endStr)) return false; 
-                if (r.vendedor === vendedor) return true; 
-                if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && (r.tipo || '').includes('PROD_EXTRA')) return true; 
-                return false; 
-            });
-            
+            let registros = db
+                .filter(r => { 
+                    if (!r.fecha || !(r.fecha >= startStr && r.fecha <= endStr)) return false; 
+                    if (r.vendedor === vendedor) return true; 
+                    if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && (r.tipo || '').includes('PROD_EXTRA')) return true; 
+                    return false; 
+                })
+                .map((r, idx) => ({ ...r, _ord: idx }))
+                .sort((a, b) => {
+                    const ta = fechaOrdenValor(a.fecha);
+                    const tbv = fechaOrdenValor(b.fecha);
+                    if (ta !== tbv) return ta - tbv;
+                    return a._ord - b._ord;
+                })
+                .map(({ _ord, ...r }) => r);
+
             let tTinacos = '', tTambos = '', tGastos = ''; 
-            let sumQTin = 0, sumPTin = 0, sumDTin = 0, sumQTam = 0, sumPTam = 0, sumDTam = 0, sumQExtTin = 0, sumQExtTam = 0, sumQExtTinPedro = 0, sumQExtTamPedro = 0, sumGastos = 0, sumComisionTinacos = 0, sumComisionTambos = 0;
+            let sumQTin = 0, sumDTin = 0, sumQTam = 0, sumDTam = 0, sumQExtTin = 0, sumQExtTam = 0, sumQExtTinPedro = 0, sumQExtTamPedro = 0, sumGastos = 0, sumComisionTinacos = 0, sumComisionTambos = 0;
             let hizoTambosExtra = false, hizoTinacosExtra = false, hizoTambosExtraPedro = false, hizoTinacosExtraPedro = false, countGastos = 0;
-            
+
             registros.forEach(r => {
                 const fechaFormat = r.fecha.split('-').reverse().join('/'), cantNum = parseFloat(r.cantidad) || 0, precioNum = parseFloat(r.precio) || 0, totalNum = parseFloat(r.total) || 0;
-                const filaTin = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
-                const filaTam = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+                const conceptoSafe = escHtml(r.concepto || '');
+                const filaTin = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${conceptoSafe}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
+                const filaTam = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${conceptoSafe}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
 
-                const noPagaComision = precioNum === 0 && ((r.concepto || '').includes('GARANTÍA') || (r.concepto || '').includes('ENTREGA CONSIGNACIÓN') || (r.concepto || '').includes('TRASPASO SUCURSAL'));
+                const concepto = String(r.concepto || '').toUpperCase();
+                const esSalidaSinIngreso = concepto.includes('ENTREGA CONSIGNACIÓN') || concepto.includes('TRASPASO SUCURSAL') || concepto.includes('GARANTÍA');
+                const esVentaValida = esMovimientoConIngreso(r);
 
                 if((r.tipo === 'VENTA_TINACO' || r.tipo === 'VENTA_TINACO_COBRO' || r.tipo === 'TRASPASO_TINACO' || r.tipo === 'TRASPASO_TINACO_COBRO') && mostrarTinacos) { 
-                    tTinacos += filaTin; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; 
-                    if(!noPagaComision && !r.tipo.includes('TRASPASO_TINACO')) sumComisionTinacos += (cantNum * 35);
+                    if (esVentaValida) {
+                        tTinacos += filaTin; sumQTin += cantNum; sumDTin += totalNum; 
+                        if(!esSalidaSinIngreso && !r.tipo.includes('TRASPASO_TINACO')) sumComisionTinacos += (cantNum * 35);
+                    }
                 }
                 if((r.tipo === 'VENTA_TAMBO' || r.tipo === 'VENTA_TAMBO_COBRO' || r.tipo === 'TRASPASO_TAMBO' || r.tipo === 'TRASPASO_TAMBO_COBRO') && mostrarTambos) { 
-                    tTambos += filaTam; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; 
-                    if(!noPagaComision && !r.tipo.includes('TRASPASO_TAMBO')) sumComisionTambos += (cantNum * 10);
+                    if (esVentaValida) {
+                        tTambos += filaTam; sumQTam += cantNum; sumDTam += totalNum; 
+                        if(!esSalidaSinIngreso && !r.tipo.includes('TRASPASO_TAMBO')) sumComisionTambos += (cantNum * 10);
+                    }
                 }
                 if((r.tipo || '').includes('PROD_EXTRA')) { 
                     let esTambo = r.tipo === 'PROD_EXTRA_TAMBO' || (r.concepto || '').includes('TAMBO') || (r.concepto || '').includes('235LT');
                     if (r.vendedor === 'PEDRO' && vendedor === 'FERNANDO') { if (esTambo) { sumQExtTamPedro += cantNum; hizoTambosExtraPedro = true; } else { sumQExtTinPedro += cantNum; hizoTinacosExtraPedro = true; } } 
                     else if (r.vendedor === vendedor) { if (esTambo) { sumQExtTam += cantNum; hizoTambosExtra = true; } else { sumQExtTin += cantNum; hizoTinacosExtra = true; } } 
                 }
-                if(r.tipo === 'GASTO') { tGastos += `<tr><td style="text-align:left;">${r.concepto}</td><td style="text-align:right;">${formato(totalNum)}</td></tr>`; sumGastos += totalNum; countGastos++; }
+                if(r.tipo === 'GASTO') { tGastos += `<tr><td style="text-align:left;">${escHtml(r.concepto || '')}</td><td style="text-align:right;">${formato(totalNum)}</td></tr>`; sumGastos += totalNum; countGastos++; }
             });
-            
+
             while(countGastos < 4) { tGastos += `<tr><td style="text-align:left;">&nbsp;</td><td style="text-align:right;">-</td></tr>`; countGastos++; }
             if(!tTinacos) tTinacos = '<tr><td colspan="7">Sin ventas registradas</td></tr>';
             if(!tTambos) tTambos = '<tr><td colspan="7">Sin ventas registradas</td></tr>';
 
             const granTotal = sumDTin + sumDTam, comExtPedro = (sumQExtTinPedro * 35) + (sumQExtTamPedro * 10), comExtVendedor = (sumQExtTin * 35) + (sumQExtTam * 10), totComs = comExtPedro + comExtVendedor + sumComisionTinacos + sumComisionTambos, subTotal = granTotal - sumGastos;
             const totalEfe = subTotal - totComs; 
-            
+
             let textoExtrasPedro = "TIN EXTRA PEDRO"; if (hizoTambosExtraPedro && !hizoTinacosExtraPedro) textoExtrasPedro = "TAM EXTRA PEDRO"; else if (hizoTambosExtraPedro && hizoTinacosExtraPedro) textoExtrasPedro = "TIN/TAM EXT PEDRO";
             let textoExtras = `TIN EXTRA ${vendedor}`; if (hizoTambosExtra && !hizoTinacosExtra) textoExtras = `TAM EXTRA ${vendedor}`; else if (hizoTambosExtra && hizoTinacosExtra) textoExtras = `TIN/TAM EXT ${vendedor}`;
 
-            let filaPedro = (vendedor === 'FERNANDO') ? `<tr><td style="text-align:center;">${sumQExtTinPedro + sumQExtTamPedro}</td><td>${textoExtrasPedro}</td><td style="text-align:right;">$${formato(comExtPedro)}</td></tr>` : '';
+            let filaPedro = (vendedor === 'FERNANDO') ? `<tr><td style="text-align:center;">${sumQExtTinPedro + sumQExtTamPedro}</td><td>${escHtml(textoExtrasPedro)}</td><td style="text-align:right;">$${formato(comExtPedro)}</td></tr>` : '';
 
             let htmlCorte = `
-                <div class="header-pdf">TINACOS PLASTINOVA<br>VENDEDOR: ${vendedor}<br>${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')} | SEMANA ${semanaCalculada}</div>
-                
+                <div class="header-pdf">TINACOS PLASTINOVA<br>VENDEDOR: ${escHtml(vendedor)}<br>${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')} | SEMANA ${semanaCalculada}</div>
+
                 <div class="subtitle-pdf">VENTAS TINACOS</div>
                 <table class="pdf-table">
                     <thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TINACO</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead>
                     <tbody>${tTinacos}</tbody>
                     <tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTin.toFixed(2)}</td><td>-</td><td>$${formato(sumDTin)}</td></tr></tfoot>
                 </table>
-                
+
                 <div class="subtitle-pdf">VENTAS TAMBOS Y MACETAS</div>
                 <table class="pdf-table">
                     <thead><tr><th>FOLIO</th><th>FECHA</th><th>CONCEPTO</th><th># TAM/MAC</th><th>CANTIDAD</th><th>PRECIO UNI</th><th>TOTAL</th></tr></thead>
                     <tbody>${tTambos}</tbody>
                     <tfoot><tr class="row-total"><td colspan="4" style="text-align: right; padding-right: 15px;">TOTAL</td><td>${sumQTam.toFixed(2)}</td><td>-</td><td>$${formato(sumDTam)}</td></tr></tfoot>
                 </table>
-                
+
                 <div class="bottom-container">
                     <div class="left-panel">
                         <table class="tabla-extras">
                             <tr><td style="width:10%; text-align:center;">0</td><td>HORAS EXTRAS</td><td style="text-align:right;">$0</td></tr>
                             ${filaPedro}
-                            <tr><td style="text-align:center;">${sumQExtTin + sumQExtTam}</td><td>${textoExtras}</td><td style="text-align:right;">$${formato(comExtVendedor)}</td></tr>
+                            <tr><td style="text-align:center;">${sumQExtTin + sumQExtTam}</td><td>${escHtml(textoExtras)}</td><td style="text-align:right;">$${formato(comExtVendedor)}</td></tr>
                             <tr><td style="text-align:center;">${(sumComisionTinacos / 35).toFixed(2)}</td><td>VENTAS TINACOS</td><td style="text-align:right;">$${formato(sumComisionTinacos)}</td></tr>
                             <tr><td style="text-align:center;">${(sumComisionTambos / 10).toFixed(2)}</td><td>VENTAS TAMBOS</td><td style="text-align:right;">$${formato(sumComisionTambos)}</td></tr>
                             <tr><td colspan="2" style="text-align:center; color:red;">TOTAL COMISIONES</td><td style="color:red; text-align:right;">$${formato(totComs)}</td></tr>
@@ -1739,21 +1811,21 @@
             const filasTambosImpresas = (tTambos.match(/<tr>/g) || []).length;
             const filasGastosImpresas = Math.max(countGastos, 4);
             const filasComisiones = 5 + (vendedor === 'FERNANDO' ? 1 : 0);
-            const scoreImpresion = filasTinacosImpresas + filasTambosImpresas + Math.ceil(filasGastosImpresas * 1.2) + filasComisiones + 6;
+            const scoreImpresion = filasTinacosImpresas + filasTambosImpresas + Math.ceil(filasGastosImpresas * 1.15) + filasComisiones + 6;
 
             let modoImpresion = 'spacious-mode';
             let escalaImpresion = 1;
 
-            if (scoreImpresion > 22) { modoImpresion = 'compact-mode'; escalaImpresion = 0.90; }
-            if (scoreImpresion > 30) { modoImpresion = 'super-compact-mode'; escalaImpresion = 0.78; }
-            if (scoreImpresion > 36) escalaImpresion = 0.74;
-            if (scoreImpresion > 42) escalaImpresion = 0.70;
-            if (scoreImpresion > 48) escalaImpresion = 0.66;
-            if (scoreImpresion > 54) escalaImpresion = 0.62;
-            if (scoreImpresion > 60) escalaImpresion = 0.58;
+            if (scoreImpresion > 24) { modoImpresion = 'compact-mode'; escalaImpresion = 0.96; }
+            if (scoreImpresion > 32) { modoImpresion = 'compact-mode'; escalaImpresion = 0.93; }
+            if (scoreImpresion > 40) { modoImpresion = 'compact-mode'; escalaImpresion = 0.90; }
+            if (scoreImpresion > 48) { modoImpresion = 'super-compact-mode'; escalaImpresion = 0.88; }
+            if (scoreImpresion > 56) { modoImpresion = 'super-compact-mode'; escalaImpresion = 0.86; }
 
             imprimirDocumento(htmlCorte, "CORTE DE CAJA", modoImpresion, escalaImpresion);
         }
+
+
     </script>
 </body>
 </html>
