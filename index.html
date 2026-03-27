@@ -28,6 +28,7 @@
         .btn-green { background-color: #2E7D32; }
         .btn-orange { background-color: #EF6C00; }
         .btn-red { background-color: #d32f2f; }
+        .btn-small { padding: 8px 12px; font-size: 12px; border-radius: 5px; width: auto; display: inline-block;}
         
         .checkbox-group { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 10px; padding: 10px; background: #e8f5e9; border-radius: 5px; border: 1px solid #c8e6c9;}
         .checkbox-group input { width: 20px; height: 20px; }
@@ -61,6 +62,7 @@
         </div>
 
         <div class="container">
+            
             <div id="tab-registro" class="tab-content active">
                 <div class="card">
                     <div class="row">
@@ -80,14 +82,28 @@
                 <div class="card">
                     <h3>📦 Venta / Traspaso Tinacos</h3>
                     <div class="row">
-                        <div class="form-group"><label>Capacidad</label><select id="capTinaco" onchange="actualizarPrecios('tinaco')"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option></select></div>
-                        <div class="form-group"><label>Color</label><select id="colTinaco"><option value="BEIGE">BEIGE</option><option value="NEGRO" selected>NEGRO</option><option value="AZUL">AZUL</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option></select></div>
+                        <div class="form-group">
+                            <label>Capacidad</label>
+                            <select id="capTinaco" onchange="actualizarPrecios('tinaco')"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <select id="colTinaco"><option value="BEIGE">BEIGE</option><option value="NEGRO" selected>NEGRO</option><option value="AZUL">AZUL</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option></select>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Operación / Precio</label>
                             <select id="tipoPrecioTinaco" onchange="actualizarPrecios('tinaco')">
-                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option><option value="segunda">SEGUNDA / REMATE</option><option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option><option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option><option value="garantia">CAMBIO GARANTÍA ($0)</option><option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option><option value="traspaso_cobro">COBRO DE TRASPASO</option>
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="segunda">SEGUNDA / REMATE</option>
+                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
+                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
+                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
+                                <option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option>
+                                <option value="traspaso_cobro">COBRO DE TRASPASO</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTinaco" placeholder="0"></div>
@@ -108,7 +124,15 @@
                         <div class="form-group">
                             <label>Operación / Precio</label>
                             <select id="tipoPrecioTambo" onchange="actualizarPrecios('tambo')">
-                                <option value="publico">PÚBLICO</option><option value="mayoreo" selected>MAYOREO</option><option value="distribuidor">DISTRIBUIDOR</option><option value="segunda">SEGUNDA / REMATE</option><option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option><option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option><option value="garantia">CAMBIO GARANTÍA ($0)</option><option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option><option value="traspaso_cobro">COBRO DE TRASPASO</option>
+                                <option value="publico">PÚBLICO</option>
+                                <option value="mayoreo" selected>MAYOREO</option>
+                                <option value="distribuidor">DISTRIBUIDOR</option>
+                                <option value="segunda">SEGUNDA / REMATE</option>
+                                <option value="consignacion_salida">SALIDA CONSIGNACIÓN ($0)</option>
+                                <option value="consignacion_cobro">COBRO DE CONSIGNACIÓN</option>
+                                <option value="garantia">CAMBIO GARANTÍA ($0)</option>
+                                <option value="traspaso_sucursal">TRASPASO A SUCURSAL ($0)</option>
+                                <option value="traspaso_cobro">COBRO DE TRASPASO</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Cantidad</label><input type="number" id="qTambo" placeholder="0"></div>
@@ -119,24 +143,48 @@
                 <div class="card" style="border: 2px solid #d32f2f; background-color: #fff5f5;">
                     <h3 style="color: #d32f2f;">🚨 Registro de Mermas / Daños</h3>
                     <div class="row">
-                        <div class="form-group"><label>Categoría</label><select id="mermaCategoria" onchange="actualizarListaMermas()"><option value="POLVOS">POLVOS / MATERIA PRIMA</option><option value="ACCESORIOS">ACCESORIOS</option><option value="TERMINADOS">PRODUCTOS TERMINADOS</option></select></div>
-                        <div class="form-group"><label>Material o Producto</label><select id="mermaProducto" style="border: 2px solid #d32f2f;"></select></div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="mermaCategoria" onchange="actualizarListaMermas()">
+                                <option value="POLVOS">POLVOS / MATERIA PRIMA</option>
+                                <option value="ACCESORIOS">ACCESORIOS</option>
+                                <option value="TERMINADOS">PRODUCTOS TERMINADOS</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Material o Producto</label>
+                            <select id="mermaProducto" style="border: 2px solid #d32f2f;"></select>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="form-group"><label>Cantidad a descontar (KG o Pza)</label><input type="number" id="qMerma" placeholder="0"></div>
                         <div class="form-group"><label>Causa o Motivo</label><input type="text" id="descMerma" placeholder="Ej. Pinchado, Derramado..."></div>
                     </div>
-                    <button class="btn" style="background-color: #d32f2f;" onclick="registrarMerma()">⚠️ Descontar de Bodega</button>
+                    <button class="btn btn-red" onclick="registrarMerma()">⚠️ Descontar de Bodega</button>
                 </div>
 
                 <div class="card">
                     <h3>🏭 Registro de Producción</h3>
                     <div class="row">
                         <div class="form-group"><label>Productor</label><select id="productor"><option value="PEDRO">PEDRO</option><option value="FERNANDO">FERNANDO</option><option value="IVAN">IVAN</option><option value="HUSAI">HUSAI</option></select></div>
-                        <div class="form-group"><label>Producto Fabricado</label><select id="tipoProdFabricado" onchange="autoCompletarCapacidadProd()"><option value="TINACO">TINACO</option><option value="TAMBO">TAMBO</option><option value="MACETA">MACETA CUADRADA</option></select></div>
+                        <div class="form-group">
+                            <label>Producto Fabricado</label>
+                            <select id="tipoProdFabricado" onchange="autoCompletarCapacidadProd()">
+                                <option value="TINACO">TINACO</option>
+                                <option value="TAMBO">TAMBO</option>
+                                <option value="MACETA">MACETA CUADRADA</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="form-group"><label>Capacidad / Tamaño</label><select id="capProdFabricado"><option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option><option value="235LT">235LT (Tambo)</option><option value="GRANDE">GRANDE (Maceta)</option><option value="CHICA">CHICA (Maceta)</option></select></div>
+                        <div class="form-group">
+                            <label>Capacidad / Tamaño</label>
+                            <select id="capProdFabricado">
+                                <option value="1200LT">1200LT</option><option value="1100LT" selected>1100LT</option><option value="750LT">750LT</option>
+                                <option value="235LT">235LT (Tambo)</option>
+                                <option value="GRANDE">GRANDE (Maceta)</option><option value="CHICA">CHICA (Maceta)</option>
+                            </select>
+                        </div>
                         <div class="form-group"><label>Color</label><select id="colProdFabricado"><option value="AZUL" selected>AZUL</option><option value="NEGRO">NEGRO</option><option value="BEIGE">BEIGE</option><option value="ROJO">ROJO</option><option value="VERDE">VERDE</option><option value="NATURAL">NATURAL</option><option value="NARANJA">NARANJA</option><option value="VERDE INDUSTRIAL">VERDE INDUSTRIAL</option><option value="CAFÉ">CAFÉ</option><option value="BLANCO">BLANCO</option><option value="ROJO CON BLANCO">ROJO CON BLANCO</option><option value="VERDE CON BLANCO">VERDE CON BLANCO</option><option value="AZUL CON BLANCO">AZUL CON BLANCO</option><option value="TERRACOTA">TERRACOTA</option><option value="MENTA">MENTA</option><option value="PISTACHE">PISTACHE</option><option value="GRANITO BEIGE">GRANITO BEIGE</option><option value="GRANITO">GRANITO</option><option value="DUVALIN">DUVALIN</option><option value="UVA">UVA</option><option value="MELON">MELON</option><option value="OXFORD">OXFORD</option></select></div>
                     </div>
                     <div class="row">
@@ -158,7 +206,9 @@
                 <div class="card" style="background-color: #e8f5e9; border-left: 4px solid #2E7D32;">
                     <h3 style="color: #2E7D32; margin-top: 0; margin-bottom: 5px;">📥 Recuperación y Carga (Desde Nube)</h3>
                     <p style="font-size: 11px; color: #555; margin-bottom: 10px; margin-top: 0;">Selecciona el CSV descargado de Google Sheets para añadir datos o reconstruir todo.</p>
-                    <div class="row"><input type="file" id="archivoCSV" accept=".csv" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;"></div>
+                    <div class="row">
+                        <input type="file" id="archivoCSV" accept=".csv" style="flex: 2; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: white;">
+                    </div>
                     <div class="row">
                         <button class="btn btn-green" style="flex: 1; padding: 10px;" onclick="importarCSV(false)">➕ Añadir a DB Actual</button>
                         <button class="btn btn-orange" style="flex: 1; padding: 10px;" onclick="importarCSV(true)">☁️ Rescatar (Reconstruir Todo)</button>
@@ -166,7 +216,10 @@
                 </div>
                 <div class="card" style="overflow-x: auto;">
                     <h3>🗄️ Historial de Movimientos</h3>
-                    <table class="db-table" id="tablaBD"><thead><tr><th>Fecha</th><th>Resp.</th><th>Movimiento</th><th>Concepto</th><th>Cant.</th><th>P. Uni</th><th>Total</th><th>Borrar</th></tr></thead><tbody></tbody></table>
+                    <table class="db-table" id="tablaBD">
+                        <thead><tr><th>Fecha</th><th>Resp.</th><th>Movimiento</th><th>Concepto</th><th>Cant.</th><th>P. Uni</th><th>Total</th><th>Borrar</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
                     <div style="display: flex; gap:10px; margin-top: 15px;">
                         <button class="btn btn-orange" style="flex: 1;" onclick="imprimirReporteDirecto('tablaBD', 'REPORTE DE MOVIMIENTOS HISTÓRICOS')">🖨️ Imprimir Historial</button>
                         <button class="btn" style="background-color: #d32f2f; flex: 1;" onclick="limpiarBD()">🗑️ Borrar Todo</button>
@@ -192,7 +245,9 @@
                     <h3>✂️ Generar Reporte de Corte</h3>
                     <div class="form-group" style="margin-bottom: 10px;">
                         <label>Vendedor a Cortar</label>
-                        <select id="vendedorCorte" onchange="actualizarFechasCorte()"><option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option></select>
+                        <select id="vendedorCorte" onchange="actualizarFechasCorte()">
+                            <option value="FERNANDO">FERNANDO</option><option value="HUSAI">HUSAI</option><option value="ISIDRO">ISIDRO</option><option value="IVAN">IVAN</option><option value="OFELIA">OFELIA</option><option value="PEDRO">PEDRO</option><option value="RAMON">RAMON</option>
+                        </select>
                     </div>
                     <div class="row" style="margin-bottom: 15px;">
                         <div class="form-group"><label style="color:#1565C0;">Desde:</label><input type="date" id="fechaDesde"></div>
@@ -207,8 +262,12 @@
             <div id="tab-inventario" class="tab-content">
                 <div class="card" style="border: 2px solid #8E24AA; background-color: #f3e5f5;">
                     <h3 style="color: #8E24AA; margin-bottom: 5px;">🔍 Auditoría por Lotes (Método PEPS)</h3>
+                    <p style="font-size:11px; color:#555; margin-top:0;">Determina si las ventas salieron del lote viejo o del lote nuevo basado en la fecha de llegada.</p>
                     <div class="row">
-                        <div class="form-group"><label style="color: #8E24AA; font-weight: bold;">Fecha de llegada de NUEVO lote</label><input type="date" id="fechaLoteNuevo" style="border: 2px solid #8E24AA;"></div>
+                        <div class="form-group">
+                            <label style="color: #8E24AA; font-weight: bold;">Fecha de llegada de NUEVO lote</label>
+                            <input type="date" id="fechaLoteNuevo" style="border: 2px solid #8E24AA;">
+                        </div>
                     </div>
                     <button class="btn" style="background-color: #8E24AA;" onclick="generarPDFFifo()">📄 Generar PDF de Lotes (FIFO)</button>
                 </div>
@@ -221,7 +280,10 @@
                         <button class="btn" onclick="resetearStock()" style="background-color: #d32f2f; color: white; padding: 10px; font-size: 14px; flex: 1;">🚨 Poner Ceros</button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="db-table" id="tablaStockActual"><thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th><th>Acciones (Ajuste Manual)</th></tr></thead><tbody></tbody></table>
+                        <table class="db-table" id="tablaStockActual">
+                            <thead><tr><th>Material / Producto Terminado</th><th>Cantidad Restante</th><th>Acciones (Ajuste Manual)</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -231,7 +293,10 @@
                         <button class="btn btn-orange" onclick="imprimirReporteDirecto('tablaStockRuta', 'REPORTE DE MERCANCÍA EN RUTA')" style="padding: 8px; font-size: 12px; flex: 1;">🖨️ Imprimir Reporte de Ruta</button>
                     </div>
                     <div style="overflow-x: auto;">
-                        <table class="db-table" id="tablaStockRuta"><thead><tr><th>Responsable / Ubicación</th><th>Producto Pendiente</th><th>Cantidad</th></tr></thead><tbody></tbody></table>
+                        <table class="db-table" id="tablaStockRuta">
+                            <thead><tr><th>Responsable / Ubicación</th><th>Producto Pendiente</th><th>Cantidad</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -245,10 +310,11 @@
                                 <optgroup label="MATERIA PRIMA (POLVO)">
                                     <option value="ROTOFOAM NEGRO AR">ROTOFOAM NEGRO AR</option><option value="ROTOFOAM BLANCO AR">ROTOFOAM BLANCO AR</option>
                                     <option value="ROTOLENE BEIGE">ROTOLENE BEIGE</option><option value="ROTOLENE NEGRO - BLACK">ROTOLENE NEGRO - BLACK</option>
-                                    <option value="ROTOLENE AZUL #5">ROTOLENE AZUL #5</option><option value="ROTOLENE VERDE #15">ROTOLENE VERDE #15</option><option value="ROTOLENE VERDE INDUST.">ROTOLENE VERDE INDUST.</option>
+                                    <option value="ROTOLENE AZUL #5">ROTOLENE AZUL #5</option><option value="ROTOLENE VERDE #15">ROTOLENE VERDE #15</option>
                                     <option value="ROTOLENE BLANCO">ROTOLENE BLANCO</option><option value="RECICLADO / MERMA">RECICLADO / MERMA</option>
                                     <option value="ROTOLENE ROJO 14">ROTOLENE ROJO 14</option><option value="ROTOLENE NATURAL">ROTOLENE NATURAL</option>
                                     <option value="ROTOLENE CAFÉ">ROTOLENE CAFÉ</option><option value="ROTOLENE NARANJA II">ROTOLENE NARANJA II</option>
+                                    <option value="ROTOLENE VERDE INDUSTRIAL">ROTOLENE VERDE INDUSTRIAL</option>
                                 </optgroup>
                                 <optgroup label="ACCESORIOS (KITS)">
                                     <option value="KIT COMPLETO (PIEZAS)">KIT COMPLETO (PIEZAS)</option><option value="TAPA (PIEZAS)">TAPA (PIEZAS)</option>
@@ -303,8 +369,6 @@
     <script>
         // ==========================================
         // 🟢 CONFIGURACIÓN DEL LOGO
-        // Pon el nombre exacto de tu archivo de imagen (Ej: logo.png) 
-        // en la MISMA CARPETA que esta app.
         // ==========================================
         const LOGO_PLASTINOVA = "logo.png"; 
 
@@ -318,11 +382,9 @@
         // ==========================================
         // 🟢 MOTOR DE IMPRESIÓN SEGURO (VENTANA NUEVA CON BOTÓN DE REGRESO)
         // ==========================================
-        function imprimirDocumento(htmlContent, tituloDocumento, modoImpresion = 'spacious-mode', escalaImpresion = 1) {
+        function imprimirDocumento(htmlContent, tituloDocumento, sizeClass = '') {
             let logoHTML = LOGO_PLASTINOVA ? `<img src="${LOGO_PLASTINOVA}" style="height:60px; max-width: 150px; object-fit: contain;">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO]</b></div>`;
             let fStr = new Date().toLocaleString('es-MX');
-            const escalaSegura = Math.max(0.58, Math.min(parseFloat(escalaImpresion) || 1, 1));
-            const anchoEscala = (100 / escalaSegura).toFixed(2) + '%';
 
             let printWindow = window.open('', '_blank');
             printWindow.document.write(`
@@ -330,397 +392,99 @@
                 <head>
                     <title>${tituloDocumento}</title>
                     <style>
-                        @page { size: landscape; margin: 4mm 5mm; }
+                        /* Forzamos a Horizontal */
+                        @page { size: landscape; margin: 10mm; }
+                        body { font-family: 'Arial Narrow', Arial, sans-serif; margin: 0; padding: 0; }
+                        
+                        /* Estilos para el botón de Regreso */
+                        .btn-volver { display: block; width: 90%; margin: 10px auto 20px auto; padding: 15px; background-color: #d32f2f; color: white; text-align: center; font-size: 18px; text-decoration: none; font-weight: bold; border-radius: 8px; border: 2px solid #b71c1c; }
+                        
+                        /* Cabecera */
+                        .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 5px; margin-bottom: 10px; }
+                        .print-header-info { text-align: right; font-size: 11px; }
+                        .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;}
+                        
+                        /* Tablas de Corte Restauradas (Colores y Columnas Exactas) */
+                        .header-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
+                        .subtitle-pdf { text-align: center; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 2px; text-transform: uppercase; background-color: #eee; border: 1px solid #000; border-bottom: none;}
+                        
+                        .pdf-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 5px; }
+                        .pdf-table th { background-color: #388E3C !important; color: white !important; font-size: 10px; font-weight: bold; border: 1px solid #000; -webkit-print-color-adjust: exact; padding: 2px; }
+                        .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 2px; }
+                        .row-total td { color: red !important; font-weight: bold; }
+                        
+                        /* USO DE DISPLAY TABLE PARA EVITAR QUE SAFARI LO ROMPA EN 2 HOJAS */
+                        .bottom-container { display: table; width: 100%; table-layout: fixed; margin-top: 5px; page-break-inside: avoid; }
+                        .left-panel { display: table-cell; width: 48%; vertical-align: top; padding-right: 10px; }
+                        .right-panel { display: table-cell; width: 52%; vertical-align: top; }
 
-                        html {
-                            -webkit-text-size-adjust: 100%;
-                            text-size-adjust: 100%;
-                        }
-
-                        html, body {
-                            margin: 0;
-                            padding: 0;
-                            width: 100%;
-                            background: #fff;
-                            overflow: visible !important;
-                        }
-
-                        :root,
-                        body,
-                        #print-master-zone {
-                            --logo-h: 46px;
-                            --logo-w: 120px;
-                            --header-info-size: 8.2px;
-                            --header-title-size: 12px;
-                            --doc-title-size: 10.8px;
-                            --sub-title-size: 9px;
-                            --th-size: 7px;
-                            --td-size: 7.6px;
-                            --mini-table-size: 7.7px;
-                            --cell-pad-v: 1px;
-                            --cell-pad-h: 3px;
-                            --gap: 4px;
-                            --line-tight: 1.02;
-                            --gasto-row-h: 12px;
-                        }
-
-                        body.spacious-mode,
-                        #print-master-zone.spacious-mode {
-                            --logo-h: 50px;
-                            --logo-w: 128px;
-                            --header-info-size: 8.8px;
-                            --header-title-size: 13px;
-                            --doc-title-size: 11.3px;
-                            --sub-title-size: 9.5px;
-                            --th-size: 7.3px;
-                            --td-size: 8px;
-                            --mini-table-size: 8px;
-                            --cell-pad-v: 1.5px;
-                            --cell-pad-h: 3px;
-                            --gap: 5px;
-                            --line-tight: 1.05;
-                            --gasto-row-h: 13px;
-                        }
-
-                        body.compact-mode,
-                        #print-master-zone.compact-mode {
-                            --logo-h: 40px;
-                            --logo-w: 108px;
-                            --header-info-size: 7px;
-                            --header-title-size: 10.3px;
-                            --doc-title-size: 9.2px;
-                            --sub-title-size: 7.8px;
-                            --th-size: 6.1px;
-                            --td-size: 6.6px;
-                            --mini-table-size: 6.7px;
-                            --cell-pad-v: 0.5px;
-                            --cell-pad-h: 2px;
-                            --gap: 2px;
-                            --line-tight: 0.98;
-                            --gasto-row-h: 9px;
-                        }
-
-                        body.super-compact-mode,
-                        #print-master-zone.super-compact-mode {
-                            --logo-h: 34px;
-                            --logo-w: 96px;
-                            --header-info-size: 6.2px;
-                            --header-title-size: 9px;
-                            --doc-title-size: 8px;
-                            --sub-title-size: 6.8px;
-                            --th-size: 5.4px;
-                            --td-size: 5.8px;
-                            --mini-table-size: 5.8px;
-                            --cell-pad-v: 0px;
-                            --cell-pad-h: 1px;
-                            --gap: 1px;
-                            --line-tight: 0.94;
-                            --gasto-row-h: 7px;
-                        }
-
-                        * {
-                            box-sizing: border-box;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
-
-                        body {
-                            font-family: 'Arial Narrow', Arial, sans-serif;
-                            color: #000;
-                            font-size: 9px;
-                            line-height: var(--line-tight);
-                            word-spacing: -0.2px;
-                        }
-
-                        #print-master-zone {
-                            width: 100%;
-                            transform-origin: top left;
-                        }
-
-                        .btn-volver {
-                            display: block;
-                            width: 90%;
-                            margin: 10px auto 20px auto;
-                            padding: 15px;
-                            background-color: #d32f2f;
-                            color: white;
-                            text-align: center;
-                            font-size: 18px;
-                            text-decoration: none;
-                            font-weight: bold;
-                            border-radius: 8px;
-                            border: 2px solid #b71c1c;
-                        }
-
-                        .print-header-global,
-                        .header-pdf,
-                        .subtitle-pdf,
-                        .pdf-table,
-                        .gen-table,
-                        .fifo-table,
-                        .bottom-container,
-                        .left-panel,
-                        .right-panel,
-                        .tabla-extras,
-                        .tabla-resumen,
-                        .tabla-gastos,
-                        .firma,
-                        tbody,
-                        tfoot,
-                        tr {
-                            break-inside: avoid;
-                            page-break-inside: avoid;
-                        }
-
-                        .print-header-global {
-                            width: 100%;
-                            display: table;
-                            table-layout: fixed;
-                            border-bottom: 2px solid #2E7D32;
-                            padding-bottom: var(--gap);
-                            margin-bottom: var(--gap);
-                        }
-
-                        .print-header-global > :first-child,
-                        .print-header-global > :last-child {
-                            display: table-cell;
-                            vertical-align: middle;
-                        }
-
-                        .print-header-global > :first-child {
-                            width: var(--logo-w) !important;
-                            max-width: var(--logo-w) !important;
-                        }
-
-                        .print-header-global img {
-                            display: block;
-                            height: var(--logo-h) !important;
-                            max-height: var(--logo-h) !important;
-                            max-width: var(--logo-w) !important;
-                            width: auto;
-                            object-fit: contain;
-                        }
-
-                        .print-header-global > div:first-child {
-                            height: var(--logo-h) !important;
-                            width: var(--logo-w) !important;
-                        }
-
-                        .print-header-info {
-                            text-align: right;
-                            font-size: var(--header-info-size) !important;
-                            line-height: var(--line-tight);
-                        }
-
-                        .print-header-info h2 {
-                            margin: 0 0 1px 0;
-                            font-size: var(--header-title-size) !important;
-                            color: #2E7D32;
-                            text-transform: uppercase;
-                            line-height: 1;
-                        }
-
-                        .header-pdf {
-                            text-align: center;
-                            font-weight: bold;
-                            font-size: var(--doc-title-size) !important;
-                            line-height: var(--line-tight);
-                            margin: 0 0 var(--gap) 0 !important;
-                            text-transform: uppercase;
-                        }
-
-                        .subtitle-pdf {
-                            text-align: center;
-                            font-weight: bold;
-                            font-size: var(--sub-title-size) !important;
-                            line-height: 1;
-                            margin: var(--gap) 0 0 0;
-                            padding: 1px 2px;
-                            text-transform: uppercase;
-                            border: 1px solid #000;
-                            border-bottom: none;
-                        }
-
-                        .pdf-table,
-                        table.gen-table,
-                        table.fifo-table,
-                        .tabla-extras,
-                        .tabla-resumen,
-                        .tabla-gastos {
-                            width: 100%;
-                            border-collapse: collapse;
-                            table-layout: fixed;
-                            margin: 0 0 var(--gap) 0 !important;
-                            text-align: center;
-                        }
-
-                        .pdf-table th,
-                        .pdf-table td,
-                        table.gen-table th,
-                        table.gen-table td,
-                        table.fifo-table th,
-                        table.fifo-table td,
-                        .tabla-extras td,
-                        .tabla-resumen td,
-                        .tabla-gastos td {
-                            border: 1px solid #000;
-                            padding: var(--cell-pad-v) var(--cell-pad-h) !important;
-                            vertical-align: middle;
-                            line-height: 1;
-                            overflow: hidden;
-                            text-overflow: clip;
-                        }
-
-                        .pdf-table th,
-                        table.gen-table th,
-                        table.fifo-table th {
-                            background-color: #388E3C !important;
-                            color: white !important;
-                            font-size: var(--th-size) !important;
-                            font-weight: bold;
-                            white-space: nowrap;
-                        }
-
-                        .pdf-table td,
-                        table.gen-table td,
-                        table.fifo-table td {
-                            font-size: var(--td-size) !important;
-                            font-weight: bold;
-                        }
-
-                        table.gen-table th { background-color: #2E7D32 !important; }
-                        table.fifo-table th { background-color: #757575 !important; }
+                        .tabla-extras, .tabla-resumen { width: 100%; border-collapse: collapse; font-weight: bold; font-size: 10px; }
+                        .tabla-extras td, .tabla-resumen td { border: 1px solid #000; padding: 2px; }
+                        .tabla-gastos { width: 100%; border-collapse: collapse; margin-bottom: 2px; font-size: 10px; }
+                        .tabla-gastos td { border: 1px solid #000; padding: 2px; height: 14px;}
+                        .firma { margin-top: 15px; font-size: 10px; text-align: left; font-weight: bold; }
+                        
+                        /* Tablas Generales */
+                        table.gen-table { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 11px; }
+                        table.gen-table th { background-color: #2E7D32 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact; }
+                        table.gen-table td { border: 1px solid #000; padding: 4px; }
+                        
+                        /* Tablas FIFO */
+                        table.fifo-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 10px; margin-bottom: 10px;}
+                        table.fifo-table th { background-color: #757575 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact;}
+                        table.fifo-table td { border: 1px solid #000; padding: 4px;}
                         table.fifo-table.nuevo th { background-color: #8E24AA !important; }
                         table.fifo-table.resumen th { background-color: #2E7D32 !important; }
 
-                        .pdf-table th,
-                        .pdf-table td,
-                        .tabla-extras td,
-                        .tabla-resumen td,
-                        .tabla-gastos td {
-                            white-space: nowrap;
-                        }
+                        /* === MODOS AUTO-COMPACTABLES === */
+                        body.spacious-mode .pdf-table th { font-size: 12px; padding: 6px; }
+                        body.spacious-mode .pdf-table td { font-size: 13px; padding: 6px; }
+                        body.spacious-mode .tabla-gastos td { height: 16px; padding: 4px; }
+                        body.spacious-mode .tabla-extras td, body.spacious-mode .tabla-resumen td { padding: 4px; font-size: 11px;}
 
-                        .pdf-table th:nth-child(1), .pdf-table td:nth-child(1) { width: 6%; }
-                        .pdf-table th:nth-child(2), .pdf-table td:nth-child(2) { width: 11%; }
-                        .pdf-table th:nth-child(3), .pdf-table td:nth-child(3) { width: 38%; }
-                        .pdf-table th:nth-child(4), .pdf-table td:nth-child(4) { width: 9%; }
-                        .pdf-table th:nth-child(5), .pdf-table td:nth-child(5) { width: 10%; }
-                        .pdf-table th:nth-child(6), .pdf-table td:nth-child(6) { width: 12%; }
-                        .pdf-table th:nth-child(7), .pdf-table td:nth-child(7) { width: 14%; }
-                        .pdf-table td:nth-child(3) { text-align: left; }
+                        body.compact-mode .pdf-table th { font-size: 9px; padding: 1px; }
+                        body.compact-mode .pdf-table td { font-size: 10px; padding: 1px; }
+                        body.compact-mode .tabla-gastos td { height: 12px; padding: 1px; }
+                        body.compact-mode .tabla-extras, body.compact-mode .tabla-resumen { font-size: 9px; }
+                        body.compact-mode .tabla-extras td, body.compact-mode .tabla-resumen td { padding: 1px; }
 
-                        .row-total td {
-                            color: red !important;
-                            font-weight: bold;
-                        }
+                        body.super-compact-mode { zoom: 0.9; transform: scale(0.95); transform-origin: top left; width: 105%; }
+                        body.super-compact-mode .pdf-table th { font-size: 8px; padding: 1px; }
+                        body.super-compact-mode .pdf-table td { font-size: 9px; padding: 1px; }
+                        body.super-compact-mode .tabla-gastos td { height: 10px; padding: 1px; }
+                        body.super-compact-mode .tabla-extras, body.super-compact-mode .tabla-resumen { font-size: 8px; }
+                        body.super-compact-mode .tabla-extras td, body.super-compact-mode .tabla-resumen td { padding: 1px; }
+                        body.super-compact-mode .header-pdf { font-size: 12px; margin-bottom: 1px; }
+                        body.super-compact-mode .subtitle-pdf { font-size: 10px; }
 
-                        .bottom-container {
-                            width: 100%;
-                            display: table;
-                            table-layout: fixed;
-                            margin-top: var(--gap);
-                            border-spacing: 0;
-                        }
-
-                        .left-panel,
-                        .right-panel {
-                            display: table-cell;
-                            vertical-align: top;
-                        }
-
-                        .left-panel {
-                            width: 46%;
-                            padding-right: 4px;
-                        }
-
-                        .right-panel {
-                            width: 54%;
-                            padding-left: 4px;
-                        }
-
-                        .tabla-extras,
-                        .tabla-resumen,
-                        .tabla-gastos {
-                            font-size: var(--mini-table-size) !important;
-                            font-weight: bold;
-                        }
-
-                        .tabla-gastos td {
-                            height: var(--gasto-row-h) !important;
-                        }
-
-                        .firma {
-                            margin-top: 3px;
-                            font-size: var(--mini-table-size) !important;
-                            line-height: 1 !important;
-                            text-align: left;
-                            font-weight: normal;
-                            white-space: nowrap;
-                        }
-
-                        body.compact-mode *,
-                        #print-master-zone.compact-mode *,
-                        body.super-compact-mode *,
-                        #print-master-zone.super-compact-mode * {
-                            line-height: var(--line-tight) !important;
-                        }
-
-                        @media print {
-                            .btn-volver { display: none !important; }
-
-                            body {
-                                margin: 0 !important;
-                                padding: 0 !important;
-                            }
-
-                            body.compact-mode #print-master-zone,
-                            #print-master-zone.compact-mode {
-                                zoom: var(--print-scale, 0.90);
-                            }
-
-                            body.super-compact-mode #print-master-zone,
-                            #print-master-zone.super-compact-mode {
-                                zoom: var(--print-scale, 0.78);
-                            }
-
-                            @supports not (zoom: 1) {
-                                body.compact-mode #print-master-zone,
-                                #print-master-zone.compact-mode,
-                                body.super-compact-mode #print-master-zone,
-                                #print-master-zone.super-compact-mode {
-                                    transform: scale(var(--print-scale, 1));
-                                    transform-origin: top left;
-                                    width: var(--print-scale-width, 100%);
-                                }
-                            }
-                        }
+                        /* Ocultar el botón rojo a la hora de imprimir en papel */
+                        @media print { .btn-volver { display: none !important; } }
                     </style>
                 </head>
-                <body class="${modoImpresion}" style="--print-scale:${escalaSegura}; --print-scale-width:${anchoEscala};">
-                    <a href="#" class="btn-volver" onclick="window.close(); return false;">❌ CERRAR VISTA PREVIA Y VOLVER A LA APP</a>
+                <body class="${sizeClass}">
+                    <a href="#" class="btn-volver" onclick="window.close(); return false;">⬅️ CERRAR REPORTE Y VOLVER A LA APP</a>
                     
-                    <div id="print-master-zone" class="${modoImpresion}">
-                        <div class="print-header-global">
-                            ${logoHTML}
-                            <div class="print-header-info">
-                                <h2>${tituloDocumento}</h2>
-                                Generado: <b>${fStr}</b>
-                            </div>
+                    <div class="print-header-global">
+                        ${logoHTML}
+                        <div class="print-header-info">
+                            <h2>${tituloDocumento}</h2>
+                            Generado: <b>${fStr}</b>
                         </div>
-                        <div>
-                            ${htmlContent}
-                        </div>
+                    </div>
+                    <div>
+                        ${htmlContent}
                     </div>
                     
                     <script>
+                        // Al terminar de imprimir (o cancelar), cerramos la ventana automáticamente
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                        // Al cargar la ventana, lanzamos la impresión automáticamente (Dándole 500ms a Safari para que respire)
                         window.onload = function() {
                             setTimeout(function() {
                                 window.print();
                             }, 500);
-                        };
-                        window.onafterprint = function() {
-                            window.close();
                         };
                     <\/script>
                 </body>
@@ -733,18 +497,13 @@
         // 🟢 CÁLCULO DE SEMANA CORREGIDO (Zona Horaria Local de México)
         // ==========================================
         function getNumeroSemana(fechaInput) {
-            // Separa la fecha YYYY-MM-DD para evitar el error de huso horario UTC vs Local
             let partes = fechaInput.split('-');
             if(partes.length !== 3) return 0;
-            // Año, Mes (0-11), Día
             let d = new Date(partes[0], partes[1] - 1, partes[2]);
             d.setHours(0,0,0,0);
-            // Día de la semana (Lunes=1, Domingo=7)
             let diaSemana = d.getDay() || 7;
-            // Jueves de esa semana (ISO 8601)
             d.setDate(d.getDate() + 4 - diaSemana);
             let yearStart = new Date(d.getFullYear(), 0, 1);
-            // Días de diferencia / 7
             return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
@@ -757,8 +516,8 @@
         const LISTA_MATERIALES = {
             "POLVOS": [
                 "ROTOFOAM NEGRO AR", "ROTOFOAM BLANCO AR", "ROTOLENE BEIGE", "ROTOLENE NEGRO - BLACK", 
-                "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", "ROTOLENE VERDE INDUST.", "ROTOLENE BLANCO", "RECICLADO / MERMA", 
-                "ROTOLENE ROJO 14", "ROTOLENE NATURAL", "ROTOLENE CAFÉ", "ROTOLENE NARANJA II"
+                "ROTOLENE AZUL #5", "ROTOLENE VERDE #15", "ROTOLENE BLANCO", "RECICLADO / MERMA", 
+                "ROTOLENE ROJO 14", "ROTOLENE NATURAL", "ROTOLENE CAFÉ", "ROTOLENE NARANJA II", "ROTOLENE VERDE INDUSTRIAL"
             ],
             "ACCESORIOS": [
                 "KIT COMPLETO (PIEZAS)", "TAPA (PIEZAS)", "VALVULA (PIEZAS)", "JARRO DE AIRE (PIEZAS)", 
@@ -794,65 +553,6 @@
             "235LT":  { publico: 520,  mayoreo: 495,  distribuidor: 495,  segunda: 350,  consignacion_salida: 0, consignacion_cobro: 495,  garantia: 0, traspaso_sucursal: 0, traspaso_cobro: 495 } 
         };
 
-        const COLORES_UI_DETECTABLES = [...new Set([...colsTin, ...colsTam])].sort((a, b) => b.length - a.length);
-        const CATALOGO_STOCK_CANONICO = [...new Set([...LISTA_MATERIALES["POLVOS"], ...LISTA_MATERIALES["ACCESORIOS"], ...LISTA_MATERIALES["TERMINADOS"]])];
-
-        function normalizarTextoClave(txt) {
-            return String(txt || '')
-                .toUpperCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function normalizarColorUI(color) {
-            const buscado = normalizarTextoClave(color);
-            if (!buscado) return null;
-            return COLORES_UI_DETECTABLES.find(c => normalizarTextoClave(c) === buscado) || color;
-        }
-
-        function extraerColorDesdeConcepto(concepto) {
-            const conceptoNorm = normalizarTextoClave(concepto);
-            if (!conceptoNorm) return null;
-            const match = COLORES_UI_DETECTABLES.find(c => conceptoNorm.includes(normalizarTextoClave(c)));
-            return match || null;
-        }
-
-        function normalizarMaterialStock(material) {
-            const original = String(material || '').trim().toUpperCase();
-            if (!original) return null;
-            const normalizado = normalizarTextoClave(original);
-            const alias = {
-                'ROTOLENE VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUST.',
-                'ROTOLENE VERDE INDUST': 'ROTOLENE VERDE INDUST.',
-                'ROTOLENE VERDE INDUST.': 'ROTOLENE VERDE INDUST.',
-                'ROTOLENE VERDE INDUSTRIAL.': 'ROTOLENE VERDE INDUST.',
-                'ROTOLENE CAFE': 'ROTOLENE CAFÉ'
-            };
-            if (alias[normalizado]) return alias[normalizado];
-            const exacto = CATALOGO_STOCK_CANONICO.find(item => normalizarTextoClave(item) === normalizado);
-            return exacto || original;
-        }
-
-        function extraerMaterialDesdeConcepto(concepto, tipoMov) {
-            const raw = String(concepto || '').trim().toUpperCase();
-            if (!raw) return null;
-            if (tipoMov === 'COMPRA') return normalizarMaterialStock(raw.replace(/^INGRESO:\s*/, ''));
-            if (tipoMov === 'MERMA') {
-                const sinPrefijo = raw.replace(/^MERMA:\s*/, '').trim();
-                const matchMerma = sinPrefijo.match(/^(.*?)(\s*\([^()]*\))?\s*$/);
-                return normalizarMaterialStock(matchMerma ? matchMerma[1].trim() : sinPrefijo);
-            }
-            if (tipoMov === 'INVENTARIO_FISICO') {
-                const sinPrefijo = raw.replace(/^REAL:\s*/, '').trim();
-                const matchInv = sinPrefijo.match(/^(.*?)\s*\(DIF:\s*[-+]?\d+(?:\.\d+)?\)\s*$/);
-                return normalizarMaterialStock(matchInv ? matchInv[1].trim() : sinPrefijo);
-            }
-            return normalizarMaterialStock(raw);
-        }
-
-
         function cambiarTab(tab) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active')); document.getElementById('tab-' + tab).classList.add('active'); document.getElementById('btn-tab-' + tab).classList.add('active'); if(tab === 'bd') cargarBD(); if(tab === 'dashboard') renderGraficas(); if(tab === 'cortes') actualizarFechasCorte(); if(tab === 'inventario') verStockActual(); }
         
         function actualizarPrecios(tipoItem) { if(tipoItem === 'tinaco') { const cap = document.getElementById('capTinaco').value; const tipo = document.getElementById('tipoPrecioTinaco').value; document.getElementById('pTinaco').value = LISTA_PRECIOS[cap][tipo]; } else if (tipoItem === 'tambo') { const cap = document.getElementById('capTambo').value; const tipo = document.getElementById('tipoPrecioTambo').value; document.getElementById('pTambo').value = LISTA_PRECIOS[cap][tipo]; } }
@@ -867,8 +567,7 @@
 
         function obtenerRecetaMateriales(tipoMovimiento, capacidad, colorUI) {
             let consumo = {};
-            colorUI = normalizarColorUI(colorUI);
-            const mapeoColor = { 'NEGRO': 'ROTOLENE NEGRO - BLACK', 'BEIGE': 'ROTOLENE BEIGE', 'AZUL': 'ROTOLENE AZUL #5', 'VERDE': 'ROTOLENE VERDE #15', 'NATURAL': 'ROTOLENE NATURAL', 'NARANJA': 'ROTOLENE NARANJA II', 'CAFÉ': 'ROTOLENE CAFÉ', 'BLANCO': 'ROTOLENE BLANCO', 'ROJO': 'ROTOLENE ROJO 14', 'VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUST.' };
+            const mapeoColor = { 'NEGRO': 'ROTOLENE NEGRO - BLACK', 'BEIGE': 'ROTOLENE BEIGE', 'AZUL': 'ROTOLENE AZUL #5', 'VERDE': 'ROTOLENE VERDE #15', 'NATURAL': 'ROTOLENE NATURAL', 'NARANJA': 'ROTOLENE NARANJA II', 'CAFÉ': 'ROTOLENE CAFÉ', 'BLANCO': 'ROTOLENE BLANCO', 'ROJO': 'ROTOLENE ROJO 14', 'VERDE INDUSTRIAL': 'ROTOLENE VERDE INDUSTRIAL' };
             let matColorBase = mapeoColor[colorUI] || `ROTOLENE ${colorUI}`;
             
             if (!tipoMovimiento.includes('_COBRO') && (tipoMovimiento.includes('VENTA') || tipoMovimiento.includes('TRASPASO'))) {
@@ -908,11 +607,8 @@
             
             if(tipo === 'COMPRA' || tipo === 'MERMA') {
                 let mod = tipo === 'MERMA' ? -1 : 1; 
-                const materialCanonico = normalizarMaterialStock(color);
-                if (!materialCanonico) return;
-                stock[materialCanonico] = (stock[materialCanonico] || 0) + (cant * mod * mult);
+                stock[color] = (stock[color] || 0) + (cant * mod * mult);
             } else { 
-                color = normalizarColorUI(color);
                 let receta = obtenerRecetaMateriales(tipo, capacidad, color); 
                 for(let mat in receta) { stock[mat] = (stock[mat] || 0) - (receta[mat] * cant * mult); }
                 
@@ -1173,6 +869,9 @@
                 if(esRescate) localStorage.removeItem('plastinova_stock_v1');
                 let contador = 0;
 
+                const todosLosColores = ["AZUL", "NEGRO", "BEIGE", "ROJO", "VERDE", "NATURAL", "NARANJA", "VERDE INDUSTRIAL", "CAFÉ", "BLANCO", "ROJO CON BLANCO", "VERDE CON BLANCO", "AZUL CON BLANCO", "TERRACOTA", "MENTA", "PISTACHE", "GRANITO BEIGE", "GRANITO", "DUVALIN", "UVA", "MELON", "OXFORD"];
+                todosLosColores.sort((a,b) => b.length - a.length);
+
                 for (let i = 1; i < lineas.length; i++) {
                     if (lineas[i].trim() === '') continue;
                     let cols = lineas[i].split(',');
@@ -1192,24 +891,21 @@
                             else tipoMov = 'VENTA_TINACO'; 
                         }
 
-                        let cant = parseFloat(cols[4]) || 0; let cap = null; let col = null; let materialStock = null;
+                        let cant = parseFloat(cols[4]) || 0; let cap = null; let col = null;
                         if(conceptoStr.includes('1200LT')) cap = '1200LT';
                         else if(conceptoStr.includes('1100LT')) cap = '1100LT';
                         else if(conceptoStr.includes('750LT')) cap = '750LT';
                         else if(conceptoStr.includes('235LT') || conceptoStr.includes('TAMBO')) cap = '235LT';
                         else if(conceptoStr.includes('MACETA') && conceptoStr.includes('GRANDE')) cap = 'GRANDE';
                         else if(conceptoStr.includes('MACETA') && conceptoStr.includes('CHICA')) cap = 'CHICA';
+                        
+                        for(let c of todosLosColores) { if(conceptoStr.includes(c)) { col = c; break; } }
 
-                        if (tipoMov === 'COMPRA' || tipoMov === 'MERMA' || tipoMov === 'INVENTARIO_FISICO') materialStock = extraerMaterialDesdeConcepto(conceptoStr, tipoMov);
-                        else col = extraerColorDesdeConcepto(conceptoStr);
-
-                        const colorUIReconstruido = materialStock || col || '';
-                        const reg = { id: Date.now() + i, fecha: fechaStr, semana: sem, vendedor: cols[1].trim().toUpperCase(), tipo: tipoMov, concepto: conceptoStr, cantidad: cant, precio: parseFloat(cols[5]) || 0, total: parseFloat(cols[6]) || 0, capacidad: cap, colorUI: colorUIReconstruido };
+                        const reg = { id: Date.now() + i, fecha: fechaStr, semana: sem, vendedor: cols[1].trim().toUpperCase(), tipo: tipoMov, concepto: conceptoStr, cantidad: cant, precio: parseFloat(cols[5]) || 0, total: parseFloat(cols[6]) || 0, capacidad: cap, colorUI: col || 'BEIGE' };
                         let existe = db.find(x => x.fecha === reg.fecha && x.concepto === reg.concepto && x.cantidad === reg.cantidad);
                         if(esRescate || !existe) {
                             db.push(reg); 
-                            if(cap && col) actualizarStockGlobal(tipoMov, cap, col, cant, false);
-                            else if(tipoMov === 'COMPRA' || tipoMov === 'MERMA') actualizarStockGlobal(tipoMov, null, materialStock, cant, false);
+                            if(cap || tipoMov === 'COMPRA' || tipoMov === 'MERMA') { actualizarStockGlobal(tipoMov, cap, col || 'BEIGE', cant, false); }
                             contador++;
                         }
                     }
@@ -1313,7 +1009,7 @@
                 </table>
             `;
 
-            imprimirDocumento(htmlFIFO, "REPORTE DE AUDITORÍA (FIFO/PEPS)");
+            imprimirDocumento(htmlFIFO, "REPORTE DE AUDITORÍA (FIFO)");
         }
 
         function imprimirReporteDirecto(tablaId, titulo) {
@@ -1449,7 +1145,7 @@
             
             registros.forEach(r => {
                 const fechaFormat = r.fecha.split('-').reverse().join('/'), cantNum = parseFloat(r.cantidad) || 0, precioNum = parseFloat(r.precio) || 0, totalNum = parseFloat(r.total) || 0;
-                // COLUMNAS: FOLIO(vacio), FECHA, CONCEPTO, #TINACO(vacio), CANTIDAD, PRECIO UNI, TOTAL
+                // COLUMNAS RESTAURADAS: FOLIO, FECHA, CONCEPTO, #TINACO, CANTIDAD, PRECIO UNI, TOTAL
                 const filaTin = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
                 const filaTam = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
 
@@ -1483,6 +1179,13 @@
 
             let filaPedro = (vendedor === 'FERNANDO') ? `<tr><td style="text-align:center;">${sumQExtTinPedro + sumQExtTamPedro}</td><td>${textoExtrasPedro}</td><td style="text-align:right;">$${formato(comExtPedro)}</td></tr>` : '';
 
+            // EL SECRETO DEL TAMAÑO (COMPACT MODE)
+            let sizeClass = '';
+            let totalFilas = (tTinacos.match(/<tr>/g) || []).length + (tTambos.match(/<tr>/g) || []).length + countGastos;
+            if (totalFilas < 8) sizeClass = 'spacious-mode';
+            else if (totalFilas >= 25) sizeClass = 'super-compact-mode';
+            else if (totalFilas >= 16) sizeClass = 'compact-mode';
+
             let htmlCorte = `
                 <div class="header-pdf">TINACOS PLASTINOVA<br>VENDEDOR: ${vendedor}<br>${startStr.split('-').reverse().join('/')} AL ${endStr.split('-').reverse().join('/')} | SEMANA ${semanaCalculada}</div>
                 
@@ -1510,7 +1213,7 @@
                             <tr><td style="text-align:center;">${(sumComisionTambos / 10).toFixed(2)}</td><td>VENTAS TAMBOS</td><td style="text-align:right;">$${formato(sumComisionTambos)}</td></tr>
                             <tr><td colspan="2" style="text-align:center; color:red;">TOTAL COMISIONES</td><td style="color:red; text-align:right;">$${formato(totComs)}</td></tr>
                         </table>
-                        <div class="firma">FIRMA RECIBIDO: _______________________</div>
+                        <div class="firma">FIRMA RECIBIDO: <br>_____________________________</div>
                     </div>
                     <div class="right-panel">
                         <table class="tabla-resumen"><tr><td style="width: 60%; color: red;">TOTAL VENTAS</td><td style="color: red;">$${formato(granTotal)}</td></tr></table>
@@ -1519,36 +1222,13 @@
                             <tr><td style="width: 60%;">GASTOS $</td><td>$${formato(sumGastos)}</td></tr>
                             <tr><td>SUB TOTAL $</td><td>$${formato(subTotal)}</td></tr>
                             <tr><td>EXTRA TRABAJADORES</td><td>$${formato(totComs)}</td></tr>
-                            <tr><td style="color: red; font-weight: bold;">TOTAL FINAL $</td><td style="color: red; font-weight: bold;">$${formato(totalEfe)}</td></tr>
+                            <tr><td style="color: red; font-size: 13px;">TOTAL FINAL $</td><td style="color: red; font-size: 13px;">$${formato(totalEfe)}</td></tr>
                         </table>
                     </div>
                 </div>
             `;
 
-            const filasTinacosImpresas = (tTinacos.match(/<tr>/g) || []).length;
-            const filasTambosImpresas = (tTambos.match(/<tr>/g) || []).length;
-            const filasGastosImpresas = Math.max(countGastos, 4);
-            const filasComisiones = 5 + (vendedor === 'FERNANDO' ? 1 : 0);
-            const scoreImpresion = filasTinacosImpresas + filasTambosImpresas + Math.ceil(filasGastosImpresas * 1.2) + filasComisiones + 6;
-
-            let modoImpresion = 'spacious-mode';
-            let escalaImpresion = 1;
-
-            if (scoreImpresion > 22) {
-                modoImpresion = 'compact-mode';
-                escalaImpresion = 0.90;
-            }
-            if (scoreImpresion > 30) {
-                modoImpresion = 'super-compact-mode';
-                escalaImpresion = 0.78;
-            }
-            if (scoreImpresion > 36) escalaImpresion = 0.74;
-            if (scoreImpresion > 42) escalaImpresion = 0.70;
-            if (scoreImpresion > 48) escalaImpresion = 0.66;
-            if (scoreImpresion > 54) escalaImpresion = 0.62;
-            if (scoreImpresion > 60) escalaImpresion = 0.58;
-
-            imprimirDocumento(htmlCorte, "CORTE DE CAJA", modoImpresion, escalaImpresion);
+            imprimirDocumento(htmlCorte, "CORTE DE CAJA", sizeClass);
         }
     </script>
 </body>
