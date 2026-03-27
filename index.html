@@ -367,9 +367,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // 🟢 CONFIGURACIÓN DEL LOGO
-        // ==========================================
         const LOGO_PLASTINOVA = "logo.png"; 
 
         const URL_GOOGLE_SHEETS = "https://script.google.com/macros/s/AKfycbzRpyFi3tp65WTEye3zV5q8iPPDPm8ZRmn-cX-Wqc9eQpYS1NGtjItSBy5Y6KEgR3iG/exec";
@@ -379,9 +376,6 @@
             .catch(error => console.log("Aviso: Falló la conexión a la nube.", error));
         }
 
-        // ==========================================
-        // 🟢 MOTOR DE IMPRESIÓN SEGURO (VENTANA NUEVA CON BOTÓN DE REGRESO)
-        // ==========================================
         function imprimirDocumento(htmlContent, tituloDocumento, sizeClass = '') {
             let logoHTML = LOGO_PLASTINOVA ? `<img src="${LOGO_PLASTINOVA}" style="height:60px; max-width: 150px; object-fit: contain;">` : `<div style="height:60px; width:150px; background:#eee; display:flex; align-items:center; justify-content:center; border:1px dashed #999;"><b>[LOGO]</b></div>`;
             let fStr = new Date().toLocaleString('es-MX');
@@ -392,19 +386,15 @@
                 <head>
                     <title>${tituloDocumento}</title>
                     <style>
-                        /* Forzamos a Horizontal */
                         @page { size: landscape; margin: 10mm; }
                         body { font-family: 'Arial Narrow', Arial, sans-serif; margin: 0; padding: 0; }
                         
-                        /* Estilos para el botón de Regreso */
                         .btn-volver { display: block; width: 90%; margin: 10px auto 20px auto; padding: 15px; background-color: #d32f2f; color: white; text-align: center; font-size: 18px; text-decoration: none; font-weight: bold; border-radius: 8px; border: 2px solid #b71c1c; }
                         
-                        /* Cabecera */
                         .print-header-global { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #2E7D32; padding-bottom: 5px; margin-bottom: 10px; }
                         .print-header-info { text-align: right; font-size: 11px; }
                         .print-header-info h2 { margin: 0; font-size: 16px; color: #2E7D32; text-transform: uppercase;}
                         
-                        /* Tablas de Corte Restauradas (Colores y Columnas Exactas) */
                         .header-pdf { text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; }
                         .subtitle-pdf { text-align: center; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 2px; text-transform: uppercase; background-color: #eee; border: 1px solid #000; border-bottom: none;}
                         
@@ -413,7 +403,6 @@
                         .pdf-table td { border: 1px solid #000; font-size: 11px; font-weight: bold; padding: 2px; }
                         .row-total td { color: red !important; font-weight: bold; }
                         
-                        /* USO DE DISPLAY TABLE PARA EVITAR QUE SAFARI LO ROMPA EN 2 HOJAS */
                         .bottom-container { display: table; width: 100%; table-layout: fixed; margin-top: 5px; page-break-inside: avoid; }
                         .left-panel { display: table-cell; width: 48%; vertical-align: top; padding-right: 10px; }
                         .right-panel { display: table-cell; width: 52%; vertical-align: top; }
@@ -424,19 +413,16 @@
                         .tabla-gastos td { border: 1px solid #000; padding: 2px; height: 14px;}
                         .firma { margin-top: 15px; font-size: 10px; text-align: left; font-weight: bold; }
                         
-                        /* Tablas Generales */
                         table.gen-table { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 11px; }
                         table.gen-table th { background-color: #2E7D32 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact; }
                         table.gen-table td { border: 1px solid #000; padding: 4px; }
                         
-                        /* Tablas FIFO */
                         table.fifo-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 10px; margin-bottom: 10px;}
                         table.fifo-table th { background-color: #757575 !important; color: white !important; border: 1px solid #000; padding: 4px; -webkit-print-color-adjust: exact;}
                         table.fifo-table td { border: 1px solid #000; padding: 4px;}
                         table.fifo-table.nuevo th { background-color: #8E24AA !important; }
                         table.fifo-table.resumen th { background-color: #2E7D32 !important; }
 
-                        /* === MODOS AUTO-COMPACTABLES === */
                         body.spacious-mode .pdf-table th { font-size: 12px; padding: 6px; }
                         body.spacious-mode .pdf-table td { font-size: 13px; padding: 6px; }
                         body.spacious-mode .tabla-gastos td { height: 16px; padding: 4px; }
@@ -457,7 +443,6 @@
                         body.super-compact-mode .header-pdf { font-size: 12px; margin-bottom: 1px; }
                         body.super-compact-mode .subtitle-pdf { font-size: 10px; }
 
-                        /* Ocultar el botón rojo a la hora de imprimir en papel */
                         @media print { .btn-volver { display: none !important; } }
                     </style>
                 </head>
@@ -476,11 +461,9 @@
                     </div>
                     
                     <script>
-                        // Al terminar de imprimir (o cancelar), cerramos la ventana automáticamente
                         window.onafterprint = function() {
                             window.close();
                         };
-                        // Al cargar la ventana, lanzamos la impresión automáticamente (Dándole 500ms a Safari para que respire)
                         window.onload = function() {
                             setTimeout(function() {
                                 window.print();
@@ -493,9 +476,6 @@
             printWindow.document.close();
         }
 
-        // ==========================================
-        // 🟢 CÁLCULO DE SEMANA CORREGIDO (Zona Horaria Local de México)
-        // ==========================================
         function getNumeroSemana(fechaInput) {
             let partes = fechaInput.split('-');
             if(partes.length !== 3) return 0;
@@ -1129,7 +1109,6 @@
             let db = JSON.parse(localStorage.getItem('plastinova_bd_v2')) || [];
             const startStr = document.getElementById('fechaDesde').value, endStr = document.getElementById('fechaHasta').value;
             
-            // LA SEMANA SE CALCULA SEGÚN LA FECHA DE INICIO DEL CORTE
             const semanaCalculada = getNumeroSemana(startStr);
 
             let registros = db.filter(r => { 
@@ -1138,6 +1117,9 @@
                 if (vendedor === 'FERNANDO' && r.vendedor === 'PEDRO' && (r.tipo || '').includes('PROD_EXTRA')) return true; 
                 return false; 
             });
+
+            // 🟢 FIX: ORDENAR LAS FECHAS CRONOLÓGICAMENTE
+            registros.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
             
             let tTinacos = '', tTambos = '', tGastos = ''; 
             let sumQTin = 0, sumPTin = 0, sumDTin = 0, sumQTam = 0, sumPTam = 0, sumDTam = 0, sumQExtTin = 0, sumQExtTam = 0, sumQExtTinPedro = 0, sumQExtTamPedro = 0, sumGastos = 0, sumComisionTinacos = 0, sumComisionTambos = 0;
@@ -1145,18 +1127,26 @@
             
             registros.forEach(r => {
                 const fechaFormat = r.fecha.split('-').reverse().join('/'), cantNum = parseFloat(r.cantidad) || 0, precioNum = parseFloat(r.precio) || 0, totalNum = parseFloat(r.total) || 0;
-                // COLUMNAS RESTAURADAS: FOLIO, FECHA, CONCEPTO, #TINACO, CANTIDAD, PRECIO UNI, TOTAL
                 const filaTin = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
                 const filaTam = `<tr><td></td><td>${fechaFormat}</td><td style="text-align:left;">${r.concepto}</td><td></td><td>${cantNum.toFixed(2)}</td><td>$${formato(precioNum)}</td><td>$${formato(totalNum)}</td></tr>`;
 
-                const noPagaComision = precioNum === 0 && ((r.concepto || '').includes('GARANTÍA') || (r.concepto || '').includes('ENTREGA CONSIGNACIÓN') || (r.concepto || '').includes('TRASPASO SUCURSAL'));
+                const esConsignaSalida = (r.concepto || '').includes('ENTREGA CONSIGNACIÓN');
+                const esTraspasoSalida = (r.concepto || '').includes('TRASPASO SUCURSAL');
+                const esGarantia = (r.concepto || '').includes('GARANTÍA');
+                const noPagaComision = precioNum === 0 && (esGarantia || esConsignaSalida || esTraspasoSalida);
 
                 if((r.tipo === 'VENTA_TINACO' || r.tipo === 'VENTA_TINACO_COBRO' || r.tipo === 'TRASPASO_TINACO' || r.tipo === 'TRASPASO_TINACO_COBRO') && mostrarTinacos) { 
-                    tTinacos += filaTin; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; 
+                    // 🟢 FIX: OMITIR ENTREGAS A CONSIGNACIÓN EN EL REPORTE
+                    if (!esConsignaSalida && !esTraspasoSalida) {
+                        tTinacos += filaTin; sumQTin += cantNum; sumPTin += precioNum; sumDTin += totalNum; 
+                    }
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TINACO')) sumComisionTinacos += (cantNum * 35);
                 }
                 if((r.tipo === 'VENTA_TAMBO' || r.tipo === 'VENTA_TAMBO_COBRO' || r.tipo === 'TRASPASO_TAMBO' || r.tipo === 'TRASPASO_TAMBO_COBRO') && mostrarTambos) { 
-                    tTambos += filaTam; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; 
+                    // 🟢 FIX: OMITIR ENTREGAS A CONSIGNACIÓN EN EL REPORTE
+                    if (!esConsignaSalida && !esTraspasoSalida) {
+                        tTambos += filaTam; sumQTam += cantNum; sumPTam += precioNum; sumDTam += totalNum; 
+                    }
                     if(!noPagaComision && !r.tipo.includes('TRASPASO_TAMBO')) sumComisionTambos += (cantNum * 10);
                 }
                 if((r.tipo || '').includes('PROD_EXTRA')) { 
@@ -1179,7 +1169,6 @@
 
             let filaPedro = (vendedor === 'FERNANDO') ? `<tr><td style="text-align:center;">${sumQExtTinPedro + sumQExtTamPedro}</td><td>${textoExtrasPedro}</td><td style="text-align:right;">$${formato(comExtPedro)}</td></tr>` : '';
 
-            // EL SECRETO DEL TAMAÑO (COMPACT MODE)
             let sizeClass = '';
             let totalFilas = (tTinacos.match(/<tr>/g) || []).length + (tTambos.match(/<tr>/g) || []).length + countGastos;
             if (totalFilas < 8) sizeClass = 'spacious-mode';
